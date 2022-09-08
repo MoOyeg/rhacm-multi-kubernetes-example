@@ -1,0 +1,11 @@
+bases:
+  - ../../base
+resources:
+  - pacman-service.yaml
+#  - pacman-ingress.yaml
+# patchesJson6902:
+#   - target:
+#       version: v1
+#       kind: Service
+#       name: pacman
+#     path: patches/service-patch.yaml

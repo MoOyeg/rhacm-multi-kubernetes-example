@@ -1,0 +1,17 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: install-openshift-gitops
+placementBindingDefaults:
+  name: openshift-gitops-operator-pb
+policyDefaults:
+  namespace: global-policies
+  # Use an existing placement rule so that placement bindings can be consolidated
+  placement:
+    placementRulePath: ../../placementrules/ocp-placementrule.yaml
+  remediationAction: enforce
+  severity: medium
+policies:
+  - name: policy-ocp-gitops-operator
+    manifests:
+      - path: openshift-gitops-subscription.yaml

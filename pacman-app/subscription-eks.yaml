@@ -1,0 +1,17 @@
+apiVersion: apps.open-cluster-management.io/v1
+kind: Subscription
+metadata:
+  annotations:
+    apps.open-cluster-management.io/git-branch: main
+    apps.open-cluster-management.io/git-path: deploy-env-specific-eks
+    apps.open-cluster-management.io/reconcile-option: merge
+  labels:
+    app: pacman-app
+  name: pacman-subscription-eks
+  namespace: pacman-app
+spec:
+  channel: pacman-app/channel-k8s-pacman-app
+  placement:
+    placementRef:
+      kind: PlacementRule
+      name: pacman-placmentrule-eks

@@ -1,0 +1,10 @@
+apiVersion: apps.open-cluster-management.io/v1
+kind: Channel
+metadata:
+  labels:
+    app: pacman-app
+  name: channel-k8s-pacman-app
+  namespace: pacman-app
+spec:
+  pathname: https://github.com/MoOyeg/rhacm-multi-kubernetes-example.git
+  type: Git

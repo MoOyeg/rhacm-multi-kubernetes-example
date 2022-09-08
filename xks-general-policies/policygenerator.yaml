@@ -1,0 +1,26 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-generator-olm
+  labels:
+    custom: olm-policies
+placementBindingDefaults:
+  name: xks-general-olm-pb
+policyDefaults:
+  namespace: global-policies
+  # Use an existing placement rule so that placement bindings can be consolidated
+  placement:
+    placementRulePath: ../placementrules/non-openshift-placementrule.yaml
+  remediationAction: enforce
+  severity: medium
+policies:
+- name: policy-xks-olm-crds
+  disabled: false
+  manifests:
+    - path: ./crds
+- name: policy-xks-olm-deploy
+  disabled: false
+  pruneObjectBehavior: DeleteAll
+  manifests:
+    - path: ./olm_deploy
+  remediationAction: enforce

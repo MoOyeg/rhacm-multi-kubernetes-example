@@ -1,0 +1,10 @@
+- op: add
+  path: "/metadata/annotations"
+  value:
+    service.beta.kubernetes.io/aws-load-balancer-type: external
+- op: add
+  path: "/metadata/annotations/service.beta.kubernetes.io~aws-load-balancer-nlb-target-type"
+  value: ip
+- op: add
+  path: "/metadata/annotations/service.beta.kubernetes.io~aws-load-balancer-scheme"
+  value: ip

@@ -1,0 +1,6 @@
+resources:
+- non-openshift-placementrule.yaml
+- aks-placementrule.yaml
+- eks-placementrule.yaml
+- gks-placementrule.yaml
+- ocp-placementrule.yaml

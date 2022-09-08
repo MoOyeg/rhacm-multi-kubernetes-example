@@ -1,0 +1,21 @@
+---
+apiVersion: tower.ansible.com/v1alpha1
+kind: AnsibleJob
+metadata:
+  name: f5-update-dns-load-balancer
+  namespace: pacman-app
+  labels:
+    app.kubernetes.io/name: pacman
+spec:
+  tower_auth_secret: toweraccess
+  job_template_name: f5-update-dns-load-balancer
+  extra_vars:
+    API_DOMAIN: moyooyegunle.com
+    BASE_AWS_DOMAIN: aws.moyooyegunle.com
+    BASE_AZ_DOMAIN: azure.moyooyegunle.com
+    BASE_DOMAIN: moyooyegunle.com
+    GSLB_ZONE: pacman-demo
+    # The AWS Route53 NS Record must exist with NameServers:
+    # ns1.f5cloudservices.com
+    # ns2.f5cloudservices.com
+

@@ -1,0 +1,21 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-generator-xks-argocd
+  labels:
+    custom: argocd-xks-policy
+placementBindingDefaults:
+  name: xks-argocd-policy-pb
+policyDefaults:
+  namespace: global-policies
+  # Use an existing placement rule so that placement bindings can be consolidated
+  placement:
+    placementRulePath: ../placementrules/non-openshift-placementrule.yaml
+  remediationAction: enforce
+  severity: medium
+policies:
+- name: policy-xks-argocd
+  disabled: false
+  manifests:
+    - path: ./manifests
+  remediationAction: enforce

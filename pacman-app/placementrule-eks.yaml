@@ -1,0 +1,21 @@
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  labels:
+    app: pacman-app
+  name: pacman-placementrule-eks-only
+  namespace: pacman-app
+spec:
+  clusterConditions:
+    - status: "True"
+      type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+      - key: vendor
+        operator: In
+        values:
+          - EKS
+      - key: app
+        operator: In
+        values:
+          - pacman-app

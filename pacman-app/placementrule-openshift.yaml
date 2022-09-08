@@ -1,0 +1,12 @@
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  labels:
+    app: pacman-app
+  name: pacman-placementrule-openshift-only
+  namespace: pacman-app
+spec:
+  clusterSelector:
+    matchLabels:
+      env: dev
+      vendor: OpenShift
