@@ -22,4 +22,8 @@ policies:
   disabled: false
   manifests:
     - path: ./aks-ingress
+# - name: policy-acs-operator-central
+#   disabled: false
+#   manifests:
+#     - path: ./acs-operator-central
 

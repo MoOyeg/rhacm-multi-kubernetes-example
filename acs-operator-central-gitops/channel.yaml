@@ -1,0 +1,10 @@
+apiVersion: apps.open-cluster-management.io/v1
+kind: Channel
+metadata:
+  labels:
+    app: acs-gitops-app
+  name: channel-acs-gitops-app
+  namespace: gitops-policies
+spec:
+  pathname: https://github.com/MoOyeg/rhacm-multi-kubernetes-example.git
+  type: Git
