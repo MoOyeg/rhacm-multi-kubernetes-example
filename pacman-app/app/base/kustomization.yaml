@@ -3,4 +3,4 @@ resources:
 - mongo-deployment.yaml
 - mongo-service.yaml
 - pacman-deployment.yaml
-- pacman-service.yaml
+#- pacman-service.yaml

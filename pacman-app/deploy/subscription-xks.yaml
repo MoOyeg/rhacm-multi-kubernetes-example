@@ -14,4 +14,4 @@ spec:
   placement:
     placementRef:
       kind: PlacementRule
-      name: pacman-placmentrule-eks
+      name: pacman-placementrule-xks-only

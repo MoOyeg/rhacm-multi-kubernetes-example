@@ -1,8 +1,8 @@
-# bases:
-#   - ../../base
+bases:
+  - ../../base
 resources:
   - pacman-service.yaml
-#  - pacman-ingress.yaml
+  - pacman-ingress.yaml
 # patchesJson6902:
 #   - target:
 #       version: v1

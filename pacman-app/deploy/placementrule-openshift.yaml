@@ -6,7 +6,12 @@ metadata:
   name: pacman-placementrule-openshift-only
   namespace: pacman-app
 spec:
+  clusterConditions:
+    - status: "True"
+      type: ManagedClusterConditionAvailable
   clusterSelector:
-    matchLabels:
-      env: dev
-      vendor: OpenShift
+    matchExpressions:
+      - key: vendor
+        operator: In
+        values:
+          - OpenShift

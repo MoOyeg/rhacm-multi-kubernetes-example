@@ -14,4 +14,4 @@ spec:
   placement:
     placementRef:
       kind: PlacementRule
-      name: pacman-placementrule-openshift
+      name: pacman-placementrule-openshift-only
