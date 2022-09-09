@@ -2,9 +2,9 @@ resources:
 - namespace.yaml
 - application.yaml
 - placementrule-eks.yaml
-- placementrule-xks.yaml
+- placementrule-aks.yaml
 - subscription-eks.yaml
-- subscription-xks.yaml
+- subscription-aks.yaml
 - channel.yaml
 - placementrule-openshift.yaml
 - subscription-openshift.yaml

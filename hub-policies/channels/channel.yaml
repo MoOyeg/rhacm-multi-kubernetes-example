@@ -1,0 +1,8 @@
+apiVersion: apps.open-cluster-management.io/v1
+kind: Channel
+metadata:
+  name: helm-nginx
+  namespace: global-policies
+spec:
+    pathname: https://kubernetes.github.io/ingress-nginx
+    type: HelmRepo

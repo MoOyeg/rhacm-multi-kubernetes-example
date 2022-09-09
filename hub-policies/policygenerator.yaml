@@ -1,0 +1,25 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-generator-hub
+  labels:
+    custom: hub-policies
+placementBindingDefaults:
+  name: hub-general-pb
+policyDefaults:
+  namespace: global-policies
+  # Use an existing placement rule so that placement bindings can be consolidated
+  placement:
+    placementRulePath: ../placementrules/hub-placementrule.yaml
+  remediationAction: enforce
+  severity: medium
+policies:
+- name: policy-hub-helm-channels
+  disabled: false
+  manifests:
+    - path: ./channels
+- name: policy-aks-helm-ingress
+  disabled: false
+  manifests:
+    - path: ./aks-ingress
+

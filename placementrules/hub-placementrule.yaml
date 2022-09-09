@@ -1,22 +1,15 @@
 apiVersion: apps.open-cluster-management.io/v1
 kind: PlacementRule
 metadata:
-  labels:
-    app: pacman-app
-  name: pacman-placementrule-xks-only
-  namespace: pacman-app
+  name: hub-placementrule
+  namespace: global-policies
 spec:
   clusterConditions:
     - status: "True"
       type: ManagedClusterConditionAvailable
   clusterSelector:
     matchExpressions:
-      - key: vendor
+      - key: name
         operator: In
         values:
-          - AKS
-          - GKS
-      - key: app
-        operator: In
-        values:
-          - pacman-app
+          - local-cluster
