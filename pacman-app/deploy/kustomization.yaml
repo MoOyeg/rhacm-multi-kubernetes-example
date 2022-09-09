@@ -6,7 +6,5 @@ resources:
 - subscription-eks.yaml
 - subscription-xks.yaml
 - channel.yaml
-- placementrule-all-kubernetes.yaml
 - placementrule-openshift.yaml
-- subscription-all-kubernetes.yaml
 - subscription-openshift.yaml
