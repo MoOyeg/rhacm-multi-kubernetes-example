@@ -1,5 +1,5 @@
-bases:
-  - ../../base
+# bases:
+#   - ../../base
 resources:
   - pacman-service.yaml
 #  - pacman-ingress.yaml
