@@ -3,7 +3,7 @@ kind: Subscription
 metadata:
   annotations:
     apps.open-cluster-management.io/git-branch: main
-    apps.open-cluster-management.io/git-path: deploy-env-specific-openshift
+    apps.open-cluster-management.io/git-path: pacman-app/app/overlays/openshift
     apps.open-cluster-management.io/reconcile-option: merge
   labels:
     app: pacman-app

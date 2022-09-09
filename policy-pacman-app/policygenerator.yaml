@@ -1,0 +1,17 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-generator-pacman-app
+policyDefaults:
+  namespace: global-policies
+  # Use an existing placement rule so that placement bindings can be consolidated
+  placement:
+    clusterSelectors:
+      name: local-cluster
+  remediationAction: enforce
+policies:
+- name: policy-pacman-app
+  disabled: false
+  manifests:
+    - path: ../pacman-app/deploy
+  remediationAction: enforce

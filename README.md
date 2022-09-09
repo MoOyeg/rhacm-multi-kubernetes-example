@@ -11,3 +11,8 @@ kustomize build ./xks-general-policies/ --enable-alpha-plugins | oc create -f -
 kustomize build ./openshift-gitops/base --enable-alpha-plugins | oc create -f -
 
 kustomize build ./argocd/ --enable-alpha-plugins | oc create -f -
+
+Apps:
+Pacman App
+oc apply -k ./policy-pacman-namespace/
+oc apply -k ./pacman-app/deploy

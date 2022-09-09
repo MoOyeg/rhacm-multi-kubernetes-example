@@ -38,9 +38,15 @@ metadata:
   name: pacman-app-namespace-placement
   namespace: default
 spec:
-  clusterConditions: []
+  clusterConditions:
+    - status: "True"
+      type: ManagedClusterConditionAvailable
   clusterSelector:
-    matchExpressions: []
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - pacman-app
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
