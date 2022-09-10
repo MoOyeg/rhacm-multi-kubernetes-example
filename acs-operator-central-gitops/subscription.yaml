@@ -5,12 +5,10 @@ metadata:
     apps.open-cluster-management.io/git-branch: main
     apps.open-cluster-management.io/git-path: acs-operator-central-gitops/manifests/
     apps.open-cluster-management.io/reconcile-option: merge
-  labels:
-    app: pacman-app
-  name: pacman-subscription-openshift
-  namespace: pacman-app
+  name: acs-subscription-hub
+  namespace: global-policies
 spec:
-  channel: gitops-policies/channel-acs-gitops-app
+  channel: global-policies/channel-acs-gitops-app
   placement:
     placementRef:
       kind: PlacementRule
