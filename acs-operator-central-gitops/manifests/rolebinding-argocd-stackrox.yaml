@@ -1,0 +1,20 @@
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: openshift-gitops-argocd-stackrox
+  namespace: stackrox
+  labels:
+    app.kubernetes.io/managed-by: openshift-gitops
+    app.kubernetes.io/name: argocd-stackrox
+    app.kubernetes.io/part-of: argocd
+  annotations:
+    argocds.argoproj.io/name: openshift-gitops
+    argocds.argoproj.io/namespace: openshift-gitops
+subjects:
+  - kind: ServiceAccount
+    name: openshift-gitops-argocd-application-controller
+    namespace: openshift-gitops
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: rhacs-stackrox-gitops-role
