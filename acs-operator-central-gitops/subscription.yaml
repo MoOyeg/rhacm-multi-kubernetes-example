@@ -8,9 +8,9 @@ metadata:
   labels:
     app: acs-gitops-app
   name: acs-subscription-hub
-  namespace: global-policies
+  namespace: openshift-gitops
 spec:
-  channel: global-policies/channel-acs-gitops-app
+  channel: openshift-gitops/channel-acs-gitops-app
   placement:
     placementRef:
       kind: PlacementRule

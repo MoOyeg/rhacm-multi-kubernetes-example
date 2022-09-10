@@ -2,3 +2,5 @@ resources:
 - application.yaml
 - channel.yaml
 - subscription.yaml
+- namespace-stackrox.yaml
+- hub-placementrule.yaml
