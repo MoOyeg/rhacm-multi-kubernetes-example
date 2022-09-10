@@ -4,3 +4,4 @@ resources:
 - subscription.yaml
 - namespace-stackrox.yaml
 - hub-placementrule.yaml
+- policy-configure-subscription-admin-hub
