@@ -1,0 +1,8 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: secured-cluster-tekton-pipelinerun
+spec:
+  pipelineRef:
+    name: secured-cluster-tekton-pipeline
+  serviceAccountName: 'infra-pipeline'

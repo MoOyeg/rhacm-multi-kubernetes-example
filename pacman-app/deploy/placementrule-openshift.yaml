@@ -15,3 +15,7 @@ spec:
         operator: In
         values:
           - OpenShift
+      - key: app
+        operator: In
+        values:
+          - pacman-app

@@ -10,10 +10,17 @@ kustomize build ./xks-general-policies/ --enable-alpha-plugins | oc create -f -
 
 kustomize build ./hub-policies --enable-alpha-plugins | oc create -f -
 
-kustomize build ./openshift-gitops/base --enable-alpha-plugins | oc create -f -
+## Operator Installs
 
-kustomize build ./argocd/ --enable-alpha-plugins | oc create -f -
+### Install GitOps,Pipelines on OCP
 
+kustomize build ./ocp-policies --enable-alpha-plugins | oc create -f -
+
+kustomize build ./xks-argocd/ --enable-alpha-plugins | oc create -f -
+
+## Install ACS Central
+
+oc apply -k ./acs-operator-central-gitops
 
 Apps:
 Deploy Pacman App

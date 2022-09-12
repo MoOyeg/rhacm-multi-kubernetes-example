@@ -1,0 +1,104 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: secured-cluster-tekton-task
+  namespace: global-policies
+  labels:
+    app.kubernetes.io/version: "0.3"
+  annotations:
+    tekton.dev/categories: rhacs
+    tekton.dev/pipelines.minVersion: "0.17.0"
+    tekton.dev/tags: rhacs
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
+spec:
+  description: >-
+    Find and secure RHACM Managed clusters with RHACS
+
+  params:
+  - name: MANAGED_CLUSTER_NAME
+    description: Cluster we would like to secure with RHACS.
+    default: ""
+  - name: MANAGED_CLUSTER_SERVER_ADDRESS
+    description: Cluster we would like to secure with RHACS.
+    default: ""
+  - name: BASE_IMAGE
+    description: Image we will use to run commands.
+    default: registry.redhat.io/ubi8/ubi:8.6-855
+  - name: RHACS_REPO
+    description: RHACS CHART REPO
+    default: https://mirror.openshift.com/pub/rhacs/charts/
+  - name: HELM_BINARY
+    description: Helm Version to be used
+    default: helm-v3.9.4-linux-amd64.tar.gz
+  - name: OC_URL_CHANNEL
+    description: OC channel to be used to get oc
+    default: stable  
+  workspaces:
+  - name: source
+    optional: true
+  steps:
+  - name: push
+    image: $(params.BASE_IMAGE)
+    workingDir: $(workspaces.source.path)
+    script: |
+      yum install -y tar curl wget buildah && \
+      wget https://get.helm.sh/$(params.HELM_BINARY) && \
+      wget https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/$(params.OC_URL_CHANNEL)/openshift-client-linux.tar.gz && \
+      tar -xvf $(params.HELM_BINARY) && ./linux-amd64/helm repo add rhacs $(params.RHACS_REPO) && \
+      tar -xvf openshift-client-linux.tar.gz && \
+      echo "Get Managed Clusters" && \
+      export MC=$(./oc get managedclusters --no-headers | awk '{print $1}'| grep -v local-cluster) && \
+      echo "Get Central Route" && \
+      export CENTRAL_ROUTE=$(./oc get route/central -n stackrox -o jsonpath='{.spec.host}') && \
+      echo "Get Central Secret" && \
+      export CENTRAL_SECRET=$(./oc get secret central-htpasswd -n stackrox -o jsonpath='{.data.password}' | base64 -d ) && \
+      echo "Get RHACS Bundle" && \
+      curl -k -o ./bundle.json -X GET -u "admin:${CENTRAL_SECRET}" -H "Content-Type: application/json" https://${CENTRAL_ROUTE}/v1/cluster-init/init-bundles && \
+      ./oc tag --source=docker registry.redhat.io/ubi8/ubi:8.6-855 ubi8:latest
+
+      for mc in $MC
+      do
+        buildah_image=$(buildah from image-registry.openshift-image-registry.svc:5000/global-policies/ubi-buildah:latest)
+        buildah run $buildah_image /bin/bash -c "yum install -y tar curl wget buildah"
+        buildah run $buildah_image /bin/bash -c "mkdir /app-run && cd /app-run"
+        buildah run $buildah_image /bin/bash -c "wget https://get.helm.sh/$(params.HELM_BINARY)"
+        buildah run $buildah_image /bin/bash -c "tar -xvf $(params.HELM_BINARY) && ./linux-amd64/helm repo add rhacs $(params.RHACS_REPO)"
+        buildah copy $buildah_image ./bundle.json /app-run/bundle.json        
+        buildah config --env CLUSTER_NAME="$mc" --env CENTRAL_ROUTE=$CENTRAL_ROUTE $buildah_image  
+
+        echo "here3"
+        if [ $(./oc get managedclusters/$mc -o jsonpath='{.status.clusterClaims[?(@.name=="version.openshift.io")]}']) != "" ]
+        then
+           echo "Non-Openshift Cluster"
+           buildah run $buildah_image /bin/bash -c "echo '''/app-run/linux-amd64/helm install -n stackrox \
+           --create-namespace stackrox-secured-cluster-services rhacs/secured-cluster-services \
+           -f /app-run/bundle.json \ 
+           --set clusterName=\$CLUSTER_NAME \
+           --set centralEndpoint=\$CENTRAL_ROUTE''' > /app-run/entrypoint.sh"
+           echo "Entrypoint Script Output"
+           buildah run $buildah_image /bin/bash -c "cat /app-run/entrypoint.sh"
+        else
+           echo "Openshift Cluster"
+           buildah run $buildah_image /bin/bash -c "echo '''/app-run/linux-amd64/helm install -n stackrox \
+           --create-namespace stackrox-secured-cluster-services rhacs/secured-cluster-services \
+           -f /app-run/bundle.json \ 
+           --set clusterName=\$CLUSTER_NAME \
+           --set centralEndpoint=\$CENTRAL_ROUTE --set scanner.disable=false''' > /app-run/entrypoint.sh"
+           echo "Entrypoint Script Output"
+           buildah run $buildah_image /bin/bash -c "cat /app-run/entrypoint.sh"
+        fi
+        buildah run $buildah_image /bin/bash -c "chgrp -R 0 /app-run && chmod -R g+rwX /app-run && chmod -R g=u /app-run"
+        buildah config --workingdir /app-run --entrypoint /app-run/entrypoint.sh $buildah_image 
+        buildah commit $buildah_image image-registry.openshift-image-registry.svc:5000/global-policies/$mc:latest
+        buildah push --tls-verify=false image-registry.openshift-image-registry.svc:5000/global-policies/$mc:latest       
+      done
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - name: varlibcontainers
+      mountPath: /var/lib/containers
+
+  volumes:
+  - name: varlibcontainers
+    emptyDir: {}

@@ -6,7 +6,7 @@ metadata:
   name: nginx-subscription-1
   namespace: ingress-basic
 spec:
-  channel: global-policies/helm-nginx
+  channel: channel-helm-nginx/helm-nginx
   name: ingress-nginx
   packageOverrides:
   - packageName: ingress-nginx

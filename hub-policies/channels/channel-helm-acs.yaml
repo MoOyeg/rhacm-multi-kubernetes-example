@@ -1,0 +1,8 @@
+apiVersion: apps.open-cluster-management.io/v1
+kind: Channel
+metadata:
+  name: helm-rhacs
+  namespace: channel-helm-acs
+spec:
+    pathname: https://mirror.openshift.com/pub/rhacs/charts/
+    type: HelmRepo
