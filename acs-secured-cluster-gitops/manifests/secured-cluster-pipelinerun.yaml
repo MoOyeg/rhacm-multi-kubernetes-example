@@ -2,6 +2,7 @@ apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
   name: secured-cluster-tekton-pipelinerun
+  namespace: global-policies
 spec:
   pipelineRef:
     name: secured-cluster-tekton-pipeline

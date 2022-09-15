@@ -1,0 +1,8 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  namespace: ansible-automation-platform
+spec:
+  displayName: Ansible Automation Platform
+status:
+  phase: Succeeded   # check the csv status to determine if operator is running or not

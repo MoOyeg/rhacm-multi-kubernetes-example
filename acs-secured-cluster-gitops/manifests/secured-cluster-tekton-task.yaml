@@ -33,7 +33,10 @@ spec:
     default: helm-v3.9.4-linux-amd64.tar.gz
   - name: OC_URL_CHANNEL
     description: OC channel to be used to get oc
-    default: stable  
+    default: stable
+  - name: CENTRAL_HTPASSWD_SECRET_NAME
+    description: HTPASSWD Secret for central
+    default: acs-password
   workspaces:
   - name: source
     optional: true
@@ -42,32 +45,51 @@ spec:
     image: $(params.BASE_IMAGE)
     workingDir: $(workspaces.source.path)
     script: |
+      #Install Basic Tools
       yum install -y tar curl wget buildah && \
-      wget https://get.helm.sh/$(params.HELM_BINARY) && \
       wget https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/$(params.OC_URL_CHANNEL)/openshift-client-linux.tar.gz && \
-      tar -xvf $(params.HELM_BINARY) && ./linux-amd64/helm repo add rhacs $(params.RHACS_REPO) && \
-      tar -xvf openshift-client-linux.tar.gz && \
-      echo "Get Managed Clusters" && \
-      export MC=$(./oc get managedclusters --no-headers | awk '{print $1}'| grep -v local-cluster) && \
+      tar -xvf openshift-client-linux.tar.gz
+
+      #Get Central Route
       echo "Get Central Route" && \
       export CENTRAL_ROUTE=$(./oc get route/central -n stackrox -o jsonpath='{.spec.host}') && \
+      
+      #Get Central Secret
       echo "Get Central Secret" && \
-      export CENTRAL_SECRET=$(./oc get secret central-htpasswd -n stackrox -o jsonpath='{.data.password}' | base64 -d ) && \
-      echo "Get RHACS Bundle" && \
-      curl -k -o ./bundle.json -X GET -u "admin:${CENTRAL_SECRET}" -H "Content-Type: application/json" https://${CENTRAL_ROUTE}/v1/cluster-init/init-bundles && \
-      ./oc tag --source=docker registry.redhat.io/ubi8/ubi:8.6-855 ubi8:latest
+      export CENTRAL_SECRET=$(./oc get secret $(params.CENTRAL_HTPASSWD_SECRET_NAME) -n stackrox -o jsonpath='{.data.password}' | base64 -d ) && \
+
+      #Download Roxctl
+      curl -s -k -H "Content-Type: application/json" -u "admin:${CENTRAL_SECRET}" "https://$CENTRAL_ROUTE/api/cli/download/roxctl-linux" --output ./roxctl  > /dev/null; echo "Getting roxctl"
+      chmod +x ./roxctl > /dev/null
+
+      #Tag Base Image for cluster specific embedded image
+      ./oc tag --source=docker $(params.BASE_IMAGE) global-policies/ubi-buildah:latest
+
+      echo "Get Managed Clusters" && \
+      export MC=$(./oc get managedclusters --no-headers | awk '{print $1}'| grep -v local-cluster)
 
       for mc in $MC
       do
+        #Create RHACS Bundle
+        echo "Create/Get RHACS Bundle for $mc"
+        bundlename=$(roxctl central init-bundles list -p ${CENTRAL_SECRET} -e "$CENTRAL_ROUTE:443" --insecure 2>/dev/null | grep -o $mc)
+        if [ "$bundlename" = "$mc" ]
+        then
+           roxctl central init-bundles revoke "${bundlename}" -p "${CENTRAL_SECRET}" -e "$CENTRAL_ROUTE:443" --insecure
+        fi
+        #curl -k -o ./bundle.json -X GET -u "admin:${CENTRAL_SECRET}" -H "Content-Type: application/json" https://${CENTRAL_ROUTE}/v1/cluster-init/init-bundles && \
+        ./roxctl -p $CENTRAL_SECRET -e "$CENTRAL_ROUTE:443" central init-bundles generate $mc --output "./$mc-bundle.yaml"
+
+        echo "Build Image for $mc"
         buildah_image=$(buildah from image-registry.openshift-image-registry.svc:5000/global-policies/ubi-buildah:latest)
         buildah run $buildah_image /bin/bash -c "yum install -y tar curl wget buildah"
         buildah run $buildah_image /bin/bash -c "mkdir /app-run && cd /app-run"
         buildah run $buildah_image /bin/bash -c "wget https://get.helm.sh/$(params.HELM_BINARY)"
         buildah run $buildah_image /bin/bash -c "tar -xvf $(params.HELM_BINARY) && ./linux-amd64/helm repo add rhacs $(params.RHACS_REPO)"
-        buildah copy $buildah_image ./bundle.json /app-run/bundle.json        
+        buildah copy $buildah_image ./$mc-bundle.yaml /app-run/bundle.yaml
+        buildah copy $buildah_image ./roxctl /app-run/roxctl    
         buildah config --env CLUSTER_NAME="$mc" --env CENTRAL_ROUTE=$CENTRAL_ROUTE $buildah_image  
 
-        echo "here3"
         if [ $(./oc get managedclusters/$mc -o jsonpath='{.status.clusterClaims[?(@.name=="version.openshift.io")]}']) != "" ]
         then
            echo "Non-Openshift Cluster"

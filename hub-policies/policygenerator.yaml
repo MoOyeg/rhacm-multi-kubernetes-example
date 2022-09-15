@@ -22,6 +22,10 @@ policies:
   disabled: false
   manifests:
     - path: ./aks-ingress
+- name: policy-ansible-automation-operator
+  disabled: false
+  manifests:
+    - path: ./ansible  
 # - name: policy-acs-operator-central
 #   disabled: false
 #   manifests:
