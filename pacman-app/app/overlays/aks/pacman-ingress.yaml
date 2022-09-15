@@ -11,7 +11,7 @@ spec:
   rules:
   - http:
       paths:
-      - path: /(.*)
+      - path: /pacman
         pathType: Prefix
         backend:
           service:
