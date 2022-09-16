@@ -1,0 +1,11 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:  
+  name: secured-cluster-tekton-task
+  namespace: global-policies
+spec:
+  triggers:
+    - bindings: []
+      name: my-trigger
+      template:
+        ref: secured-cluster-pipeline-template

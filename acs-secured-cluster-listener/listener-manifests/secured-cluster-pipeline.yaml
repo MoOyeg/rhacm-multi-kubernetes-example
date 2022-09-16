@@ -1,0 +1,12 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: secured-cluster-tekton-pipeline
+  namespace: global-policies
+spec:
+  tasks:
+    - name: secure-managed-clusters
+      taskRef:
+        kind: Task
+        name: secured-cluster-tekton-task
+

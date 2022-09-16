@@ -1,7 +1,7 @@
 apiVersion: apps.open-cluster-management.io/v1
 kind: PlacementRule
 metadata:
-  name: non-local-ocp-placementrule.yaml
+  name: non-local-ocp-placementrule
   namespace: global-policies
 spec:
   clusterConditions:
