@@ -2,11 +2,12 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: secure-cluster-provision-job
+  namespace: global-policies
 spec:
   template:
     spec:
       containers:
-        - image: '{{ fromConfigMap "default" "logs-config" "log-file" }}'
+        - image: '{{ fromConfigMap "global-policies" "central-config-details" "log-file" }}'
           env:
             - name: PASSWORD
               valueFrom:

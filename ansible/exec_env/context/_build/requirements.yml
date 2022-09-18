@@ -1,0 +1,21 @@
+collections:
+  - name: amazon.aws
+    version: 3.4.0
+    #source: https://galaxy.ansible.com
+  - name: community.aws
+    version: 3.5.0
+    #source: https://galaxy.ansible.com
+  # Azure
+  - name: azure.azcollection
+    version: 1.13.0
+    #source: https://galaxy.ansible.com
+  - name: community.azure
+    version: 1.1.0
+    #source: https://galaxy.ansible.com
+  - name: google.cloud
+    version: 1.0.2
+    #source: https://galaxy.ansible.com
+  - name: kubernetes.core
+    version: 2.3.2
+  - name: awx.awx
+    version: 21.5.0 

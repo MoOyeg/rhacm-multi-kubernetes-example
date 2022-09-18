@@ -25,3 +25,8 @@ oc apply -k ./acs-operator-central-gitops
 Apps:
 Deploy Pacman App
 oc apply -k ./pacman-app/deploy
+
+
+
+https://automation-ansible-automation-platform.apps.cluster1.test.oyegunle.com
+4Tzg5LfArOwcFg8VBCFhmTyQqAkYzs
