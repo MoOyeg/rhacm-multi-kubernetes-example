@@ -12,7 +12,7 @@ spec:
   rules:
   - http:
       paths:
-      - path: /pacman(/|$)(.*)
+      - path: /pacman($)(.*)
         pathType: Prefix
         backend:
           service:

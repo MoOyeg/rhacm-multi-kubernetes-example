@@ -15,21 +15,20 @@ FROM $EE_BUILDER_IMAGE as builder
 
 COPY --from=galaxy /usr/share/ansible /usr/share/ansible
 
-ADD _build/requirements.txt requirements.txt
-RUN ansible-builder introspect --sanitize --user-pip=requirements.txt --write-bindep=/tmp/src/bindep.txt --write-pip=/tmp/src/requirements.txt
+RUN ansible-builder introspect --sanitize --write-bindep=/tmp/src/bindep.txt --write-pip=/tmp/src/requirements.txt
 RUN assemble
 
 FROM $EE_BASE_IMAGE
 USER root
-RUN pip3 install --upgrade pip setuptools
 
 COPY --from=galaxy /usr/share/ansible /usr/share/ansible
-
+RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc && \
+    dnf install -y https://packages.microsoft.com/config/rhel/9.0/packages-microsoft-prod.rpm && \
+    dnf install -y azure-cli unzip wget curl && \
+    wget https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-client-linux.tar.gz && \
+    tar -xvf openshift-client-linux.tar.gz && chmod ugo+rwx ./oc && chmod ugo+rwx ./kubectl && mv ./oc /usr/bin && mv ./kubectl /usr/bin/ && \
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && ./aws/install
+    
 COPY --from=builder /output/ /output/
 RUN /output/install-from-bindep && rm -rf /output/wheels
-RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc && \
-dnf install -y https://packages.microsoft.com/config/rhel/9.0/packages-microsoft-prod.rpm && \
-dnf install -y azure-cli unzip wget curl jq && \
-wget https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-client-linux.tar.gz && \
-tar -xvf openshift-client-linux.tar.gz && chmod ugo+rwx ./oc && chmod ugo+rwx ./kubectl && mv ./oc /usr/bin && mv ./kubectl /usr/bin/ && \
-pip3 install awscli --upgrade --user

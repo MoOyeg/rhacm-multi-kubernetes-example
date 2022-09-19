@@ -2,9 +2,18 @@
 version: 1
 
 build_arg_defaults:
-  EE_BASE_IMAGE: 'quay.io/ansible/ansible-runner:stable-2.10-devel'
+  EE_BASE_IMAGE: 'quay.io/ansible/ansible-runner:stable-2.12-latest'
 
 dependencies:
   galaxy: requirements.yml
   python: requirements.txt
-
+additional_build_steps:
+  prepend: |
+    RUN pip3 install --upgrade pip setuptools 
+  append: |  
+    RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc && \
+    dnf install -y https://packages.microsoft.com/config/rhel/9.0/packages-microsoft-prod.rpm && \
+    dnf install -y azure-cli unzip wget curl jq && \
+    wget https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-client-linux.tar.gz && \
+    tar -xvf openshift-client-linux.tar.gz && chmod ugo+rwx ./oc && chmod ugo+rwx ./kubectl && mv ./oc /usr/bin && mv ./kubectl /usr/bin/ && \
+    pip3 install awscli --upgrade --user
