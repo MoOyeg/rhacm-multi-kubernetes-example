@@ -5,14 +5,12 @@ metadata:
   namespace: pacman-app
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   ingressClassName: nginx
   rules:
   - http:
       paths:
-      - path: /pacman($)(.*)
+      - path: /pacman
         pathType: Prefix
         backend:
           service:
