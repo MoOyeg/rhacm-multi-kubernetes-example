@@ -1,0 +1,18 @@
+- name: Get Pacman Route IPs directly when on local-cluster
+  ansible.builtin.shell: |
+    dig +short +noall +answer $( oc get routes pacman-route -n pacman-app -o jsonpath='{.spec.host}')
+  when: item == 'local-cluster'
+  register: pacman_route
+
+- name: Add IP Address to Cluster dictionary
+  ansible.builtin.set_fact:
+     cluster_ip_dict: "{{ cluster_ip_dict| default({}) | combine({item: pacman_route.stdout_lines }) }}"
+  when: 
+    - pacman_route | default("") != ""
+
+
+- name: Add IP Address IP list
+  ansible.builtin.set_fact:
+     ip_list: "{{ ip_list + pacman_route.stdout_lines }}"
+  when: 
+    - pacman_route.stdout_lines | default("") != ""

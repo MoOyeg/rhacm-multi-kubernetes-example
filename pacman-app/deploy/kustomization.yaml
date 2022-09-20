@@ -8,3 +8,6 @@ resources:
 - channel.yaml
 - placementrule-openshift.yaml
 - subscription-openshift.yaml
+- subscription-all.yaml
+- placementrule-all.yaml
+- rolebinding-ansible.yaml

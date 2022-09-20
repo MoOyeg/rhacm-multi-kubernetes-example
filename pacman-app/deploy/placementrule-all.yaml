@@ -3,7 +3,7 @@ kind: PlacementRule
 metadata:
   labels:
     app: pacman-app
-  name: pacman-placementrule-all-kubernetes
+  name: pacman-placementrule-all
   namespace: pacman-app
 spec:
   clusterConditions:

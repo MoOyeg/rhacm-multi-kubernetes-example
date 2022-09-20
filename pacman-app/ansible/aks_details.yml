@@ -1,0 +1,47 @@
+
+- name: Azure Login
+  ansible.builtin.shell: |
+    az login --service-principal -u "{{ lookup('ansible.builtin.env', 'CLIENT_ID') }}" -p "{{ lookup('ansible.builtin.env', 'PASSWORD') }}" --tenant "{{ lookup('ansible.builtin.env', 'TENANT') }}"
+  when: lookup('ansible.builtin.env', 'CLIENT_ID')|default("") != ""
+  register: azure_login 
+
+- name: Remove file (delete file)
+  ansible.builtin.file:
+    path: "/tmp/{{ item }}-kubeconfig"
+    state: absent
+
+- name: Azure Get AKS Kubeconfig
+  ansible.builtin.shell: |
+    az aks get-credentials -n "{{ item }}" -g "{{ lookup('ansible.builtin.env', 'RESOURCEGROUP') }}" -f /tmp/{{ item }}-kubeconfig
+  when: azure_login 
+
+- name: Display resolv.conf contents
+  command: cat /tmp/{{ item }}-kubeconfig
+  register: command_output
+
+- name: Print to console
+  debug:
+    msg: "{{command_output.stdout}}"
+
+- name: Use Kubeconfig to get Ingress IP
+  ansible.builtin.shell: |
+    oc get service/pacman -n pacman-app -o jsonpath="{.status.loadBalancer.ingress[0].ip}"  --insecure-skip-tls-verify=true --kubeconfig=/tmp/{{ item }}-kubeconfig
+  when: azure_login
+  register: ip_address
+
+- name: Add IP Address to Cluster dictionary
+  ansible.builtin.set_fact:
+     cluster_ip_dict: "{{ cluster_ip_dict| default({}) | combine({item: ip_address.stdout_lines }) }}"
+  when: 
+    - azure_login
+    - ip_address.stdout | default("") != ""
+
+- name: Add IP Address IP list
+  ansible.builtin.set_fact:
+     ip_list: "{{ ip_list + ip_address.stdout_lines }}"
+  when: 
+    - azure_login
+    - ip_address.stdout | default("") != ""
+
+
+
