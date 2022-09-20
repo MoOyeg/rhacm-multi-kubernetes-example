@@ -2,10 +2,15 @@
 apiVersion: tower.ansible.com/v1alpha1
 kind: AnsibleJob
 metadata:
-  name: test
-  namespace: global-policies
+  name: update-gslb
+  namespace: pacman-app
   labels:
     app.kubernetes.io/name: pacman
 spec:
   tower_auth_secret: aaap
-  job_template_name: ACM-DemoTemplate
+  job_template_name: pacman-gslb-aws-template
+
+
+
+
+---
