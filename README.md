@@ -22,6 +22,14 @@ kustomize build ./xks-argocd/ --enable-alpha-plugins | oc create -f -
 
 oc apply -k ./acs-operator-central-gitops
 
-Apps:
-Deploy Pacman App
+## Deploy an Application
+
+This Pacman App deployment will show a High Availibility use case of
+
+### Attach Subscription Policy to your user if necessary
+
+```bash
+sed -e "s/<user>/kube:admin/" ./pacman-app/deploy/policy/policy-subscription-pacman-admin.yaml | oc create -f - -n global-policies
+```
+
 oc apply -k ./pacman-app/deploy
