@@ -1,6 +1,7 @@
 bases:
   - ../../base
 resources:
-  - pacman-f5-route.yaml
+  - pacman-gslb-route.yaml
   - pacman-route.yaml
   - pacman-service.yaml
+  - metadata-app.yaml

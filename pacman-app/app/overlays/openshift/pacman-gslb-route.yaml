@@ -1,13 +1,12 @@
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: f5-gslb-pacman
+  name: gslb-pacman
   namespace: pacman-app
   labels:
     app.kubernetes.io/name: pacman
 spec:
-  # Added for f5 demonstration
-  host: pacman.pacman-demo.moyooyegunle.com
+  host: pacman.test.oyegunle.com
   path: "/"
   to:
     kind: Service

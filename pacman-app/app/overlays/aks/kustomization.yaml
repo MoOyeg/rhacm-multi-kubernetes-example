@@ -3,6 +3,7 @@ bases:
 resources:
   - pacman-service.yaml
   - pacman-ingress.yaml
+  - metadata-app.yaml
 # patchesJson6902:
 #   - target:
 #       version: v1
