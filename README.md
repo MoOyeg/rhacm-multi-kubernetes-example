@@ -28,6 +28,8 @@ This Pacman App deployment will show a High Availibility use case of
 
 ### Attach Subscription Policy to your user if necessary
 
+example
+
 ```bash
 sed -e "s/<user>/kube:admin/" ./pacman-app/deploy/policy/policy-subscription-pacman-admin.yaml | oc create -f - -n global-policies
 ```

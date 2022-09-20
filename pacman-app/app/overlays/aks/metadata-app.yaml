@@ -9,7 +9,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: demo-subscription-gitops/cloud-provider/nginx/
+    path: cloud-provider/nginx/
     repoURL: https://github.com/stolostron/demo-subscription-gitops.git
     targetRevision: master
   syncPolicy:
