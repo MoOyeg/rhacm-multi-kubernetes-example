@@ -11,4 +11,6 @@ spec:
   config:
     env:
       - name: ARGOCD_CLUSTER_CONFIG_NAMESPACES
-        value: argocd-operator
+        value: '*'
+      - name: DISABLE_DEFAULT_ARGOCD_INSTANCE
+        value: 'true'
