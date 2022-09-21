@@ -12,7 +12,7 @@ patchesJson6902:
     - op: add
       path: /spec/source/path
       value: 
-        gitops/base/overlays/ocp       
+        gitops/base/overlays/xks      
   target:
     group: argoproj.io
     kind: Application
