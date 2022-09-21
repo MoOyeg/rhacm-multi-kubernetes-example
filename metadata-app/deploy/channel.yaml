@@ -4,7 +4,7 @@ metadata:
   labels:
     app: metadata-app
   name: channel-k8s-metadata-app
-  namespace: metadata-service
+  namespace: metadata-acm-app
 spec:
   pathname: https://github.com/MoOyeg/rhacm-multi-kubernetes-example.git
   type: Git

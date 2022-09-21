@@ -2,7 +2,7 @@ apiVersion: apps.open-cluster-management.io/v1
 kind: PlacementRule
 metadata:
   name: ocp-placementrule-metadata-app
-  namespace: metadata-service
+  namespace: metadata-acm-app
 spec:
   clusterConditions:
     - status: "True"

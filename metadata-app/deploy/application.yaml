@@ -1,8 +1,8 @@
 apiVersion: app.k8s.io/v1beta1
 kind: Application
 metadata:
-  name: metadata-app
-  namespace: metadata-service
+  name: metadata-acm-app
+  namespace: metadata-acm-app
 spec:
   componentKinds:
   - group: apps.open-cluster-management.io
