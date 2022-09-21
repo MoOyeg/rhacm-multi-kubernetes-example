@@ -22,4 +22,6 @@ bases:
  - ../../base
 resources:
  - operatorgroup.yaml
+ - role-admin.yaml
+ - rolebinding-admin.yaml
 namespace: argocd-operator
