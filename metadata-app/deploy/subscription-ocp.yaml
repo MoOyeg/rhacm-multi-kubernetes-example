@@ -14,4 +14,4 @@ spec:
   placement:
     placementRef:
       kind: PlacementRule
-      name: non-ocp-placementrule-metadata-app
+      name: ocp-placementrule-metadata-app
