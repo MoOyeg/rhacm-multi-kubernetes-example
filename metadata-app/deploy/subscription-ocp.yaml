@@ -7,7 +7,7 @@ metadata:
     apps.open-cluster-management.io/reconcile-option: merge
   labels:
     app: metadata-app
-  name: metadata-subscription-non-ocp
+  name: metadata-subscription-ocp
   namespace: metadata-app
 spec:
   channel: metadata-app/channel-k8s-metadata-app
