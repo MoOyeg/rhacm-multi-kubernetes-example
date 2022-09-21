@@ -4,7 +4,7 @@ metadata:
   name: argocd-operator
   namespace: argocd-operator
 spec:
-  channel: alpha
+  channel: stable
   name: argocd-operator
   source: operatorhubio-catalog
   sourceNamespace: olm
