@@ -3,7 +3,7 @@ kind: Subscription
 metadata:
   annotations:
     apps.open-cluster-management.io/git-branch: main
-    apps.open-cluster-management.io/git-path: metadata-app/argo-application/base
+    apps.open-cluster-management.io/git-path: metadata-app/argo-application/overlays/xks
     apps.open-cluster-management.io/reconcile-option: merge
   labels:
     app: metadata-app
