@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: metadata-app-ingress
+  namespace: metadata-service
+  annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  # defaultBackend:
+  #   resource:
+  #     apiGroup: v1
+  #     kind: Service
+  #     name: pacman
+  rules:
+  - host: metadata-argo.test.oyegunle.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: xks-metadata-service-argocd-server
+            port:
+              number: 443
