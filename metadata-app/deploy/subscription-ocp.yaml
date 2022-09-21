@@ -1,0 +1,17 @@
+apiVersion: apps.open-cluster-management.io/v1
+kind: Subscription
+metadata:
+  annotations:
+    apps.open-cluster-management.io/git-branch: main
+    apps.open-cluster-management.io/git-path: metadata-app/argo-application/overlays/ocp
+    apps.open-cluster-management.io/reconcile-option: merge
+  labels:
+    app: metadata-app
+  name: metadata-subscription-non-ocp
+  namespace: metadata-app
+spec:
+  channel: metadata-app/channel-k8s-metadata-app
+  placement:
+    placementRef:
+      kind: PlacementRule
+      name: non-ocp-placementrule-metadata-app

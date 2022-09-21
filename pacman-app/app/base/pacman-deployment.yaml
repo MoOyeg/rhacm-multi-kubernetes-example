@@ -19,8 +19,16 @@ spec:
         app.kubernetes.io/name: pacman
     spec:
       containers:
-      - image: quay.io/jpacker/nodejs-pacman-app:green
+      - image: quay.io/mooyeg/pacman:1.0
         name: pacman
         ports:
         - containerPort: 8080
           name: http-server
+        env:
+          - name: METADATA_NODE_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: spec.nodeName
+          - name: METADATA_NODE_PORT
+            value: '16261'

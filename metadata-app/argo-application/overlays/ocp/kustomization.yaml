@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+patchesJson6902:
+- patch: |-
+    - op: replace
+      path: /kind
+      value: Application
+    - op: add
+      path: /metadata/namespace
+      value: 
+        openshift-gitops
+    - op: add
+      path: /spec/source/path
+      value: 
+        gitops/base/overlays/ocp       
+  target:
+    group: argoproj.io
+    kind: Application
+    name: metadata-app
+    version: v1alpha1
+bases:
+ - ../../base
+namespace: openshift-gitops

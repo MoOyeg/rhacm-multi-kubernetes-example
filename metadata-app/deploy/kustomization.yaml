@@ -1,0 +1,9 @@
+resources:
+- namespace.yaml
+- application.yaml
+- channel.yaml
+- non-ocp-placementrule.yaml
+- ocp-placementrule.yaml
+- subscription-ocp.yaml
+- subscription-non-ocp.yaml
+
