@@ -8,9 +8,9 @@ metadata:
   labels:
     app: metadata-app
   name: metadata-subscription-ocp
-  namespace: metadata-app
+  namespace: metadata-service
 spec:
-  channel: metadata-app/channel-k8s-metadata-app
+  channel: metadata-service/channel-k8s-metadata-app
   placement:
     placementRef:
       kind: PlacementRule

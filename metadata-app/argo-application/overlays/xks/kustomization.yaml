@@ -8,7 +8,7 @@ patchesJson6902:
     - op: add
       path: /metadata/namespace
       value: 
-        metadata-app
+        metadata-service
     - op: add
       path: /spec/source/path
       value: 
@@ -16,10 +16,10 @@ patchesJson6902:
   target:
     group: argoproj.io
     kind: Application
-    name: metadata-app
+    name: metadata-service
     version: v1alpha1
 bases:
  - ../../base
 resources:
  - argocd-instance.yaml
-namespace: metadata-app
+namespace: metadata-service

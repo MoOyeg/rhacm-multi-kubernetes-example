@@ -4,7 +4,7 @@ metadata:
   name: metadata-app
 spec:
   destination:
-    namespace: metadata-app
+    namespace: metadata-service
     server: https://kubernetes.default.svc
   project: default
   source:
