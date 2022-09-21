@@ -11,4 +11,4 @@ spec:
   config:
     env:
       - name: ARGOCD_CLUSTER_CONFIG_NAMESPACES
-        value: '*'
+        value: argocd-operator
