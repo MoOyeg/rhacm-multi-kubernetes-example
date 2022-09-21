@@ -22,5 +22,5 @@ bases:
  - ../../base
 resources:
  - operatorgroup.yaml
- - role-admin.yaml
- - rolebinding-admin.yaml
+#  - role-admin.yaml
+#  - rolebinding-admin.yaml
