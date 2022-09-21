@@ -11,6 +11,6 @@ spec:
   config:
     env:
       - name: ARGOCD_CLUSTER_CONFIG_NAMESPACES
-        value: '*'
+        value: 'metadata-service,argocd-operator'
       - name: DISABLE_DEFAULT_ARGOCD_INSTANCE
         value: 'true'
