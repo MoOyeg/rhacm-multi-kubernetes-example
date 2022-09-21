@@ -3,4 +3,6 @@ kind: ArgoCD
 metadata:
   name: argocd
   namespace: argocd-operator
-spec: {}
+spec:
+  server:
+    insecure: true
