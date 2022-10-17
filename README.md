@@ -67,3 +67,13 @@ sed -e "s/<user>/kube:admin/" ./pacman-app/deploy/policy/policy-subscription-pac
 ```
 
 oc apply -k ./pacman-app/deploy
+
+## Crossplane Provisioning
+
+Repo also contains examples of using crossplane for Provisoning with ACM installing.
+
+### Install Crossplane  
+
+Will install crossplane with included provider configs:
+
+```kustomize build --enable-alpha-plugins ./crossplane/ | oc create -f -```

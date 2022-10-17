@@ -17,11 +17,12 @@ spec:
       value:
       # Update Values in Helm values.yaml file
         replicas: 2
-        provider:
-          packages:
-          - provider-aws
-          - provider-gcp
-          - provider-azure
+      # Commenting this out to use provider yaml files instead
+        # provider:
+        #   packages:
+        #   - provider-aws
+        #   - provider-gcp
+        #   - provider-azure
         serviceAccount:
           customAnnotations: 
             deployed.via.acm.subscription: crossplane-install-subscription

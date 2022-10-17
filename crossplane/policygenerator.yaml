@@ -7,6 +7,7 @@ metadata:
 placementBindingDefaults:
   name: crossplane-hub-policy
 policyDefaults:
+  pruneObjectBehavior: "DeleteAll"
   namespace: global-policies
   # Use an existing placement rule so that placement bindings can be consolidated
   placement:
@@ -31,6 +32,9 @@ policies:
             namespace: crossplane-system
             labels:
               app: crossplane
-
+- name: policy-crossplane-providers
+  disabled: false
+  manifests:
+    - path: ./crossplane-provider
 
     

@@ -1,0 +1,6 @@
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-azure
+spec:
+  package: "crossplane/provider-azure@sha256:8d74c79333569b585c3aee471ef98372ff9a0d35c1b83227b0438ea718559760"
