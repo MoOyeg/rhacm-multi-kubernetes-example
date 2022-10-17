@@ -1,2 +1,4 @@
 .vscode/settings.json
 roxctl
+ansible/aap-setup/vault.yaml
+pacman-app/secret.yaml

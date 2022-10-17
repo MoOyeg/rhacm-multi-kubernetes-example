@@ -1,0 +1,26 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-generator-crossplane
+  labels:
+    custom: crossplane-policies
+placementBindingDefaults:
+  name: crossplane-hub-policy
+policyDefaults:
+  namespace: global-policies
+  # Use an existing placement rule so that placement bindings can be consolidated
+  placement:
+    placementRulePath: ../placementrules/hub-placementrule.yaml
+  remediationAction: enforce
+  severity: medium
+policies:
+- name: policy-crossplane-helm-repo
+  disabled: false
+  manifests:
+    - path: ./crossplane-helm-repo
+- name: policy-xks-olm-deploy
+  disabled: false
+  pruneObjectBehavior: DeleteAll
+  manifests:
+    - path: ./olm_deploy
+  remediationAction: enforce

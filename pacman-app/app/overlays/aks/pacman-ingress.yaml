@@ -7,13 +7,14 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   ingressClassName: nginx
-  # defaultBackend:
-  #   resource:
-  #     apiGroup: v1
-  #     kind: Service
-  #     name: pacman
+  defaultBackend:
+    resource:
+      apiGroup: v1
+      kind: Service
+      name: pacman
   rules:
-  -  http:
+  - host: pacman.test.oyegunle.com
+    http:
       paths:
       - path: /
         pathType: Prefix
