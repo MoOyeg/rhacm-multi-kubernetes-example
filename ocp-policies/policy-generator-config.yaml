@@ -8,7 +8,7 @@ policyDefaults:
   namespace: global-policies
   # Use an existing placement rule so that placement bindings can be consolidated
   placement:
-    placementRulePath: ../placementrules/ocp-placementrule.yaml
+    placementRulePath: ../placementrules/OCP/ocp-placementrule.yaml
   remediationAction: enforce
   severity: medium
 policies:

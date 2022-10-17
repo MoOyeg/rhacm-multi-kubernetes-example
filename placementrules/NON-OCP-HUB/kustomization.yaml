@@ -1,0 +1,3 @@
+resources:
+- ./not-local-ocp-placementrule.yaml
+

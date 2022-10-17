@@ -7,38 +7,48 @@ Some steps can be skipped while others have a dependency on pre-completed steps.
 
 ## Pre-Requisites
 
-- OpenShift Cluster - Version>=4.9
+- [OpenShift Cluster](https://docs.openshift.com/container-platform/4.9/welcome/index.html) - Version>=4.9
+- [oc client](https://docs.openshift.com/container-platform/4.9/cli_reference/openshift_cli/getting-started-cli.html) >= 4.9
+- [Red Hat ACM Policy Generator Kustomize Plugin](https://github.com/stolostron/policy-generator-plugin)
 - [Red Hat Advanced Cluster Management - ACM](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.0/html-single/install/index#installing) - Version>=2.5
 - [ACM MultiClusterHub must be created with Pull Secret Option](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html/install/installing#custom-image-pull-secret)
 - [User running commands must have subscription-admin privilege](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#granting-subscription-admin-privilege)
 
-## Base Steps
+## Steps
 
-### Base Policies
+### **Base Policies**
 
 This will create a namespace on every cluster that will serve as a base for any policies we wish to apply:  
 
-oc apply -k ./policy-global-namespace/
+```oc apply -k ./policy-global-namespace/```
 
 A list of Placementrules we can pre-create to allow other polcies leverage:  
 
-oc apply -k ./placementrules/
+```oc apply -k ./placementrules/```
 
-### Base xKS Policies  
+### **Base xKS Policies**  
 
-This will create a namespace on every cluster that will serve as a base for any policies we wish to apply:  
+This will policy will install OLM on every xKS cluster added into ACM:  
 
-kustomize build ./xks-general-policies/ --enable-alpha-plugins | oc create -f -
+```kustomize build ./xks-general-policies/ --enable-alpha-plugins | oc create -f -```
 
-kustomize build ./hub-policies --enable-alpha-plugins | oc create -f -
+### **Base ACM Hub Policies**
+
+This will policy will install some policies we are likely to need for later steps.
+
+- Installs a policy for Red Hat ACS Helm Repo
+- Installs a policy for Nginx Helm Repo
+- Installs a policy for Ansible Automation Operator
+
+```kustomize build ./hub-policies --enable-alpha-plugins | oc create -f -```
 
 ## Operator Installs
 
 ### Install GitOps,Pipelines on OCP
 
-kustomize build ./ocp-policies --enable-alpha-plugins | oc create -f -
+```kustomize build ./ocp-policies --enable-alpha-plugins | oc create -f -```
 
-kustomize build ./xks-argocd/ --enable-alpha-plugins | oc create -f -
+```kustomize build ./xks-argocd/ --enable-alpha-plugins | oc create -f -``
 
 ## Install ACS Central
 

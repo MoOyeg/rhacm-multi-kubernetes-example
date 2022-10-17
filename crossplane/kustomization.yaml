@@ -1,2 +1,14 @@
+# resources:
+# - ../placementrules/OCP-HUB
 generators:
 - ./policygenerator.yaml
+# patchesJson6902:
+#   - target:
+#       group: "apps.open-cluster-management.io"
+#       version: v1
+#       kind: PlacementRule
+#       name: hub-placementrule
+#     patch: |-
+#       - op: replace
+#         path: /metadata/namespace
+#         value: crossplane-system

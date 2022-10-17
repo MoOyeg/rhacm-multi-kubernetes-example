@@ -1,6 +1,9 @@
 resources:
-- non-openshift-placementrule.yaml
-- aks-placementrule.yaml
-- eks-placementrule.yaml
-- gks-placementrule.yaml
-- ocp-placementrule.yaml
+- ./NON-OCP/non-openshift-placementrule.yaml
+- ./NON-OCP-HUB/not-local-ocp-placementrule.yaml
+- ./OCP/ocp-placementrule.yaml
+- ./OCP-HUB/hub-placementrule.yaml
+- ./AKS/aks-placementrule.yaml
+- ./EKS/eks-placementrule.yaml
+- ./GKS/gks-placementrule.yaml
+

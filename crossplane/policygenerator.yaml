@@ -10,7 +10,7 @@ policyDefaults:
   namespace: global-policies
   # Use an existing placement rule so that placement bindings can be consolidated
   placement:
-    placementRulePath: ../placementrules/hub-placementrule.yaml
+    placementRulePath: ../placementrules/OCP-HUB/hub-placementrule.yaml
   remediationAction: enforce
   severity: medium
 policies:
@@ -18,9 +18,19 @@ policies:
   disabled: false
   manifests:
     - path: ./crossplane-helm-repo
-- name: policy-xks-olm-deploy
+- name: policy-crossplane-app-install
   disabled: false
-  pruneObjectBehavior: DeleteAll
   manifests:
-    - path: ./olm_deploy
-  remediationAction: enforce
+    - path: ./crossplane-install-non-vault
+    - path: ../placementrules/OCP-HUB/hub-placementrule.yaml
+      patches:
+        - apiVersion: apps.open-cluster-management.io/v1
+          kind: PlacementRule
+          metadata:
+            name: hub-placementrule
+            namespace: crossplane-system
+            labels:
+              app: crossplane
+
+
+    
