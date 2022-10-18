@@ -1,0 +1,9 @@
+# Azure Resource Group
+apiVersion: azure.crossplane.io/v1alpha3
+kind: ResourceGroup
+metadata:
+  name: crossplane-azure-rg
+spec:
+  location: East US
+  providerConfigRef:
+    name: provider-azure

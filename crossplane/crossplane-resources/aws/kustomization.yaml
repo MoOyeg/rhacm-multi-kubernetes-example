@@ -1,0 +1,7 @@
+resources:
+  - iam-role.yaml
+  - securitygroup.yaml
+  - subnet.yaml
+  - vpc.yaml
+  - role-policy-attachment.yaml
+  

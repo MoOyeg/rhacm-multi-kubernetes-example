@@ -77,3 +77,39 @@ Repo also contains examples of using crossplane for Provisoning with ACM install
 Will install crossplane with included provider configs:
 
 ```kustomize build --enable-alpha-plugins ./crossplane/ | oc create -f -```
+
+We need to setup credentials for our providers:
+
+**[AWS Provider](https://crossplane.io/docs/v1.9/cloud-providers/aws/aws-provider.html)**:
+
+***Sample***  
+
+``` bash
+export BASE64ENCODED_AWS_ACCOUNT_CREDS=$(echo -e "[default]\naws_access_key_id = $(aws configure get aws_access_key_id --profile $aws_profile)\naws_secret_access_key = $(aws configure get aws_secret_access_key --profile $aws_profile)" | base64  | tr -d "\n")
+```
+
+```bash
+cat ./crossplane/crossplane-providerconfig-templates/aws_provider.yaml | envsubst | oc apply -f -
+```
+
+**[Azure Provider](https://github.com/crossplane-contrib/provider-azure/blob/master/examples/azure-provider.yaml)**:
+
+***Sample***  
+After running 'az login' capture serviceprincipaljson file, will be a different name in your environment.
+
+```bash
+export provider_json_file='/root/.azure/osServicePrincipal.json'
+```
+
+``` bash
+export BASE64ENCODED_AZURE_PROVIDER_CREDS=$(base64 ${provider_json_file} | tr -d "\n")
+```  
+
+```bash
+cat ./crossplane/crossplane-providerconfig-templates/azure_provider.yaml | envsubst | oc apply -f -
+```  
+
+**[GCP Provider](https://github.com/crossplane-contrib/provider-gcp)**:
+TODO  
+
+### Create Resources required for specific xKS Cluster
