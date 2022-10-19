@@ -4,7 +4,16 @@ metadata:
   name: crossplane-eks-cluster1
 spec:
   forProvider:
+    region: us-east-1
     version: "1.22"
+    resourcesVpcConfig:
+      # Defined in ../../crossplane-resources/aws/manifests
+      subnetIdRefs:
+        - name: crossplane-subnet-1-us-east-1
+        - name: crossplane-subnet-2-us-east-1
+        - name: crossplane-subnet-3-us-east-1
+      securityGroupIdRefs:
+        - name: crossplane-eks-sg-us-east-1
   writeConnectionSecretToRef:
     name: crossplane-eks-cluster1
     namespace: crossplane-system

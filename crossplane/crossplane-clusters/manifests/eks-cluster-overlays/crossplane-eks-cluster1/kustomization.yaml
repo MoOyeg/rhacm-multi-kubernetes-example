@@ -11,3 +11,9 @@ patchesJson6902:
       kind: Cluster
       name: base-cluster-name
     path: ./patches/cluster-rename-patch.yaml
+  - target:
+      group: eks.aws.crossplane.io
+      version: v1alpha1
+      kind: NodeGroup
+      name: base-cluster-nodegroup
+    path: ./patches/nodegroup-rename-patch.yaml

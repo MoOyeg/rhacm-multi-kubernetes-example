@@ -1,21 +1,14 @@
 apiVersion: eks.aws.crossplane.io/v1alpha1
 kind: NodeGroup
 metadata:
-  name: base-cluster-name
+  name: base-cluster-nodegroup
   labels:
     app: "crossplane"
     provider: aws
 spec:
   forProvider:
-    region: us-east-1
-    clusterNameRef:
-      name: sample-cluster
-    # Defined in examples/ec2
-    subnetRefs:
-      - name: sample-subnet1
-    # Defined in examples/iam
     nodeRoleRef:
-      name: somenoderole
+      name: crossplane-iam-node-role
     scalingConfig:
       desiredSize: 1
       maxSize: 1
@@ -24,4 +17,4 @@ spec:
       maxUnavailablePercentage: 50
       force: true
   providerConfigRef:
-    name: example
+    name: provider-aws

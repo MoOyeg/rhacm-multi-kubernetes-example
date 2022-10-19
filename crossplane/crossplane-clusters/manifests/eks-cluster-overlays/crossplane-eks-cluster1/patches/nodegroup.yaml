@@ -1,14 +1,12 @@
 apiVersion: eks.aws.crossplane.io/v1alpha1
 kind: NodeGroup
 metadata:
-  name: my-group
-  labels:
-    example: "true"
+  name: crossplane-eks-cluster1-nodegroup
 spec:
   forProvider:
     region: us-east-1
     clusterNameRef:
-      name: sample-cluster
+      name: crossplane-eks-cluster1
     # Defined in examples/ec2
     subnetRefs:
       - name: sample-subnet1
