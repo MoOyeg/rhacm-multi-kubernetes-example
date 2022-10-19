@@ -21,13 +21,13 @@ spec:
                 apiVersion: v1
                 kind: Secret
                 metadata:
-                name: auto-import-secret
-                namespace: my-new-cluster
+                  name: auto-import-secret
+                  namespace: my-new-cluster
                 stringData:
-                autoImportRetry: 10
-                kubeconfig: |-
-                  <the-full-contents-of-my-new-cluster-kubeconfig>
-                  ...
+                  autoImportRetry: 10
+                  kubeconfig: |-
+                    <the-full-contents-of-my-new-cluster-kubeconfig>
+                    ...
                 type: Opaque
             - complianceType: musthave
               objectDefinition:

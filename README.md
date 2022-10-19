@@ -138,13 +138,8 @@ Create ACM application for AWS Resources:
 oc apply -k ./crossplane/crossplane-resources/aws/acm-app/
 ```
 
-
 ## Attach Subscription Admin Policy to your user if necessary
 
 ```bash
 sed -e "s/<user>/kube:admin/" ./pacman-app/deploy/policy/policy-subscription-pacman-admin.yaml | oc create -f - -n global-policies
-```
-
-```bash
-oc apply -k ./pacman-app/deploy
 ```
