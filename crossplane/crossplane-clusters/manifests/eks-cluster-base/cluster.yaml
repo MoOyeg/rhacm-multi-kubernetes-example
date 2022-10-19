@@ -9,7 +9,7 @@ spec:
   forProvider:
     # Defined in ../../crossplane-resources/aws/manifests
     roleArnRef:
-      name: crossplane-iam-role
+      name: crossplane-iam-node-role
     resourcesVpcConfig:
       endpointPrivateAccess: true
       endpointPublicAccess: true
