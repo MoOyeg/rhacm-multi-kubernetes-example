@@ -8,7 +8,6 @@ metadata:
   labels:
     app: crossplane-aws-resources
   name: crossplane-aws-resources-subscription-east-2
-  namespace: crossplane-system
 spec:
   channel: channel-git-crossplane/git-crossplane
   placement:

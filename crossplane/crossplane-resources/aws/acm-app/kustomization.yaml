@@ -1,5 +1,7 @@
+namespace: crossplane-aws-resources
 resources:
 - application.yaml
+- namespace.yaml
 #Create global folder in manifests
 - subscription-global.yaml
 #Create aws region specific resources for us-east-1(folder manifests/overlays/region-us-east-1)
