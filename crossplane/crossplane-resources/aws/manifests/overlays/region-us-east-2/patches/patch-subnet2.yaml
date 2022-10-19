@@ -1,0 +1,9 @@
+
+apiVersion: ec2.aws.crossplane.io/v1beta1
+kind: Subnet
+metadata:
+  name: crossplane-subnet-2
+spec:
+  forProvider:
+    region: us-east-2
+    availabilityZone: us-east-2b

@@ -1,0 +1,23 @@
+bases:
+- ../../base
+namespace: crossplane-system
+patches:
+- path: ./patches/patch-vpc.yaml
+  target:
+    kind: VPC
+- path: ./patches/patch-subnet1.yaml
+  target:
+    kind: Subnet
+    name: crossplane-subnet-1
+- path: ./patches/patch-subnet2.yaml
+  target:
+    kind: Subnet
+    name: crossplane-subnet-2
+- path: ./patches/patch-subnet3.yaml
+  target:
+    kind: Subnet
+    name: crossplane-subnet-3
+- path: ./patches/patch-sg.yaml
+  target:
+    kind: SecurityGroup
+    name: crossplane-eks-sg

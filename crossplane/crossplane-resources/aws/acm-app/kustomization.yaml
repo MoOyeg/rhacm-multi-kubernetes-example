@@ -1,0 +1,8 @@
+resources:
+- application.yaml
+#Create global folder in manifests
+- subscription-global.yaml
+#Create aws region specific resources for us-east-1(folder manifests/overlays/region-us-east-1)
+- subscription-region-east-1.yaml
+#Create aws region specific resources for us-east-2(folder manifests/overlays/region-us-east-2)
+- subscription-region-east-2.yaml

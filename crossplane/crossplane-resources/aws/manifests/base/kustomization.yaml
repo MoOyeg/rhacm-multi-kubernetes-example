@@ -1,0 +1,6 @@
+resources:
+  - securitygroup.yaml
+  - subnet1.yaml
+  - subnet2.yaml
+  - subnet3.yaml
+  - vpc.yaml

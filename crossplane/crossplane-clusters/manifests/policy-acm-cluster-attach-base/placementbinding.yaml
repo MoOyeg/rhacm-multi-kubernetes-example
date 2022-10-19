@@ -1,0 +1,23 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: crossplane-hub-policy
+  namespace: global-policies
+  creationTimestamp: 2022-10-18T03:12:27Z
+  generation: 1
+  resourceVersion: "2540874"
+  uid: ebb50d16-1166-4b27-a76e-399205a96801
+placementRef:
+  name: hub-placementrule
+  apiGroup: apps.open-cluster-management.io
+  kind: PlacementRule
+subjects:
+  - name: policy-crossplane-helm-repo
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+  - name: policy-crossplane-app-install
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+  - name: policy-crossplane-providers
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy

@@ -1,0 +1,10 @@
+apiVersion: apps.open-cluster-management.io/v1
+kind: Channel
+metadata:
+  labels:
+    app: crossplane
+  name: git-crossplane
+  namespace: channel-git-crossplane
+spec:
+  pathname: https://github.com/MoOyeg/rhacm-multi-kubernetes-example.git
+  type: Git

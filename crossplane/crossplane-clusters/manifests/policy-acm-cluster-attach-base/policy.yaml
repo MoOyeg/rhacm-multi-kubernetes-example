@@ -1,0 +1,85 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: policy-replace-me
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+spec:
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: policy-replace-me
+        spec:
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: v1
+                kind: Secret
+                metadata:
+                name: auto-import-secret
+                namespace: my-new-cluster
+                stringData:
+                autoImportRetry: 10
+                kubeconfig: |-
+                  <the-full-contents-of-my-new-cluster-kubeconfig>
+                  ...
+                type: Opaque
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: apps.open-cluster-management.io/v1
+                kind: Channel
+                metadata:
+                  name: helm-crossplane
+                  namespace: channel-helm-crossplane
+                  labels:
+                    app: crossplane
+                spec:
+                  pathname: https://charts.crossplane.io/stable
+                  type: HelmRepo
+          remediationAction: enforce
+          severity: medium
+status:
+  compliant: Compliant
+  placement:
+    - placementBinding: crossplane-hub-policy
+      placementRule: hub-placementrule
+  status:
+    - clustername: local-cluster
+      clusternamespace: local-cluster
+      compliant: Compliant
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: hub-placementrule
+  namespace: global-policies
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: >
+      {"apiVersion":"apps.open-cluster-management.io/v1","kind":"PlacementRule","metadata":{"annotations":{},"name":"hub-placementrule","namespace":"global-policies"},"spec":{"clusterConditions":[{"status":"True","type":"ManagedClusterConditionAvailable"}],"clusterSelector":{"matchExpressions":[{"key":"name","operator":"In","values":["local-cluster"]}]}}}
+    open-cluster-management.io/user-group: c3lzdGVtOm1hc3RlcnMsc3lzdGVtOmF1dGhlbnRpY2F0ZWQ=
+    open-cluster-management.io/user-identity: c3lzdGVtOmFkbWlu
+  creationTimestamp: 2022-10-18T03:11:41Z
+  generation: 1
+  resourceVersion: "2539641"
+  uid: e93331cb-4dbc-4f0b-a739-7e2b291835df
+spec:
+  clusterConditions:
+    - status: "True"
+      type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+      - key: name
+        operator: In
+        values:
+          - local-cluster
+status:
+  decisions:
+    - clusterName: local-cluster
+      clusterNamespace: local-cluster
+---
+

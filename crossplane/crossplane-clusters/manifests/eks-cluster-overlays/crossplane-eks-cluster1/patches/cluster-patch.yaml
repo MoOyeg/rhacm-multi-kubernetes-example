@@ -1,0 +1,10 @@
+apiVersion: eks.aws.crossplane.io/v1beta1
+kind: Cluster
+metadata:
+  name: crossplane-eks-cluster1
+spec:
+  forProvider:
+    version: "1.22"
+  writeConnectionSecretToRef:
+    name: crossplane-eks-cluster1
+    namespace: crossplane-system

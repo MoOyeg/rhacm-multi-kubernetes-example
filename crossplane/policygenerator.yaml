@@ -19,6 +19,10 @@ policies:
   disabled: false
   manifests:
     - path: ./crossplane-helm-repo
+- name: policy-crossplane-git-repo
+  disabled: false
+  manifests:
+    - path: ./crossplane-git-repo
 - name: policy-crossplane-app-install
   disabled: false
   manifests:
