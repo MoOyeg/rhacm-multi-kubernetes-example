@@ -1,3 +1,4 @@
+namespace: global-policies
 resources:
 - ./NON-OCP/non-openshift-placementrule.yaml
 - ./NON-OCP-HUB/not-local-ocp-placementrule.yaml

@@ -1,10 +1,7 @@
 apiVersion: apps.open-cluster-management.io/v1
 kind: PlacementRule
 metadata:
-  labels:
-    custom: olm-policies
   name: non-openshift-placementrule
-  namespace: global-policies
 spec:
   clusterConditions:
     - status: "True"

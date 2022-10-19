@@ -7,7 +7,7 @@ metadata:
     apps.open-cluster-management.io/reconcile-option: merge
   labels:
     app: crossplane-aws-resources
-  name: crossplane-aws-resources-subscription-east-2
+  name: aws-subscription-east-2
 spec:
   channel: channel-git-crossplane/git-crossplane
   placement:
