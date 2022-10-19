@@ -17,16 +17,17 @@ Some steps can be skipped while others have a dependency on pre-completed steps.
 
 ## Steps to Run
 
-### Create Kubernetes Clusters
+### Create Kubernetes Clusters if Required
 
 If you would like to use ACM to create clusters here is some tooling to help
 
 **OCP Clusters**  
-For standard OCP clusters use ACM Cluster creation
+[For standard OCP clusters use ACM Cluster creation](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/multicluster_engine/index#creating-a-cluster)
 
 **xKS Clusters - Ansible**  
-For xKS clusters you can use Ansible. Here's an example link below. Link does not show integration between ACM and Ansible(AAP) for cluster creation - TODO.
-Use Ansible to create [xKS clusters](https://github.com/nleiva/ansible-kubernetes).
+For xKS clusters you can use Ansible. Here's an example link below.
+[Use Ansible to create xKS clusters](https://github.com/nleiva/ansible-kubernetes).
+Link does not show integration between ACM and Ansible(AAP) for cluster creation - TODO
 
 **xKS Clusters - Crossplane**  
 Use crossplane to create your clusters - see crossplane section below
