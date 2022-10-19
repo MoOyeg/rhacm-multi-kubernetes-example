@@ -7,3 +7,5 @@ spec:
   forProvider:
     region: us-east-1
     availabilityZone: us-east-1b
+    vpcIdRef:
+      name: crossplane-vpc-us-east-1

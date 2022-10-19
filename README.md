@@ -29,8 +29,8 @@ For xKS clusters you can use Ansible. Here's an example link below.
 [Use Ansible to create xKS clusters](https://github.com/nleiva/ansible-kubernetes).
 Link does not show integration between ACM and Ansible(AAP) for cluster creation - TODO
 
-**xKS Clusters - Crossplane**  
-Use crossplane to create your clusters - see crossplane section below
+[**xKS Clusters - Crossplane**](https://github.com/MoOyeg/rhacm-multi-kubernetes-example#crossplane-provisioning)  
+Use crossplane to create your clusters - [see crossplane section below](https://github.com/MoOyeg/rhacm-multi-kubernetes-example#crossplane-provisioning)
 
 ### Cluster Configuration
 
@@ -79,19 +79,7 @@ oc apply -k ./acs-operator-central-gitops
 
 ## Deploy an Application
 
-This Pacman App deployment will show a High Availibility use case of
-
-### Attach Subscription Policy to your user if necessary
-
-example
-
-```bash
-sed -e "s/<user>/kube:admin/" ./pacman-app/deploy/policy/policy-subscription-pacman-admin.yaml | oc create -f - -n global-policies
-```
-
-```bash
-oc apply -k ./pacman-app/deploy
-```
+This Pacman App deployment will show a High Availibility use case.
 
 ## Crossplane Provisioning
 
@@ -143,8 +131,20 @@ TODO
 
 Create required resources for your specific cloud provider.
 
-**EKS Cluster**: Edit the ./crossplane-resources/aws/manifests folder as required for your own situation.A tested minimal example is provided.
+**EKS Cluster**: Edit the ./crossplane-resources/aws/manifests folder as required for your own situation.A tested minimal example is provided.  
+Create ACM application for AWS Resources:
 
 ```bash
+oc apply -k ./crossplane/crossplane-resources/aws/acm-app/
+```
 
+
+## Attach Subscription Admin Policy to your user if necessary
+
+```bash
+sed -e "s/<user>/kube:admin/" ./pacman-app/deploy/policy/policy-subscription-pacman-admin.yaml | oc create -f - -n global-policies
+```
+
+```bash
+oc apply -k ./pacman-app/deploy
 ```
