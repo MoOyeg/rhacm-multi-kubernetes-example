@@ -10,7 +10,7 @@ metadata:
   name: crossplane-cluster-eks-cluster-1
   namespace: crossplane-system
 spec:
-  channel: channel-git-crossplane/git-crossplane
+  channel: channel-git-crossplane-cluster/git-crossplane-cluster
   placement:
     placementRef:
       kind: PlacementRule

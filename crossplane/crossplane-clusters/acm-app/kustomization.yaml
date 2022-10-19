@@ -1,4 +1,6 @@
 resources:
 - application.yaml
+- channel-namespace.yaml
+- channel.yaml
 #Create eks-cluster-1(folder manifests/overlays/region-us-east-1)
 - subscription-eks-cluster-1.yaml
