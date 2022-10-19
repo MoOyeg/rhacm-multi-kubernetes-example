@@ -1,6 +1,6 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: channel-git-crossplane-cluster
+  name: crossplane-aws-resources
   labels:
     app: crossplane

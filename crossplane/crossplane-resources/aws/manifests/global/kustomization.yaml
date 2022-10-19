@@ -1,5 +1,5 @@
 resources:
   - iam-role.yaml
   - role-policy-attachment.yaml
-namespace: crossplane-system
+namespace: crossplane-aws-resources
   

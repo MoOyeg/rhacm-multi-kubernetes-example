@@ -1,6 +1,6 @@
 bases:
 - ../../base
-namespace: crossplane-system
+namespace: crossplane-aws-resources
 patches:
 - path: ./patches/patch-vpc.yaml
   target:
