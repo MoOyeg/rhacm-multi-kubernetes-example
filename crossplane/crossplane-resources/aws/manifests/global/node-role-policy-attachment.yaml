@@ -9,3 +9,40 @@ spec:
       name: crossplane-iam-node-role
   providerConfigRef:
     name: provider-aws
+
+---
+apiVersion: iam.aws.crossplane.io/v1beta1
+kind: RolePolicyAttachment
+metadata:
+  name: crossplane-iam-node-role-eksregistry-attach
+spec:
+  forProvider:
+    policyArn: arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+    roleNameRef:
+      name: crossplane-iam-node-role
+  providerConfigRef:
+    name: provider-aws
+---
+apiVersion: iam.aws.crossplane.io/v1beta1
+kind: RolePolicyAttachment
+metadata:
+  name: crossplane-iam-node-role-ekscni-attach
+spec:
+  forProvider:
+    policyArn: arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+    roleNameRef:
+      name: crossplane-iam-node-role
+  providerConfigRef:
+    name: provider-aws
+---
+apiVersion: iam.aws.crossplane.io/v1beta1
+kind: RolePolicyAttachment
+metadata:
+  name: crossplane-iam-node-role-ekscluster-attach
+spec:
+  forProvider:
+    policyArn: arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+    roleNameRef:
+      name: crossplane-iam-node-role
+  providerConfigRef:
+    name: provider-aws
