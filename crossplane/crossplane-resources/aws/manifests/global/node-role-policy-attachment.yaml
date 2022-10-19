@@ -9,7 +9,6 @@ spec:
       name: crossplane-iam-node-role
   providerConfigRef:
     name: provider-aws
-
 ---
 apiVersion: iam.aws.crossplane.io/v1beta1
 kind: RolePolicyAttachment
