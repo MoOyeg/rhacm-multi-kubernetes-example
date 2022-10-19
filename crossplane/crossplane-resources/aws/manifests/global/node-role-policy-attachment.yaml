@@ -1,0 +1,11 @@
+apiVersion: iam.aws.crossplane.io/v1beta1
+kind: RolePolicyAttachment
+metadata:
+  name: crossplane-iam-node-role-eks-attach
+spec:
+  forProvider:
+    policyArn: arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+    roleNameRef:
+      name: crossplane-iam-node-role
+  providerConfigRef:
+    name: provider-aws
