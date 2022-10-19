@@ -7,18 +7,13 @@ spec:
     region: us-east-1
     clusterNameRef:
       name: crossplane-eks-cluster1
-    # Defined in examples/ec2
+    # Defined in crossplane-resources/aws/manifests
     subnetRefs:
-      - name: sample-subnet1
-    # Defined in examples/iam
-    nodeRoleRef:
-      name: somenoderole
+      - name: crossplane-subnet-1-us-east-1
+      - name: crossplane-subnet-2-us-east-1
+      - name: crossplane-subnet-3-us-east-1
     scalingConfig:
       desiredSize: 1
       maxSize: 1
       minSize: 1
-    updateConfig:
-      maxUnavailablePercentage: 50
-      force: true
-  providerConfigRef:
-    name: example
+

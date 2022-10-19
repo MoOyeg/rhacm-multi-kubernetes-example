@@ -4,6 +4,9 @@ patches:
 - path: ./patches/cluster-patch.yaml
   target:
     kind: Cluster
+- path: ./patches/nodegroup-patch.yaml
+  target:
+    kind: NodeGroup
 patchesJson6902:
   - target:
       group: eks.aws.crossplane.io
