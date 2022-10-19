@@ -5,3 +5,5 @@ metadata:
 spec:
   forProvider:
     region: us-east-2
+    vpcIdRef:
+      name: crossplane-vpc-us-east-2 

@@ -21,3 +21,35 @@ patches:
   target:
     kind: SecurityGroup
     name: crossplane-eks-sg
+#Very possible to merge both patch methods into one but couldnt be bothered..lol
+patchesJson6902:
+  - target:
+      group: ec2.aws.crossplane.io
+      version: v1beta1
+      kind: SecurityGroup
+      name: crossplane-eks-sg
+    path: ./patches/patch-sg-rename.yaml
+  - target:
+      group: ec2.aws.crossplane.io
+      version: v1beta1
+      kind: Subnet
+      name: crossplane-subnet-1
+    path: ./patches/patch-subnet1-rename.yaml
+  - target:
+      group: ec2.aws.crossplane.io
+      version: v1beta1
+      kind: Subnet
+      name: crossplane-subnet-2
+    path: ./patches/patch-subnet2-rename.yaml
+  - target:
+      group: ec2.aws.crossplane.io
+      version: v1beta1
+      kind: Subnet
+      name: crossplane-subnet-3
+    path: ./patches/patch-subnet3-rename.yaml
+  - target:
+      group: ec2.aws.crossplane.io
+      version: v1beta1
+      kind: VPC
+      name: crossplane-vpc
+    path: ./patches/patch-vpc-rename.yaml

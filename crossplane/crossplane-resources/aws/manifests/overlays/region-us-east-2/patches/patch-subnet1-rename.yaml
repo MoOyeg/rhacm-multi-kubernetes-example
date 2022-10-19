@@ -1,0 +1,4 @@
+
+- op: replace
+  path: /metadata/name
+  value: crossplane-subnet-1-us-east-2
