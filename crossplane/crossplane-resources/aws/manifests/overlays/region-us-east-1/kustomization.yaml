@@ -21,6 +21,22 @@ patches:
   target:
     kind: SecurityGroup
     name: crossplane-eks-sg
+- path: ./patches/patch-ig.yaml
+  target:
+    kind: InternetGateway
+    name: crossplane-ig
+- path: ./patches/patch-rt-1.yaml
+  target:
+    kind: RouteTable
+    name: crossplane-routetable-1
+- path: ./patches/patch-rt-2.yaml
+  target:
+    kind: RouteTable
+    name: crossplane-routetable-2
+- path: ./patches/patch-rt-3.yaml
+  target:
+    kind: RouteTable
+    name: crossplane-routetable-3
 #Very possible to merge both patch methods into one but couldnt be bothered..lol
 patchesJson6902:
   - target:
@@ -53,3 +69,27 @@ patchesJson6902:
       kind: VPC
       name: crossplane-vpc
     path: ./patches/patch-vpc-rename.yaml
+  - target:
+      group: ec2.aws.crossplane.io
+      version: v1beta1
+      kind: InternetGateway
+      name: crossplane-ig
+    path: ./patches/patch-ig-rename.yaml
+  - target:
+      group: ec2.aws.crossplane.io
+      version: v1beta1
+      kind: RouteTable
+      name: crossplane-routetable-1
+    path: ./patches/patch-rt-rename-1.yaml
+  - target:
+      group: ec2.aws.crossplane.io
+      version: v1beta1
+      kind: RouteTable
+      name: crossplane-routetable-2
+    path: ./patches/patch-rt-rename-2.yaml
+  - target:
+      group: ec2.aws.crossplane.io
+      version: v1beta1
+      kind: RouteTable
+      name: crossplane-routetable-3
+    path: ./patches/patch-rt-rename-3.yaml

@@ -1,0 +1,8 @@
+apiVersion: ec2.aws.crossplane.io/v1beta1
+kind: RouteTable
+metadata:
+  name: crossplane-routetable-3
+spec:
+  forProvider:
+  providerConfigRef:
+    name: provider-aws

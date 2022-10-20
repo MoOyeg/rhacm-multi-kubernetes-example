@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: until-cluster-ready
+  namespace: crossplane-system
+spec:
+  template:
+    spec:
+      containers:
+        - image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+          env:
+            - name: SECRETNAME
+              value: replace-me
+          command:
+            - /bin/bash
+            - -c
+            - |
+              #!/usr/bin/env bash
+              
+              count=50
+
+              until oc get secret/${SECRETNAME} -o name -n crossplane-system
+              do
+              count=$((count-1))
+              echo Will Retry $count more times
+              if [ $count -le 0 ]
+              then
+                echo "We couldnt find secret ${SECRETNAME}"
+                break
+              fi
+              done
+
+              
+          imagePullPolicy: Always
+          name: until-cluster-ready
+      dnsPolicy: ClusterFirst
+      restartPolicy: Never
+      serviceAccountName: crossplane
+      serviceAccount: crossplane

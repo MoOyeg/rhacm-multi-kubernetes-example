@@ -1,3 +1,4 @@
 resources:
 - policy.yaml
+- job.yaml
 - placementbinding.yaml

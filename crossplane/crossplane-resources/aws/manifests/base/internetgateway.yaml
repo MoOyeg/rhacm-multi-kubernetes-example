@@ -1,0 +1,8 @@
+apiVersion: ec2.aws.crossplane.io/v1beta1
+kind: InternetGateway
+metadata:
+  name: crossplane-ig
+spec:
+  forProvider: 
+  providerConfigRef:
+    name: provider-aws

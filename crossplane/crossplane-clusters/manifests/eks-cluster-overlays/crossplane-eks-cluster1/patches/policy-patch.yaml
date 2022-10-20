@@ -1,0 +1,31 @@
+#Policy Changes
+- op: replace
+  path: /metadata/name
+  value: policy-attach-eks-cluster-1
+- op: replace
+  path: /spec/policy-templates/0/objectDefinition/metadata/name
+  value: policy-attach-eks-cluster-1
+#Secret Object Changes
+- op: replace
+  path: /spec/policy-templates/0/objectDefinition/spec/object-templates/0/objectDefinition/metadata/namespace
+  value: crossplane-eks-cluster1
+- op: replace
+  path: /spec/policy-templates/0/objectDefinition/spec/object-templates/0/objectDefinition/stringData/kubeconfig
+  value: '{{ fromSecret "crossplane-system" "crossplane-eks-cluster1" "kubeconfig" | base64dec }}'
+#ManagedCluster Object Changes
+- op: replace
+  path: /spec/policy-templates/0/objectDefinition/spec/object-templates/1/objectDefinition/metadata/name
+  value: crossplane-eks-cluster1
+#KlusterletAddonConfig Object Changes
+- op: replace
+  path: /spec/policy-templates/0/objectDefinition/spec/object-templates/2/objectDefinition/metadata/name
+  value: crossplane-eks-cluster1
+- op: replace
+  path: /spec/policy-templates/0/objectDefinition/spec/object-templates/2/objectDefinition/metadata/namespace
+  value: crossplane-eks-cluster1
+- op: replace
+  path: /spec/policy-templates/0/objectDefinition/spec/object-templates/2/objectDefinition/spec/clusterName
+  value: crossplane-eks-cluster1
+- op: replace
+  path: /spec/policy-templates/0/objectDefinition/spec/object-templates/2/objectDefinition/spec/clusterNamespace
+  value: crossplane-eks-cluster1

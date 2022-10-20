@@ -2,10 +2,12 @@ apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
 metadata:
   name: policy-replace-me
+  namespace: crossplane-system
   annotations:
     policy.open-cluster-management.io/categories: CM Configuration Management
     policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
     policy.open-cluster-management.io/standards: NIST SP 800-53
+    policy.open-cluster-management.io/trigger-update: 0
 spec:
   disabled: false
   policy-templates:
@@ -22,64 +24,48 @@ spec:
                 kind: Secret
                 metadata:
                   name: auto-import-secret
-                  namespace: my-new-cluster
+                  namespace: cluster-name-replace-me
                 stringData:
-                  autoImportRetry: 10
+                  autoImportRetry: '10'
                   kubeconfig: |-
-                    <the-full-contents-of-my-new-cluster-kubeconfig>
-                    ...
+                    '{{fromSecret "default" "localsecret" "PASSWORD" | base64dec }}'
                 type: Opaque
             - complianceType: musthave
               objectDefinition:
-                apiVersion: apps.open-cluster-management.io/v1
-                kind: Channel
+                apiVersion: cluster.open-cluster-management.io/v1
+                kind: ManagedCluster
                 metadata:
-                  name: helm-crossplane
-                  namespace: channel-helm-crossplane
                   labels:
-                    app: crossplane
+                    cloud: auto-detect
+                    vendor: auto-detect
+                  name: cluster-name-replace-me
                 spec:
-                  pathname: https://charts.crossplane.io/stable
-                  type: HelmRepo
+                  hubAcceptsClient: true
+                  leaseDurationSeconds: 60
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: agent.open-cluster-management.io/v1
+                kind: KlusterletAddonConfig
+                metadata:
+                  name: cluster-name-replace-me
+                  namespace: cluster-name-replace-me
+                spec:
+                  clusterName: cluster-name-replace-me
+                  clusterNamespace: cluster-name-replace-me
+                  clusterLabels:
+                    cloud: auto-detect
+                    vendor: auto-detect
+                  applicationManager:
+                    enabled: true
+                  policyController:
+                    enabled: true
+                  searchCollector:
+                    enabled: true
+                  certPolicyController:
+                    enabled: true
+                  iamPolicyController:
+                    enabled: true            
           remediationAction: enforce
           severity: medium
-status:
-  compliant: Compliant
-  placement:
-    - placementBinding: crossplane-hub-policy
-      placementRule: hub-placementrule
-  status:
-    - clustername: local-cluster
-      clusternamespace: local-cluster
-      compliant: Compliant
----
-apiVersion: apps.open-cluster-management.io/v1
-kind: PlacementRule
-metadata:
-  name: hub-placementrule
-  namespace: global-policies
-  annotations:
-    kubectl.kubernetes.io/last-applied-configuration: >
-      {"apiVersion":"apps.open-cluster-management.io/v1","kind":"PlacementRule","metadata":{"annotations":{},"name":"hub-placementrule","namespace":"global-policies"},"spec":{"clusterConditions":[{"status":"True","type":"ManagedClusterConditionAvailable"}],"clusterSelector":{"matchExpressions":[{"key":"name","operator":"In","values":["local-cluster"]}]}}}
-    open-cluster-management.io/user-group: c3lzdGVtOm1hc3RlcnMsc3lzdGVtOmF1dGhlbnRpY2F0ZWQ=
-    open-cluster-management.io/user-identity: c3lzdGVtOmFkbWlu
-  creationTimestamp: 2022-10-18T03:11:41Z
-  generation: 1
-  resourceVersion: "2539641"
-  uid: e93331cb-4dbc-4f0b-a739-7e2b291835df
-spec:
-  clusterConditions:
-    - status: "True"
-      type: ManagedClusterConditionAvailable
-  clusterSelector:
-    matchExpressions:
-      - key: name
-        operator: In
-        values:
-          - local-cluster
-status:
-  decisions:
-    - clusterName: local-cluster
-      clusterNamespace: local-cluster
----
+
 

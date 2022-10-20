@@ -1,0 +1,16 @@
+apiVersion: ec2.aws.crossplane.io/v1beta1
+kind: RouteTable
+metadata:
+  name: crossplane-routetable-3
+spec:
+  forProvider:
+    region: us-east-1
+    routes:
+      - destinationCidrBlock: 0.0.0.0/0
+        gatewayIdRef:
+          name: crossplane-ig-us-east-1
+    associations:
+      - subnetIdRef:
+          name: crossplane-subnet-3
+    vpcIdRef:
+      name: crossplane-vpc-us-east-1

@@ -1,0 +1,7 @@
+#Policy Changes
+- op: replace
+  path: /metadata/name
+  value: pb-policy-attach-eks-cluster-1
+- op: replace
+  path: /subjects/0/name
+  value: policy-attach-eks-cluster-1

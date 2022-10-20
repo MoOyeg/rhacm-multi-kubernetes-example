@@ -3,4 +3,8 @@ resources:
   - subnet1.yaml
   - subnet2.yaml
   - subnet3.yaml
+  - routetable1.yaml
+  - routetable2.yaml
+  - routetable3.yaml
   - vpc.yaml
+  - internetgateway.yaml
