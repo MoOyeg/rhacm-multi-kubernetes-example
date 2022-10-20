@@ -1,6 +1,6 @@
 bases:
 #EKS Base Cluster Files
-#- ../../eks-cluster-base
+- ../../eks-cluster-base
 #ACM Attach Cluster Files
 - ../../policy-acm-cluster-attach-base
 patches:
