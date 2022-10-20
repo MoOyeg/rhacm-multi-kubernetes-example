@@ -11,6 +11,6 @@ spec:
           name: crossplane-ig-us-east-1
     associations:
       - subnetIdRef:
-          name: crossplane-subnet-3
+          name: crossplane-subnet-3-us-east-1
     vpcIdRef:
       name: crossplane-vpc-us-east-1
