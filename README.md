@@ -34,7 +34,7 @@ Use crossplane to create your clusters - [see crossplane section below](https://
 
 ### Cluster Configuration
 
-**Apply our Base Configuration Policies via ACM**  
+**1) Apply our Base Configuration Policies via ACM**  
 This will create a namespace on every cluster that will serve as a base for any policies we wish to apply:
 
 ```bash
@@ -47,7 +47,7 @@ A list of Placementrules we can pre-create to allow other policies leverage. Pla
 oc apply -k ./placementrules/
 ```
 
-### Base xKS Policies
+### 2) Base xKS Policies
 
 This will policy will install [Operator Lifecyle Manager](https://olm.operatorframework.io/) on every xKS cluster added into ACM:
 
@@ -89,6 +89,9 @@ Repo also contains examples of using crossplane for Provisoning with ACM install
 
 Policy will install crossplane from crossplane helm repo. Policy will also create included providers for aws,azure,gcp:
 
+Requires:
+-
+
 ```bash
 kustomize build --enable-alpha-plugins ./crossplane/ | oc create -f -
 ```
@@ -98,6 +101,10 @@ We need to setup credentials for our providers:
 **[AWS Provider](https://crossplane.io/docs/v1.9/cloud-providers/aws/aws-provider.html)**:
 
 **_Sample_**
+
+```bash
+export aws_profile=...
+```
 
 ```bash
 export BASE64ENCODED_AWS_ACCOUNT_CREDS=$(echo -e "[default]\naws_access_key_id = $(aws configure get aws_access_key_id --profile $aws_profile)\naws_secret_access_key = $(aws configure get aws_secret_access_key --profile $aws_profile)" | base64  | tr -d "\n")
@@ -127,16 +134,25 @@ cat ./crossplane/crossplane-providerconfig-templates/azure_provider.yaml | envsu
 **[GCP Provider](https://github.com/crossplane-contrib/provider-gcp)**:
 TODO
 
-### Create Resources required for specific xKS Cluster
+### Create Crossplane Resources required for specific xKS Cluster
 
 Create required resources for your specific cloud provider.
 
-**EKS Cluster**: Edit the ./crossplane-resources/aws/manifests folder as required for your own situation.A tested minimal example is provided.  
+**EKS Cluster Sample**  
+ Edit the ./crossplane-resources/aws/manifests folder as required for your own situation.A tested minimal example is provided.  
+
 Create ACM application for AWS Resources:
 
 ```bash
 oc apply -k ./crossplane/crossplane-resources/aws/acm-app/
 ```
+
+Create EKS Clusters
+
+```bash
+oc apply -k ./crossplane/crossplane-clusters/acm-app/
+```
+
 
 ## Attach Subscription Admin Policy to your user if necessary
 

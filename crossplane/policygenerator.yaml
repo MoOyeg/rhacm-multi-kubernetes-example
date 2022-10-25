@@ -11,7 +11,7 @@ policyDefaults:
   namespace: global-policies
   # Use an existing placement rule so that placement bindings can be consolidated
   placement:
-    placementRulePath: ../placementrules/OCP-HUB/hub-placementrule.yaml
+    placementName: hub-placementrule
   remediationAction: enforce
   severity: medium
 policies:
