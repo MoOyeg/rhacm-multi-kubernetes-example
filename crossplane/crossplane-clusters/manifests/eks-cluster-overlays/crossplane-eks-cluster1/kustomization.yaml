@@ -3,6 +3,7 @@ bases:
 - ../../eks-cluster-base
 #ACM Attach Cluster Files
 - ../../policy-acm-cluster-attach-base
+namespace: crossplane-system
 patches:
 - path: ./patches/cluster-patch.yaml
   target:

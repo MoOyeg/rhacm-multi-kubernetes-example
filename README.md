@@ -89,8 +89,7 @@ Repo also contains examples of using crossplane for Provisoning with ACM install
 
 Policy will install crossplane from crossplane helm repo. Policy will also create included providers for aws,azure,gcp:
 
-Requires:
--
+## Requires:
 
 ```bash
 kustomize build --enable-alpha-plugins ./crossplane/ | oc create -f -
@@ -139,7 +138,7 @@ TODO
 Create required resources for your specific cloud provider.
 
 **EKS Cluster Sample**  
- Edit the ./crossplane-resources/aws/manifests folder as required for your own situation.A tested minimal example is provided.  
+ Edit the ./crossplane-resources/aws/manifests folder as required for your own situation.A tested minimal example is provided.
 
 Create ACM application for AWS Resources:
 
@@ -153,8 +152,11 @@ Create EKS Clusters
 oc apply -k ./crossplane/crossplane-clusters/acm-app/
 ```
 
-
 ## Attach Subscription Admin Policy to your user if necessary
+
+```bash
+ oc adm policy add-cluster-role-to-user open-cluster-management:subscription-admin $(oc whoami)
+```
 
 ```bash
 sed -e "s/<user>/kube:admin/" ./pacman-app/deploy/policy/policy-subscription-pacman-admin.yaml | oc create -f - -n global-policies
