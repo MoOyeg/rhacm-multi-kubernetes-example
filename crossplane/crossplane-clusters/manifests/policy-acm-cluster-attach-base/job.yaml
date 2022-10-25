@@ -17,12 +17,12 @@ spec:
             - |
               #!/usr/bin/env bash
               
-              count=50
+              count=60
 
               until oc get secret/${SECRETNAME} -o name -n crossplane-system
               do
               count=$((count-1))
-              echo Will Retry $count more times
+              echo Will wait for secret - $count more times
               if [ $count -le 0 ]
               then
                 echo "We couldnt find secret ${SECRETNAME}"
@@ -30,7 +30,28 @@ spec:
               fi
               done
 
+              #When Our xKS cluster secret is available we can create our auto import secret from it
+              oc patch policy/policy-secret-attach-${SECRETNAME} -n crossplane-system -p '{"spec":{"disabled":"false"}}' --type=merge
               
+              count=50
+              until oc get policy/policy-secret-attach-${SECRETNAME}  -n crossplane-system -o jsonpath='{.status.compliant}
+              do
+              count=$((count-1))
+              echo Will Wait for auto-import secret policy $count more times
+              if [ $count -le 0 ]
+              then
+                echo "Policy not validated for Policy ${SECRETNAME}"
+                break
+              fi
+              done
+
+              #Enable our ManagedClusterPolicy
+              oc patch policy/policy-attach-${SECRETNAME} -n crossplane-system -p '{"spec":{"disabled":"false"}}' --type=merge
+
+              #Delete our Import Secret Policy - ACM will delete the auto-import-secret we create
+              oc delete policy/policy-secret-attach-${SECRETNAME}  -n crossplane-system
+              
+
           imagePullPolicy: Always
           name: until-cluster-ready
       dnsPolicy: ClusterFirst

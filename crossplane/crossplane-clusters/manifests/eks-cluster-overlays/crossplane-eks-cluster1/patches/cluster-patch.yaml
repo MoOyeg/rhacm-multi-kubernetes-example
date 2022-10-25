@@ -1,7 +1,7 @@
 apiVersion: eks.aws.crossplane.io/v1beta1
 kind: Cluster
 metadata:
-  name: crossplane-eks-cluster1
+  name: eks-cluster-1
 spec:
   forProvider:
     region: us-east-1
@@ -15,5 +15,5 @@ spec:
       securityGroupIdRefs:
         - name: crossplane-eks-sg-us-east-1
   writeConnectionSecretToRef:
-    name: crossplane-eks-cluster1
+    name: eks-cluster-1
     namespace: crossplane-system

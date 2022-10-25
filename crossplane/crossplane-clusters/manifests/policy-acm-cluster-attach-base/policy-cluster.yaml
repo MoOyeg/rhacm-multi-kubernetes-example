@@ -9,7 +9,7 @@ metadata:
     policy.open-cluster-management.io/standards: NIST SP 800-53
     policy.open-cluster-management.io/trigger-update: 0
 spec:
-  disabled: false
+  disabled: true
   policy-templates:
     - objectDefinition:
         apiVersion: policy.open-cluster-management.io/v1
@@ -18,18 +18,6 @@ spec:
           name: policy-replace-me
         spec:
           object-templates:
-            - complianceType: musthave
-              objectDefinition:
-                apiVersion: v1
-                kind: Secret
-                metadata:
-                  name: auto-import-secret
-                  namespace: cluster-name-replace-me
-                stringData:
-                  autoImportRetry: '10'
-                  kubeconfig: |-
-                    '{{fromSecret "default" "localsecret" "PASSWORD" | base64dec }}'
-                type: Opaque
             - complianceType: musthave
               objectDefinition:
                 apiVersion: cluster.open-cluster-management.io/v1
