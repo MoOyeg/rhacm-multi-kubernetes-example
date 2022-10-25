@@ -54,6 +54,8 @@ rules:
       - servicediscovery.aws.crossplane.io
       - sfn.aws.crossplane.io
       - sns.aws.crossplane.io
+      - snstopics.notification.aws.crossplane.io
+      - snssubscriptions.notification.aws.crossplane.io
       - sqs.aws.crossplane.io
       - transfer.aws.crossplane.io
       - azure.crossplane.io
