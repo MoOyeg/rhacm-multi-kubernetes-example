@@ -1,0 +1,14 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: crossplane-policy-role
+  namespace: crossplane-system
+  labels:
+    app: crossplane
+rules:
+  - verbs:
+      - '*'
+    apiGroups:
+      - policy.open-cluster-management.io
+    resources:
+      - '*'

@@ -3,4 +3,4 @@
   value: until-eks-cluster-1-ready
 - op: replace
   path: /spec/template/spec/containers/0/env/0/value
-  value: crossplane-eks-cluster-1
+  value: eks-cluster-1

@@ -1,0 +1,13 @@
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: crossplane-policy-rolebinding
+  namespace: crossplane-system
+subjects:
+  - kind: ServiceAccount
+    name: crossplane
+    namespace: crossplane-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: crossplane-policy-role

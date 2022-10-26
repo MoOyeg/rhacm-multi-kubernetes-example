@@ -22,22 +22,24 @@ spec:
               until oc get secret/${SECRETNAME} -o name -n crossplane-system
               do
               count=$((count-1))
-              echo Will wait for secret - $count more times
+              echo "Sleep for 60 seconds, Will check for secret - $count more times"
+              sleep 60
               if [ $count -le 0 ]
               then
-                echo "We couldnt find secret ${SECRETNAME}"
+                echo "We couldnt find secret ${SECRETNAME}"                
                 break
               fi
               done
 
               #When Our xKS cluster secret is available we can create our auto import secret from it
-              oc patch policy/policy-secret-attach-${SECRETNAME} -n crossplane-system -p '{"spec":{"disabled":"false"}}' --type=merge
+              oc patch policy/policy-secret-attach-${SECRETNAME} -n crossplane-system -p '{"spec":{"disabled":false}}' --type=merge
               
               count=50
-              until oc get policy/policy-secret-attach-${SECRETNAME}  -n crossplane-system -o jsonpath='{.status.compliant}
+              until oc get policy/policy-secret-attach-${SECRETNAME}  -n crossplane-system -o jsonpath='{.status.compliant}'
               do
               count=$((count-1))
-              echo Will Wait for auto-import secret policy $count more times
+              echo "Sleep for 60 seconds, Will check auto-import secret policy $count more times"
+              sleep 60
               if [ $count -le 0 ]
               then
                 echo "Policy not validated for Policy ${SECRETNAME}"
@@ -46,10 +48,10 @@ spec:
               done
 
               #Enable our ManagedClusterPolicy
-              oc patch policy/policy-attach-${SECRETNAME} -n crossplane-system -p '{"spec":{"disabled":"false"}}' --type=merge
+              oc patch policy/policy-attach-${SECRETNAME} -n crossplane-system -p '{"spec":{"disabled":false}}' --type=merge
 
               #Delete our Import Secret Policy - ACM will delete the auto-import-secret we create
-              oc delete policy/policy-secret-attach-${SECRETNAME}  -n crossplane-system
+              oc delete policy/policy-secret-attach-${SECRETNAME} -n crossplane-system
               
 
           imagePullPolicy: Always
