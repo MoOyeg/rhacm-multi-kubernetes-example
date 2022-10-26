@@ -15,9 +15,14 @@ spec:
   - apiVersion: policy.open-cluster-management.io/v1
     kinds:
     - Policy
+  - apiVersion: policy.open-cluster-management.io/v1
+    kinds:
+    - PlacementBinding
   - apiVersion: batch/v1
     kinds:
     - Job
+
+
   deny:
   - apiVersion: eks.aws.crossplane.io/v1beta1
     kinds:

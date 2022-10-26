@@ -1,4 +1,4 @@
-namespace: crossplane-clusters-app
+namespace: crossplane-system
 resources:
 - namespace.yaml
 - application.yaml
