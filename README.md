@@ -85,21 +85,40 @@ This Pacman App deployment will show a High Availibility use case.
 
 Repo also contains examples of using crossplane for Provisoning with ACM installing.
 
-### Install Crossplane
+### What does this do?
 
-Policy will install crossplane from crossplane helm repo. Policy will also create included providers for aws,azure,gcp:
+- ACM will install crossplane from crossplane helm repo.
+- ACM will also create crossplane providers for aws,azure,gcp.
+- ACM will also use crossplane to create xKS clusters.
+- ACM will also attempt to import created clusters into ACM for management
 
-## Requires:
+### Prerequisites
+
+- [Cluster Configuration](https://github.com/MoOyeg/rhacm-multi-kubernetes-example#cluster-configuration)
+
+### Steps
+
+1 Run ACM Policies and Applications to create repo and install crossplane.
+
+- Create via the pre-generated yaml
+
+```bash
+  oc create -f ./generated-policy.yaml
+```
+
+OR
+
+- Generate your own policy and then create
 
 ```bash
 kustomize build --enable-alpha-plugins ./crossplane/ | oc create -f -
 ```
 
-We need to setup credentials for our providers:
+2 When Crossplane is installed and crossplane providers created. We need to create credentials for respective cloud providers that crossplane can use to access the cloudprovider API.
 
-**[AWS Provider](https://crossplane.io/docs/v1.9/cloud-providers/aws/aws-provider.html)**:
+**[Setup AWS Provider](https://crossplane.io/docs/v1.9/cloud-providers/aws/aws-provider.html)**:
 
-**_Sample_**
+**_Sample Setup_**
 
 ```bash
 export aws_profile=...
@@ -113,9 +132,9 @@ export BASE64ENCODED_AWS_ACCOUNT_CREDS=$(echo -e "[default]\naws_access_key_id =
 cat ./crossplane/crossplane-providerconfig-templates/aws_provider.yaml | envsubst | oc apply -f -
 ```
 
-**[Azure Provider](https://github.com/crossplane-contrib/provider-azure/blob/master/examples/azure-provider.yaml)**:
+**[Setup Azure Provider](https://github.com/crossplane-contrib/provider-azure/blob/master/examples/azure-provider.yaml)**:
 
-**_Sample_**  
+**_Sample Setup_**  
 After running 'az login' capture serviceprincipaljson file, will be a different name in your environment.
 
 ```bash
@@ -130,27 +149,25 @@ export BASE64ENCODED_AZURE_PROVIDER_CREDS=$(base64 ${provider_json_file} | tr -d
 cat ./crossplane/crossplane-providerconfig-templates/azure_provider.yaml | envsubst | oc apply -f -
 ```
 
-**[GCP Provider](https://github.com/crossplane-contrib/provider-gcp)**:
+**[Setup GCP Provider](https://github.com/crossplane-contrib/provider-gcp)**:
 TODO
 
-### Create Crossplane Resources required for specific xKS Cluster
-
-Create required resources for your specific cloud provider.
+3 Create Crossplane Resources required for specific xKS Cluster. See Samples for Provider Resources and Clusters below.
 
 **EKS Cluster Sample**  
- Edit the ./crossplane-resources/aws/manifests folder as required for your own situation.A tested minimal example is provided.
+Edit the ./crossplane-resources/aws/manifests folder as required for your own situation.A tested minimal example is provided.
 
-Create ACM application for AWS Resources:
+- Use ACM application to create AWS Resources:
 
-```bash
-oc apply -k ./crossplane/crossplane-resources/aws/acm-app/
-```
+  ```bash
+  oc apply -k ./crossplane/crossplane-resources/aws/acm-app/
+  ```
 
-Create EKS Clusters
+- Use ACM application to create xKS Clusters.
 
-```bash
-oc apply -k ./crossplane/crossplane-clusters/acm-app/
-```
+  ```bash
+  oc apply -k ./crossplane/crossplane-clusters/acm-app/
+  ```
 
 ## Attach Subscription Admin Policy to your user if necessary
 

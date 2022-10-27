@@ -1,0 +1,646 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app: crossplane
+  name: crossplane-system
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: aks-placementrule
+  namespace: crossplane-system
+spec:
+  clusterConditions:
+  - status: "True"
+    type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+    - key: vendor
+      operator: In
+      values:
+      - AKS
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: eks-placementrule
+  namespace: crossplane-system
+spec:
+  clusterConditions:
+  - status: "True"
+    type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+    - key: vendor
+      operator: In
+      values:
+      - EKS
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: gke-placementrule
+  namespace: crossplane-system
+spec:
+  clusterConditions:
+  - status: "True"
+    type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+    - key: vendor
+      operator: In
+      values:
+      - GKE
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: hub-placementrule
+  namespace: crossplane-system
+spec:
+  clusterConditions:
+  - status: "True"
+    type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+    - key: name
+      operator: In
+      values:
+      - local-cluster
+    - key: vendor
+      operator: In
+      values:
+      - OpenShift
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: non-local-ocp-placementrule
+  namespace: crossplane-system
+spec:
+  clusterConditions:
+  - status: "True"
+    type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+    - key: name
+      operator: NotIn
+      values:
+      - local-cluster
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: non-openshift-placementrule
+  namespace: crossplane-system
+spec:
+  clusterConditions:
+  - status: "True"
+    type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+    - key: vendor
+      operator: In
+      values:
+      - AKS
+      - EKS
+      - GKE
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: ocp-placementrule
+  namespace: crossplane-system
+spec:
+  clusterConditions:
+  - status: "True"
+    type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+    - key: vendor
+      operator: In
+      values:
+      - OpenShift
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: crossplane-install-binding
+  namespace: global-policies
+placementRef:
+  apiGroup: apps.open-cluster-management.io
+  kind: PlacementRule
+  name: hub-placementrule
+subjects:
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: policy-crossplane-helm-repo
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: policy-crossplane-git-repo
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: policy-crossplane-app-install
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: policy-crossplane-providers
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: policy-crossplane-app-install
+  namespace: global-policies
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-crossplane-app-install
+      spec:
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: app.k8s.io/v1beta1
+            kind: Application
+            metadata:
+              labels:
+                app: crossplane
+              name: crossplane
+              namespace: crossplane-system
+            spec:
+              componentKinds:
+              - group: apps.open-cluster-management.io
+                kind: Subscription
+              descriptor: {}
+              selector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - crossplane
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRoleBinding
+            metadata:
+              name: crossplane-install-clusterole:crossplane-accounts
+            roleRef:
+              apiGroup: rbac.authorization.k8s.io
+              kind: ClusterRole
+              name: crossplane-install-clusterole
+            subjects:
+            - apiGroup: rbac.authorization.k8s.io
+              kind: Group
+              name: system:serviceaccounts:crossplane-system
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRoleBinding
+            metadata:
+              name: system:openshift:scc:privileged:crossplane-accounts
+            roleRef:
+              apiGroup: rbac.authorization.k8s.io
+              kind: ClusterRole
+              name: system:openshift:scc:privileged
+            subjects:
+            - apiGroup: rbac.authorization.k8s.io
+              kind: Group
+              name: system:serviceaccounts:crossplane-system
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRole
+            metadata:
+              labels:
+                app: crossplane
+              name: crossplane-install-clusterole
+            rules:
+            - apiGroups:
+              - acm.aws.crossplane.io
+              - acmpca.aws.crossplane.io
+              - apigateway.aws.crossplane.io
+              - apigatewayv2.aws.crossplane.io
+              - athena.aws.crossplane.io
+              - aws.crossplane.io
+              - cache.aws.crossplane.io
+              - cloudfront.aws.crossplane.io
+              - cloudsearch.aws.crossplane.io
+              - cloudwatchlogs.aws.crossplane.io
+              - cognitoidentity.aws.crossplane.io
+              - cognitoidentityprovider.aws.crossplane.io
+              - database.aws.crossplane.io
+              - dax.aws.crossplane.io
+              - docdb.aws.crossplane.io
+              - dynamodb.aws.crossplane.io
+              - ec2.aws.crossplane.io
+              - ecr.aws.crossplane.io
+              - ecs.aws.crossplane.io
+              - efs.aws.crossplane.io
+              - eks.aws.crossplane.io
+              - elasticache.aws.crossplane.io
+              - elasticloadbalancing.aws.crossplane.io
+              - elbv2.aws.crossplane.io
+              - glue.aws.crossplane.io
+              - iam.aws.crossplane.io
+              - iot.aws.crossplane.io
+              - kafka.aws.crossplane.io
+              - kinesis.aws.crossplane.io
+              - kms.aws.crossplane.io
+              - lambda.aws.crossplane.io
+              - mq.aws.crossplane.io
+              - mwaa.aws.crossplane.io
+              - neptune.aws.crossplane.io
+              - opensearchservice.aws.crossplane.io
+              - prometheusservice.aws.crossplane.io
+              - ram.aws.crossplane.io
+              - rds.aws.crossplane.io
+              - redshift.aws.crossplane.io
+              - route53.aws.crossplane.io
+              - route53resolver.aws.crossplane.io
+              - s3.aws.crossplane.io
+              - secretsmanager.aws.crossplane.io
+              - servicediscovery.aws.crossplane.io
+              - sfn.aws.crossplane.io
+              - sns.aws.crossplane.io
+              - snstopics.notification.aws.crossplane.io
+              - snssubscriptions.notification.aws.crossplane.io
+              - sqs.aws.crossplane.io
+              - transfer.aws.crossplane.io
+              - azure.crossplane.io
+              - cache.azure.crossplane.io
+              - compute.azure.crossplane.io
+              - database.azure.crossplane.io
+              - dns.azure.crossplane.io
+              - keyvault.azure.crossplane.io
+              - network.azure.crossplane.io
+              - storage.azure.crossplane.io
+              - cache.gcp.crossplane.io
+              - compute.gcp.crossplane.io
+              - container.gcp.crossplane.io
+              - database.gcp.crossplane.io
+              - dns.gcp.crossplane.io
+              - gcp.crossplane.io
+              - gcp.secrets.crossplane.io
+              - iam.gcp.crossplane.io
+              - kms.gcp.crossplane.io
+              - pubsub.gcp.crossplane.io
+              - registry.gcp.crossplane.io
+              - servicenetworking.gcp.crossplane.io
+              - storage.gcp.crossplane.io
+              - xrds
+              - apiextensions.crossplane.io
+              - rrs
+              - oidcprovider
+              - iamrole
+              - kvsecret
+              - notification.aws.crossplane.io
+              - pkg.crossplane.io
+              - secrets.crossplane.io
+              - serviceaccountkeys.iam.gcp.crossplane.io
+              - providerconfigs.gcp.crossplane.io
+              - providerconfigusages.gcp.crossplane.io
+              - cloudmemorystoreinstances.cache.gcp.crossplane.io
+              - cryptokeys.kms.gcp.crossplane.io
+              - serviceaccounts.iam.gcp.crossplane.io
+              - containerregistries.registry.gcp.crossplane.io
+              - keyrings.kms.gcp.crossplane.io
+              - buckets.storage.gcp.crossplane.io
+              - subnetworks.compute.gcp.crossplane.io
+              - globaladdresses.compute.gcp.crossplane.io
+              - addresses.compute.gcp.crossplane.io
+              - networks.compute.gcp.crossplane.io
+              - routers.compute.gcp.crossplane.io
+              - cloudsqlinstances.database.gcp.crossplane.io
+              - clusters.container.gcp.crossplane.io
+              - policies.dns.gcp.crossplane.io
+              - firewalls.compute.gcp.crossplane.io
+              - nodepools.container.gcp.crossplane.io
+              - resourcerecordsets.dns.gcp.crossplane.io
+              - serviceaccountpolicies.iam.gcp.crossplane.io
+              - subscriptions.pubsub.gcp.crossplane.io
+              - cryptokeypolicies.kms.gcp.crossplane.io
+              - connections.servicenetworking.gcp.crossplane.io
+              - topics.pubsub.gcp.crossplane.io
+              - bucketpolicies.storage.gcp.crossplane.io
+              - bucketpolicymembers.storage.gcp.crossplane.io
+              - serviceaccountkey.iam.gcp.crossplane.io
+              - grouppolicyattachments.iam.aws.crossplane.io
+              - dbsubnetgroups.database.aws.crossplane.io
+              - repositorypolicies.ecr.aws.crossplane.io
+              - topics.sns.aws.crossplane.io
+              - rdsinstances.database.aws.crossplane.io
+              - services.ecs.aws.crossplane.io
+              - certificateauthorities.acmpca.aws.crossplane.io
+              - cacheparametergroups.elasticache.aws.crossplane.io
+              - userpools.cognitoidentityprovider.aws.crossplane.io
+              - groupusermemberships.cognitoidentityprovider.aws.crossplane.io
+              - groups.cognitoidentityprovider.aws.crossplane.io
+              - alertmanagerdefinitions.prometheusservice.aws.crossplane.io
+              - addons.eks.aws.crossplane.io
+              - users.transfer.aws.crossplane.io
+              - servers.transfer.aws.crossplane.io
+              - users.mq.aws.crossplane.io
+              - cloudfrontoriginaccessidentities.cloudfront.aws.crossplane.io
+              - dbinstanceroleassociations.rds.aws.crossplane.io
+              - functions.lambda.aws.crossplane.io
+              - configurations.kafka.aws.crossplane.io
+              - groupusermemberships.iam.aws.crossplane.io
+              - policies.iam.aws.crossplane.io
+              - domains.cloudsearch.aws.crossplane.io
+              - replicationgroups.cache.aws.crossplane.io
+              - identityproviderconfigs.eks.aws.crossplane.io
+              - cacheclusters.cache.aws.crossplane.io
+              - cachesubnetgroups.cache.aws.crossplane.io
+              - taskdefinitions.ecs.aws.crossplane.io
+              - dbclusters.docdb.aws.crossplane.io
+              - dbsubnetgroups.docdb.aws.crossplane.io
+              - parametergroups.dax.aws.crossplane.io
+              - clusters.dax.aws.crossplane.io
+              - dbclusterparametergroups.docdb.aws.crossplane.io
+              - nodegroups.eks.aws.crossplane.io
+              - subnetgroups.dax.aws.crossplane.io
+              - dbinstances.docdb.aws.crossplane.io
+              - clusters.ecs.aws.crossplane.io
+              - users.iam.aws.crossplane.io
+              - instanceprofiles.iam.aws.crossplane.io
+              - userpolicyattachments.iam.aws.crossplane.io
+              - elbattachments.elasticloadbalancing.aws.crossplane.io
+              - groups.iam.aws.crossplane.io
+              - clusters.eks.aws.crossplane.io
+              - elbs.elasticloadbalancing.aws.crossplane.io
+              - rolepolicyattachments.iam.aws.crossplane.io
+              - accesskeys.iam.aws.crossplane.io
+              - roles.iam.aws.crossplane.io
+              - queues.sqs.aws.crossplane.io
+              - certificates.acm.aws.crossplane.io
+              - repositories.ecr.aws.crossplane.io
+              - certificateauthoritypermissions.acmpca.aws.crossplane.io
+              - secrets.secretsmanager.aws.crossplane.io
+              - subscriptions.sns.aws.crossplane.io
+              - clusters.redshift.aws.crossplane.io
+              - lifecyclepolicies.ecr.aws.crossplane.io
+              - resourceshares.ram.aws.crossplane.io
+              - fargateprofiles.eks.aws.crossplane.io
+              - resources.apigateway.aws.crossplane.io
+              - jobs.glue.aws.crossplane.io
+              - statemachines.sfn.aws.crossplane.io
+              - streams.kinesis.aws.crossplane.io
+              - clusters.kafka.aws.crossplane.io
+              - workgroups.athena.aws.crossplane.io
+              - things.iot.aws.crossplane.io
+              - dbclusterparametergroups.rds.aws.crossplane.io
+              - httpnamespaces.servicediscovery.aws.crossplane.io
+              - openidconnectproviders.iam.aws.crossplane.io
+              - dbparametergroups.rds.aws.crossplane.io
+              - resourceservers.cognitoidentityprovider.aws.crossplane.io
+              - responseheaderspolicies.cloudfront.aws.crossplane.io
+              - dbclusters.neptune.aws.crossplane.io
+              - permissions.lambda.aws.crossplane.io
+              - cachepolicies.cloudfront.aws.crossplane.io
+              - identityproviders.cognitoidentityprovider.aws.crossplane.io
+              - connections.glue.aws.crossplane.io
+              - userpooldomains.cognitoidentityprovider.aws.crossplane.io
+              - globalclusters.rds.aws.crossplane.io
+              - policies.iot.aws.crossplane.io
+              - privatednsnamespaces.servicediscovery.aws.crossplane.io
+              - crawlers.glue.aws.crossplane.io
+              - distributions.cloudfront.aws.crossplane.io
+              - identitypools.cognitoidentity.aws.crossplane.io
+              - keys.kms.aws.crossplane.io
+              - methods.apigateway.aws.crossplane.io
+              - tables.dynamodb.aws.crossplane.io
+              - backups.dynamodb.aws.crossplane.io
+              - globaltables.dynamodb.aws.crossplane.io
+              - accesspoints.efs.aws.crossplane.io
+              - dbinstances.rds.aws.crossplane.io
+              - securityconfigurations.glue.aws.crossplane.io
+              - activities.sfn.aws.crossplane.io
+              - dbclusters.rds.aws.crossplane.io
+              - aliases.kms.aws.crossplane.io
+              - publicdnsnamespaces.servicediscovery.aws.crossplane.io
+              - userpoolclients.cognitoidentityprovider.aws.crossplane.io
+              - filesystems.efs.aws.crossplane.io
+              - mounttargets.efs.aws.crossplane.io
+              - databases.glue.aws.crossplane.io
+              - classifiers.glue.aws.crossplane.io
+              - restapis.apigateway.aws.crossplane.io
+              - loggroups.cloudwatchlogs.aws.crossplane.io
+              - domains.opensearchservice.aws.crossplane.io
+              - rulegroupsnamespaces.prometheusservice.aws.crossplane.io
+              - environments.mwaa.aws.crossplane.io
+              - workspaces.prometheusservice.aws.crossplane.io
+              - brokers.mq.aws.crossplane.io
+              - aws.crossplane.io
+              - resolver.aws.crossplane.io
+              - providerconfigs.aws.crossplane.io
+              - providerconfigusages.aws.crossplane.io
+              - resourcegroups.azure.crossplane.io
+              - providerconfigusages.azure.crossplane.io
+              - providerconfigs.azure.crossplane.io
+              resources:
+              - '*'
+              verbs:
+              - '*'
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: rbac.authorization.k8s.io/v1
+            kind: Role
+            metadata:
+              labels:
+                app: crossplane
+              name: crossplane-policy-role
+              namespace: crossplane-system
+            rules:
+            - apiGroups:
+              - policy.open-cluster-management.io
+              resources:
+              - '*'
+              verbs:
+              - '*'
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: rbac.authorization.k8s.io/v1
+            kind: RoleBinding
+            metadata:
+              name: crossplane-policy-rolebinding
+              namespace: crossplane-system
+            roleRef:
+              apiGroup: rbac.authorization.k8s.io
+              kind: Role
+              name: crossplane-policy-role
+            subjects:
+            - kind: ServiceAccount
+              name: crossplane
+              namespace: crossplane-system
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: apps.open-cluster-management.io/v1
+            kind: Subscription
+            metadata:
+              annotations: {}
+              labels:
+                app: crossplane
+              name: crossplane-install-subscription
+              namespace: crossplane-system
+            spec:
+              channel: channel-helm-crossplane/helm-crossplane
+              name: crossplane
+              packageOverrides:
+              - packageAlias: crossplane-stable
+                packageName: crossplane
+                packageOverrides:
+                - path: spec
+                  value:
+                    customAnnotations:
+                      deployed.via.acm.subscription: crossplane-install-subscription
+                    replicas: 2
+                    serviceAccount:
+                      customAnnotations:
+                        deployed.via.acm.subscription: crossplane-install-subscription
+              placement:
+                placementRef:
+                  kind: PlacementRule
+                  name: hub-placementrule
+        pruneObjectBehavior: DeleteAll
+        remediationAction: enforce
+        severity: medium
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: policy-crossplane-git-repo
+  namespace: global-policies
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-crossplane-git-repo
+      spec:
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: v1
+            kind: Namespace
+            metadata:
+              labels:
+                app: crossplane
+              name: channel-git-crossplane
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: apps.open-cluster-management.io/v1
+            kind: Channel
+            metadata:
+              labels:
+                app: crossplane
+              name: git-crossplane
+              namespace: channel-git-crossplane
+            spec:
+              pathname: https://github.com/MoOyeg/rhacm-multi-kubernetes-example.git
+              type: Git
+        pruneObjectBehavior: DeleteAll
+        remediationAction: enforce
+        severity: medium
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: policy-crossplane-helm-repo
+  namespace: global-policies
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-crossplane-helm-repo
+      spec:
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: v1
+            kind: Namespace
+            metadata:
+              labels:
+                app: crossplane
+              name: channel-helm-crossplane
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: apps.open-cluster-management.io/v1
+            kind: Channel
+            metadata:
+              labels:
+                app: crossplane
+              name: helm-crossplane
+              namespace: channel-helm-crossplane
+            spec:
+              pathname: https://charts.crossplane.io/stable
+              type: HelmRepo
+        pruneObjectBehavior: DeleteAll
+        remediationAction: enforce
+        severity: medium
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: policy-crossplane-providers
+  namespace: global-policies
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-crossplane-providers
+      spec:
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: pkg.crossplane.io/v1
+            kind: Provider
+            metadata:
+              name: provider-aws
+            spec:
+              package: crossplane/provider-aws@sha256:f26dd6486d3e079eaf09ffbb31332dc367857cd97a281b578683c648472a7c63
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: pkg.crossplane.io/v1
+            kind: Provider
+            metadata:
+              name: provider-azure
+            spec:
+              package: crossplane/provider-azure@sha256:60bcce25d085e67e015b76c4ae98c3cb6b68e129974a374767e5b94772518a5f
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: pkg.crossplane.io/v1
+            kind: Provider
+            metadata:
+              name: provider-gcp
+            spec:
+              package: crossplane/provider-gcp@sha256:dea864a770923c1d08734aa8b86330da7e14c4dc69df36b63f22b3a7207644af
+        pruneObjectBehavior: DeleteAll
+        remediationAction: enforce
+        severity: medium
