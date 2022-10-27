@@ -1,0 +1,6 @@
+- op: replace
+  path: /metadata/name
+  value: until-eks-cluster-2-ready
+- op: replace
+  path: /spec/template/spec/containers/0/env/0/value
+  value: eks-cluster-2

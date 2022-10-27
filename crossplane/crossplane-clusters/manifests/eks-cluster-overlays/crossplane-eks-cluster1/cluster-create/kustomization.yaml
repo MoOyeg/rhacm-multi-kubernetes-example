@@ -1,0 +1,24 @@
+bases:
+#EKS Base Cluster Files
+- ../../../eks-cluster-base
+namespace: crossplane-system
+patches:
+- path: ./patches/cluster-patch.yaml
+  target:
+    kind: Cluster
+- path: ./patches/nodegroup-patch.yaml
+  target:
+    kind: NodeGroup
+patchesJson6902:
+  - target:
+      group: eks.aws.crossplane.io
+      version: v1beta1
+      kind: Cluster
+      name: base-cluster-name
+    path: ./patches/cluster-rename-patch.yaml
+  - target:
+      group: eks.aws.crossplane.io
+      version: v1alpha1
+      kind: NodeGroup
+      name: base-cluster-nodegroup
+    path: ./patches/nodegroup-rename-patch.yaml

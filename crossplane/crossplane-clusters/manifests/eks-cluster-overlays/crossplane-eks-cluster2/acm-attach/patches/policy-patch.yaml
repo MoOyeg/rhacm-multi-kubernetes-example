@@ -1,0 +1,24 @@
+#Policy Changes
+- op: replace
+  path: /metadata/name
+  value: policy-attach-eks-cluster-2
+- op: replace
+  path: /spec/policy-templates/0/objectDefinition/metadata/name
+  value: policy-attach-eks-cluster-2
+#ManagedCluster Object Changes
+- op: replace
+  path: /spec/policy-templates/0/objectDefinition/spec/object-templates/0/objectDefinition/metadata/name
+  value: eks-cluster-2
+#KlusterletAddonConfig Object Changes
+- op: replace
+  path: /spec/policy-templates/0/objectDefinition/spec/object-templates/1/objectDefinition/metadata/name
+  value: eks-cluster-2
+- op: replace
+  path: /spec/policy-templates/0/objectDefinition/spec/object-templates/1/objectDefinition/metadata/namespace
+  value: eks-cluster-2
+- op: replace
+  path: /spec/policy-templates/0/objectDefinition/spec/object-templates/1/objectDefinition/spec/clusterName
+  value: eks-cluster-2
+- op: replace
+  path: /spec/policy-templates/0/objectDefinition/spec/object-templates/1/objectDefinition/spec/clusterNamespace
+  value: eks-cluster-2
