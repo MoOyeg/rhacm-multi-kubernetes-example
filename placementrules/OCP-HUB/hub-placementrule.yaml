@@ -12,3 +12,7 @@ spec:
         operator: In
         values:
           - local-cluster
+      - key: vendor
+        operator: In
+        values:
+          - OpenShift

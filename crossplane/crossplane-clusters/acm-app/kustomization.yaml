@@ -1,6 +1,5 @@
 namespace: crossplane-system
 resources:
-- namespace.yaml
 - application.yaml
 - ../../../placementrules/OCP-HUB
 #Create eks-cluster-1(folder manifests/overlays/region-us-east-1)
