@@ -163,7 +163,7 @@ Edit the ./crossplane-resources/aws/manifests folder as required for your own si
   oc apply -k ./crossplane/crossplane-resources/aws/acm-app/
   ```
 
-- Use ACM application to create xKS Clusters.
+- Use ACM application to create xKS Clusters.Note there
 
   ```bash
   oc apply -k ./crossplane/crossplane-clusters/acm-app/
@@ -175,6 +175,6 @@ Edit the ./crossplane-resources/aws/manifests folder as required for your own si
  oc adm policy add-cluster-role-to-user open-cluster-management:subscription-admin $(oc whoami)
 ```
 
-```bash
-sed -e "s/<user>/kube:admin/" ./pacman-app/deploy/policy/policy-subscription-pacman-admin.yaml | oc create -f - -n global-policies
-```
+### Prerequisites
+
+- None
