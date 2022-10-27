@@ -1,0 +1,3 @@
+bases:
+- ../../placementrules/
+namespace: crossplane-system

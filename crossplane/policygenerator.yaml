@@ -1,17 +1,16 @@
 apiVersion: policy.open-cluster-management.io/v1
 kind: PolicyGenerator
 metadata:
-  name: policy-generator-crossplane
-  labels:
-    custom: crossplane-policies
+  name: policygeneratorcrossplane
 placementBindingDefaults:
-  name: crossplane-hub-policy
+  name: crossplane-install-binding
 policyDefaults:
+  placement:
+    placementRuleName: hub-placementrule
+  controls:
+    - "CM-2 Baseline Configuration"
   pruneObjectBehavior: "DeleteAll"
   namespace: global-policies
-  # Use an existing placement rule so that placement bindings can be consolidated
-  placement:
-    placementName: hub-placementrule
   remediationAction: enforce
   severity: medium
 policies:
@@ -27,15 +26,6 @@ policies:
   disabled: false
   manifests:
     - path: ./crossplane-install-non-vault
-    - path: ../placementrules/OCP-HUB/hub-placementrule.yaml
-      patches:
-        - apiVersion: apps.open-cluster-management.io/v1
-          kind: PlacementRule
-          metadata:
-            name: hub-placementrule
-            namespace: crossplane-system
-            labels:
-              app: crossplane
 - name: policy-crossplane-providers
   disabled: false
   manifests:

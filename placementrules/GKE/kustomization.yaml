@@ -1,0 +1,3 @@
+resources:
+- ./gke-placementrule.yaml
+

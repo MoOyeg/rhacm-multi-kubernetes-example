@@ -6,5 +6,5 @@ resources:
 - ./OCP-HUB/hub-placementrule.yaml
 - ./AKS/aks-placementrule.yaml
 - ./EKS/eks-placementrule.yaml
-- ./GKS/gks-placementrule.yaml
+- ./GKE/gke-placementrule.yaml
 

@@ -1,7 +1,7 @@
 apiVersion: apps.open-cluster-management.io/v1
 kind: PlacementRule
 metadata:
-  name: gks-placementrule
+  name: gke-placementrule
 spec:
   clusterConditions:
     - status: "True"
@@ -11,4 +11,4 @@ spec:
       - key: vendor
         operator: In
         values:
-          - GKS
+          - GKE
