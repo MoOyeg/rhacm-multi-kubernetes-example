@@ -1,4 +1,6 @@
 bases:
 - ./crossplane-placementrules
+resources:
+- ./namespace.yaml
 generators:
 - ./policygenerator.yaml
