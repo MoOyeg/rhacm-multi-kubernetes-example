@@ -4,5 +4,5 @@ resources:
 - application.yaml
 - ../../../placementrules/OCP-HUB
 #Create eks-cluster-1(folder manifests/overlays/region-us-east-1)
-- subscription-eks-cluster-1.yaml
-- subscription-eks-cluster-1-attach.yaml
+- ./eks-cluster-1/subscription-eks-cluster-1.yaml
+- ./eks-cluster-1/subscription-eks-cluster-1-attach.yaml
