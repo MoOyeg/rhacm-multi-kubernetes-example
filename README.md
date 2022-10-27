@@ -103,7 +103,7 @@ Repo also contains examples of using crossplane for Provisoning with ACM install
 - Create via the pre-generated yaml
 
 ```bash
-  oc create -f ./generated-policy.yaml
+  oc create -f ./crossplane/generated-policy.yaml
 ```
 
 OR
