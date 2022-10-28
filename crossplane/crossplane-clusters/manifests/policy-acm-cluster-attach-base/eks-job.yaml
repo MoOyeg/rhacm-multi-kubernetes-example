@@ -17,12 +17,51 @@ spec:
             - |
               #!/usr/bin/env bash
               
-              count=60
+              function setcount()
+              {
+                  local count='30'
+                  echo "$count"
+              }
 
+              function setsleep()
+              {
+                  local sleep=60
+                  echo $sleep
+              }
+              
+              #Check if eks cluster is created before continuing
+
+              count=$(setcount)
+              sleep=$(setsleep)
+              until [ $(oc get clusters.eks.aws.crossplane.io/${SECRETNAME} -o jsonpath='{.status.atProvider.status}') = "ACTIVE" ]
+              do
+              echo "Sleep for 60 seconds, Will check for eks-cluster ${SECRETNAME} Active - $count more times"
+              sleep ${sleep}
+              if [ $count -le 0 ]
+              then
+                echo "We couldnt find secret ${SECRETNAME}"                
+                exit 1;
+              done
+
+              #Check if eks nodegroup is created before continuing
+
+              count=$(setcount)
+              sleep=$(setsleep)
+              until [ $(oc get nodegroups.eks.aws.crossplane.io/${SECRETNAME} -o jsonpath='{.status.atProvider.status}') = "ACTIVE" ]
+              do
+              echo "Sleep for 60 seconds, Will check for eks-nodegroup ${SECRETNAME} Active - $count more times"
+              sleep ${sleep}
+              if [ $count -le 0 ]
+              then
+                echo "We couldnt find secret ${SECRETNAME}"                
+                exit 1;
+              done
+              
+              #Check if Connection Secret Exists
               until oc get secret/${SECRETNAME} -o name -n crossplane-system
               do
               count=$((count-1))
-              echo "Sleep for 60 seconds, Will check for secret - $count more times"
+              echo "Sleep for 60 seconds, Will check for connection secret - $count more times"
               sleep 60
               if [ $count -le 0 ]
               then

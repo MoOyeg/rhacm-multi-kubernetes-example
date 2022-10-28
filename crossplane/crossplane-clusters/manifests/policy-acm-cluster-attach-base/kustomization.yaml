@@ -1,5 +1,5 @@
 resources:
 - policy-cluster.yaml
 - policy-secret.yaml
-- job.yaml
+- eks-job.yaml
 - placementbinding.yaml

@@ -102,17 +102,17 @@ Repo also contains examples of using crossplane for Provisoning with ACM install
 
 - Create via the pre-generated yaml
 
-```bash
+  ```bash
   oc create -f ./crossplane/generated-policy.yaml
-```
+  ```
 
 OR
 
 - Generate your own policy and then create
 
-```bash
-kustomize build --enable-alpha-plugins ./crossplane/ | oc create -f -
-```
+  ```bash
+  kustomize build --enable-alpha-plugins ./crossplane/ | oc create -f -
+  ```
 
 2 When Crossplane is installed and crossplane providers created. We need to create credentials for respective cloud providers that crossplane can use to access the cloudprovider API.
 
@@ -163,7 +163,7 @@ Edit the ./crossplane-resources/aws/manifests folder as required for your own si
   oc apply -k ./crossplane/crossplane-resources/aws/acm-app/
   ```
 
-- Use ACM application to create xKS Clusters.Note there
+- Use ACM application to create xKS Clusters.**_Please note there seems to be a bug where the cluster application appears blank._**
 
   ```bash
   oc apply -k ./crossplane/crossplane-clusters/acm-app/
