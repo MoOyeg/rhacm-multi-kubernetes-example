@@ -25,60 +25,65 @@ spec:
 
               function setsleep()
               {
-                  local sleep=60
-                  echo $sleep
+                  local sleepval=60
+                  echo $sleepval
               }
               
               #Check if eks cluster is created before continuing
 
               count=$(setcount)
-              sleep=$(setsleep)
+              sleepval=$(setsleep)
               until [ $(oc get clusters.eks.aws.crossplane.io/${SECRETNAME} -o jsonpath='{.status.atProvider.status}') = "ACTIVE" ]
               do
-              echo "Sleep for 60 seconds, Will check for eks-cluster ${SECRETNAME} Active - $count more times"
-              sleep ${sleep}
+              echo "Sleep for ${sleepval} seconds, Will check for eks-cluster ${SECRETNAME} Active - $count more times"
+              sleep ${sleepval}
               if [ $count -le 0 ]
               then
                 echo "We couldnt find secret ${SECRETNAME}"                
                 exit 1;
+              fi
               done
 
               #Check if eks nodegroup is created before continuing
 
               count=$(setcount)
-              sleep=$(setsleep)
+              sleepval=$(setsleep)
               until [ $(oc get nodegroups.eks.aws.crossplane.io/${SECRETNAME} -o jsonpath='{.status.atProvider.status}') = "ACTIVE" ]
               do
-              echo "Sleep for 60 seconds, Will check for eks-nodegroup ${SECRETNAME} Active - $count more times"
-              sleep ${sleep}
+              echo "Sleep for ${sleepval} seconds, Will check for eks-nodegroup ${SECRETNAME} Active - $count more times"
+              sleep ${sleepval}
               if [ $count -le 0 ]
               then
                 echo "We couldnt find secret ${SECRETNAME}"                
                 exit 1;
+              fi
               done
               
               #Check if Connection Secret Exists
+              count=$(setcount)
+              sleepval=$(setsleep)
               until oc get secret/${SECRETNAME} -o name -n crossplane-system
               do
               count=$((count-1))
-              echo "Sleep for 60 seconds, Will check for connection secret - $count more times"
-              sleep 60
+              echo "Sleep for ${sleepval} seconds, Will check for connection secret - $count more times"
+              sleep ${sleepval}
               if [ $count -le 0 ]
               then
                 echo "We couldnt find secret ${SECRETNAME}"                
-                break
+                exit 1;
               fi
               done
 
               #When Our xKS cluster secret is available we can create our auto import secret from it
               oc patch policy/policy-secret-attach-${SECRETNAME} -n crossplane-system -p '{"spec":{"disabled":false}}' --type=merge
               
-              count=50
+              count=$(setcount)
+              sleepval=$(setsleep)
               until [ $(oc get policy/policy-secret-attach-${SECRETNAME}  -n crossplane-system -o jsonpath='{.status.compliant}') == "Compliant" ]
               do
               count=$((count-1))
-              echo "Sleep for 60 seconds, Will check auto-import secret policy $count more times"
-              sleep 60
+              echo "Sleep for ${sleepval} seconds, Will check auto-import secret policy $count more times"
+              sleep ${sleepval}
               if [ $count -le 0 ]
               then
                 echo "Policy not validated for Policy ${SECRETNAME}"
