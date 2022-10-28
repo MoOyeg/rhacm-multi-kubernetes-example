@@ -35,6 +35,7 @@ spec:
               sleepval=$(setsleep)
               until [ $(oc get clusters.eks.aws.crossplane.io/${SECRETNAME} -o jsonpath='{.status.atProvider.status}') = "ACTIVE" ]
               do
+              count=$((count-1))
               echo "Sleep for ${sleepval} seconds, Will check for eks-cluster ${SECRETNAME} Active - $count more times"
               sleep ${sleepval}
               if [ $count -le 0 ]
@@ -50,6 +51,7 @@ spec:
               sleepval=$(setsleep)
               until [ $(oc get nodegroups.eks.aws.crossplane.io/${SECRETNAME} -o jsonpath='{.status.atProvider.status}') = "ACTIVE" ]
               do
+              count=$((count-1))
               echo "Sleep for ${sleepval} seconds, Will check for eks-nodegroup ${SECRETNAME} Active - $count more times"
               sleep ${sleepval}
               if [ $count -le 0 ]
