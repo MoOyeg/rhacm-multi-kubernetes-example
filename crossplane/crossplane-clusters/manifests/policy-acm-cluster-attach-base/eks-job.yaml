@@ -49,10 +49,10 @@ spec:
 
               count=$(setcount)
               sleepval=$(setsleep)
-              until [ $(oc get nodegroups.eks.aws.crossplane.io/${SECRETNAME} -o jsonpath='{.status.atProvider.status}') = "ACTIVE" ]
+              until [ $(oc get nodegroups.eks.aws.crossplane.io-${SECRETNAME} -o jsonpath='{.status.atProvider.status}') = "ACTIVE" ]
               do
               count=$((count-1))
-              echo "Sleep for ${sleepval} seconds, Will check for eks-nodegroup ${SECRETNAME} Active - $count more times"
+              echo "Sleep for ${sleepval} seconds, Will check for eks-nodegroup-${SECRETNAME} Active - $count more times"
               sleep ${sleepval}
               if [ $count -le 0 ]
               then
