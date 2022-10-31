@@ -1,0 +1,3 @@
+- op: replace
+  path: /metadata/name
+  value: eks-cluster-1-nodegroup

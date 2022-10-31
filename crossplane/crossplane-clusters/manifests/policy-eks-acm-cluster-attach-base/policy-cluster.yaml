@@ -52,7 +52,8 @@ spec:
                   certPolicyController:
                     enabled: true
                   iamPolicyController:
-                    enabled: true            
+                    enabled: true      
+          pruneObjectBehavior: DeleteAll      
           remediationAction: enforce
           severity: medium
 

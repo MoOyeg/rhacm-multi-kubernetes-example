@@ -1,6 +1,5 @@
-resources:
+resources: []
 #Uncomment Resourcegroup if you would like it created
 #  - "resourcegroup.yaml"
-  - virtualnetwork.yaml
-  - subnet.yaml
+
   

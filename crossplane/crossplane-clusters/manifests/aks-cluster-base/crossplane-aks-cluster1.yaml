@@ -7,19 +7,7 @@ metadata:
     app: "crossplane"
     provider: azure
 spec: 
-  resourceGroupName: openenv-7qsfr  
-  # resourceGroupNameRef:
-  #   name: example-rg
-  vnetSubnetIDRef:
-    name: crossplane-azure-sub1
-  location: East US
-  version: "1.19.11"
-  nodeCount: 1
-  nodeVMSize: Standard_B2s
-  dnsNamePrefix: crossplane-aks
   disableRBAC: false
   providerConfigRef:
     name: crossplane-azure
-  writeConnectionSecretToRef:
-    namespace: crossplane-system
-    name: crossplane-aks-cluster1
+

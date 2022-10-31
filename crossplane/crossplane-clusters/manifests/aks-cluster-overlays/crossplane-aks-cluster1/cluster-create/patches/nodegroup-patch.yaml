@@ -1,0 +1,19 @@
+apiVersion: eks.aws.crossplane.io/v1alpha1
+kind: NodeGroup
+metadata:
+  name: eks-cluster-1-nodegroup
+spec:
+  forProvider:
+    region: us-east-1
+    clusterNameRef:
+      name: eks-cluster-1
+    # Defined in crossplane-resources/aws/manifests
+    subnetRefs:
+      - name: crossplane-subnet-1-us-east-1
+      - name: crossplane-subnet-2-us-east-1
+      - name: crossplane-subnet-3-us-east-1
+    scalingConfig:
+      desiredSize: 2
+      maxSize: 4
+      minSize: 1
+
