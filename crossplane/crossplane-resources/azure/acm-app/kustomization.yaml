@@ -5,5 +5,3 @@ resources:
 - subscription-global.yaml
 #Create aws region specific resources for eastus(folder manifests/overlays/region-eastus)
 - subscription-region-eastus.yaml
-#Create aws region specific resources for us-east-2(folder manifests/overlays/region-us-east-2)
-- subscription-region-east-2.yaml

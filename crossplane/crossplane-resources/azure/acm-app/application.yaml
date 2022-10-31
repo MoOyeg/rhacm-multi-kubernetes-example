@@ -1,7 +1,7 @@
 apiVersion: app.k8s.io/v1beta1
 kind: Application
 metadata:
-  name: crossplane-aws-resources
+  name: crossplane-azure-resources
   namespace: crossplane-system
 spec:
   componentKinds:
@@ -13,4 +13,4 @@ spec:
       - key: app
         operator: In
         values: 
-          - crossplane-aws-resources
+          - crossplane-azure-resources
