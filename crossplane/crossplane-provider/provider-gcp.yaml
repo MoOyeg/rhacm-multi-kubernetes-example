@@ -5,3 +5,4 @@ metadata:
 spec:
   package: "crossplane/provider-gcp@sha256:dea864a770923c1d08734aa8b86330da7e14c4dc69df36b63f22b3a7207644af"
   packagePullPolicy: Always
+  revisionActivationPolicy: Manual
