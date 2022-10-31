@@ -1,15 +1,10 @@
 apiVersion: network.azure.crossplane.io/v1alpha3
 kind: VirtualNetwork
 metadata:
-  name: crossplane-azure-vnet
+  name: crossplane-eastus-azure-vnet
 spec:
   # resourceGroupNameRef:
   #   name: use resource group name from previous yaml is using
   resourceGroupName: openenv-7qsfr  
   location: East US
-  properties:
-    addressSpace:
-      addressPrefixes:
-        - 10.0.0.0/16
-  providerConfigRef:
-    name: provider-azure
+

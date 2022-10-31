@@ -128,6 +128,8 @@ export aws_profile=...
 export BASE64ENCODED_AWS_ACCOUNT_CREDS=$(echo -e "[default]\naws_access_key_id = $(aws configure get aws_access_key_id --profile $aws_profile)\naws_secret_access_key = $(aws configure get aws_secret_access_key --profile $aws_profile)" | base64  | tr -d "\n")
 ```
 
+Create AWS ProviderConfig  
+
 ```bash
 cat ./crossplane/crossplane-providerconfig-templates/aws_provider.yaml | envsubst | oc apply -f -
 ```
@@ -135,15 +137,24 @@ cat ./crossplane/crossplane-providerconfig-templates/aws_provider.yaml | envsubs
 **[Setup Azure Provider](https://github.com/crossplane-contrib/provider-azure/blob/master/examples/azure-provider.yaml)**:
 
 **_Sample Setup_**  
-After running 'az login' capture serviceprincipaljson file, will be a different name in your environment.
+If you already have your credentials/service principal you can export them as variables.  
 
 ```bash
-export provider_json_file='/root/.azure/osServicePrincipal.json'
+export CLIENT_ID=""
+export PASSWORD="" 
+export TENANT=""
+export SUBSCRIPTION=""
+export RESOURCEGROUP=""
+
+export BASE64ENCODED_AZURE_PROVIDER_CREDS=$(cat ./crossplane/crossplane-providerconfig-templates/azure_credentials.json | envsubst | base64 | tr -d "\n")
+
 ```
 
-```bash
-export BASE64ENCODED_AZURE_PROVIDER_CREDS=$(base64 ${provider_json_file} | tr -d "\n")
-```
+OR  
+
+If you dont have created credentials, follow [steps](https://github.com/crossplane/crossplane/blob/master/docs/cloud-providers/azure/azure-provider.md)
+
+Create Azure ProviderConfig  
 
 ```bash
 cat ./crossplane/crossplane-providerconfig-templates/azure_provider.yaml | envsubst | oc apply -f -
@@ -155,6 +166,7 @@ TODO
 3 Create Crossplane Resources required for specific xKS Cluster. See Samples for Provider Resources and Clusters below.
 
 **EKS Cluster Sample**  
+
 Edit the ./crossplane-resources/aws/manifests folder as required for your own situation.A tested minimal example is provided.
 
 - Use ACM application to create AWS Resources:
@@ -168,6 +180,8 @@ Edit the ./crossplane-resources/aws/manifests folder as required for your own si
   ```bash
   oc apply -k ./crossplane/crossplane-clusters/acm-app/
   ```
+
+- To create new clusters make copies of the eks-cluster-1 sample under acm-app and crossplane-eks-cluster1 under eks-cluster-overlays.
 
 ## Attach Subscription Admin Policy to your user if necessary
 

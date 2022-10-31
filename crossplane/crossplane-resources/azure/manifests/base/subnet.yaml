@@ -1,0 +1,11 @@
+apiVersion: network.azure.crossplane.io/v1alpha3
+kind: Subnet
+metadata:
+  name: crossplane-azure-sub
+spec:
+  properties:
+    addressPrefix: 10.1.0.0/24
+    serviceEndpoints:
+      - service: Microsoft.Sql
+  providerConfigRef:
+    name: provider-azure

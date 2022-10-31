@@ -1,0 +1,11 @@
+apiVersion: network.azure.crossplane.io/v1alpha3
+kind: VirtualNetwork
+metadata:
+  name: crossplane-azure-vnet
+spec:
+  properties:
+    addressSpace:
+      addressPrefixes:
+        - 10.0.0.0/16
+  providerConfigRef:
+    name: provider-azure

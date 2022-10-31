@@ -1,0 +1,26 @@
+bases:
+- ../../base
+namespace: crossplane-system
+patches:
+- path: ./patches/patch-vnet.yaml
+  target:
+    kind: VirtualNetwork
+- path: ./patches/patch-subnet.yaml
+  target:
+    kind: Subnet
+    name: crossplane-azure-sub
+#Very possible to merge both patch methods into one but couldnt be bothered..lol
+patchesJson6902:
+  - target:
+      group: network.azure.crossplane.io
+      version: v1alpha3
+      kind: Subnet
+      name: crossplane-azure-sub
+    path: ./patches/patch-subnet-rename.yaml
+  - target:
+      group: network.azure.crossplane.io
+      version: v1alpha3
+      kind: VirtualNetwork
+      name: crossplane-azure-vnet
+    path: ./patches/patch-vnet-rename.yaml
+
