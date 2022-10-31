@@ -6,7 +6,7 @@ metadata:
     apps.open-cluster-management.io/git-path: crossplane/crossplane-resources/azure/manifests/overlays/region-eastus
     apps.open-cluster-management.io/reconcile-option: merge
   labels:
-    app: crossplane-aws-resources
+    app: crossplane-azure-resources
   name: azure-subscription-eastus
 spec:
   channel: channel-git-crossplane/git-crossplane

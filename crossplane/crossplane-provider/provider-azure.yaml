@@ -5,3 +5,4 @@ metadata:
 spec:
   #package: "crossplane/provider-azure@sha256:8d74c79333569b585c3aee471ef98372ff9a0d35c1b83227b0438ea718559760"
   package: "crossplane/provider-azure@sha256:60bcce25d085e67e015b76c4ae98c3cb6b68e129974a374767e5b94772518a5f"
+  packagePullPolicy: Always
