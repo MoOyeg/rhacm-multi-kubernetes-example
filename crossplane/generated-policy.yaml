@@ -508,7 +508,7 @@ spec:
                 placementRef:
                   kind: PlacementRule
                   name: hub-placementrule
-        pruneObjectBehavior: DeleteAll
+        pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce
         severity: medium
 ---
@@ -551,7 +551,7 @@ spec:
             spec:
               pathname: https://github.com/MoOyeg/rhacm-multi-kubernetes-example.git
               type: Git
-        pruneObjectBehavior: DeleteAll
+        pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce
         severity: medium
 ---
@@ -594,7 +594,7 @@ spec:
             spec:
               pathname: https://charts.crossplane.io/stable
               type: HelmRepo
-        pruneObjectBehavior: DeleteAll
+        pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce
         severity: medium
 ---
@@ -625,6 +625,7 @@ spec:
               name: provider-aws
             spec:
               package: crossplane/provider-aws@sha256:f26dd6486d3e079eaf09ffbb31332dc367857cd97a281b578683c648472a7c63
+              packagePullPolicy: Always
         - complianceType: musthave
           objectDefinition:
             apiVersion: pkg.crossplane.io/v1
@@ -633,6 +634,7 @@ spec:
               name: provider-azure
             spec:
               package: crossplane/provider-azure@sha256:60bcce25d085e67e015b76c4ae98c3cb6b68e129974a374767e5b94772518a5f
+              packagePullPolicy: Always
         - complianceType: musthave
           objectDefinition:
             apiVersion: pkg.crossplane.io/v1
@@ -641,6 +643,7 @@ spec:
               name: provider-gcp
             spec:
               package: crossplane/provider-gcp@sha256:dea864a770923c1d08734aa8b86330da7e14c4dc69df36b63f22b3a7207644af
-        pruneObjectBehavior: DeleteAll
+              packagePullPolicy: Always
+        pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce
         severity: medium

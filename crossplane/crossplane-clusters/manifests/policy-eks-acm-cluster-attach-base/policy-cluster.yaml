@@ -53,7 +53,7 @@ spec:
                     enabled: true
                   iamPolicyController:
                     enabled: true      
-          pruneObjectBehavior: DeleteAll      
+          pruneObjectBehavior: "DeleteIfCreated"     
           remediationAction: enforce
           severity: medium
 

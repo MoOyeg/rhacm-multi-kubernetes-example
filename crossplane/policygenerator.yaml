@@ -9,7 +9,7 @@ policyDefaults:
     placementRuleName: hub-placementrule
   controls:
     - "CM-2 Baseline Configuration"
-  pruneObjectBehavior: "DeleteAll"
+  pruneObjectBehavior: "DeleteIfCreated"
   namespace: global-policies
   remediationAction: enforce
   severity: medium
