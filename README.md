@@ -21,17 +21,17 @@ Some steps can be skipped while others have a dependency on pre-completed steps.
 
 If you would like to use ACM to create clusters here is some tooling to help
 
-**OCP Clusters**  
+**OCP Clusters**
 
 - [For standard OCP clusters use ACM Cluster creation](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/multicluster_engine/index#creating-a-cluster)
 
-**xKS Clusters - Ansible**  
+**xKS Clusters - Ansible**
 
 - For xKS clusters you can use Ansible. Here's an example link below.
-[Use Ansible to create xKS clusters](https://github.com/nleiva/ansible-kubernetes).
-Link does not show integration between ACM and Ansible(AAP) for cluster creation - TODO
+  [Use Ansible to create xKS clusters](https://github.com/nleiva/ansible-kubernetes).
+  Link does not show integration between ACM and Ansible(AAP) for cluster creation - TODO
 
-**xKS Clusters - Crossplane**  
+**xKS Clusters - Crossplane**
 
 - Use crossplane to create your clusters - [see crossplane section below](https://github.com/MoOyeg/rhacm-multi-kubernetes-example#crossplane-provisioning)
 
@@ -68,13 +68,17 @@ This will policy will install some policies we are likely to need for later step
 
 `kustomize build ./hub-policies --enable-alpha-plugins | oc create -f -`
 
-## Operator Installs
+<!-- ## Operator Installs
 
 ### Install GitOps,Pipelines on OCP
 
-`kustomize build ./ocp-policies --enable-alpha-plugins | oc create -f -`
+```bash
+kustomize build ./ocp-policies --enable-alpha-plugins | oc create -f -
+```
 
-``kustomize build ./xks-argocd/ --enable-alpha-plugins | oc create -f -`
+```bash
+kustomize build ./xks-argocd/ --enable-alpha-plugins | oc create -f -
+```
 
 ## Install ACS Central
 
@@ -82,7 +86,7 @@ oc apply -k ./acs-operator-central-gitops
 
 ## Deploy an Application
 
-This Pacman App deployment will show a High Availibility use case.
+This Pacman App deployment will show a High Availibility use case. -->
 
 ## Crossplane Provisioning
 
@@ -131,7 +135,7 @@ export aws_profile=...
 export BASE64ENCODED_AWS_ACCOUNT_CREDS=$(echo -e "[default]\naws_access_key_id = $(aws configure get aws_access_key_id --profile $aws_profile)\naws_secret_access_key = $(aws configure get aws_secret_access_key --profile $aws_profile)" | base64  | tr -d "\n")
 ```
 
-Create AWS ProviderConfig  
+Create AWS ProviderConfig
 
 ```bash
 cat ./crossplane/crossplane-providerconfig-templates/aws_provider.yaml | envsubst | oc apply -f -
@@ -140,11 +144,11 @@ cat ./crossplane/crossplane-providerconfig-templates/aws_provider.yaml | envsubs
 **[Setup Azure Provider](https://github.com/crossplane-contrib/provider-azure/blob/master/examples/azure-provider.yaml)**:
 
 **_Sample Setup_**  
-If you already have your credentials/service principal you can export them as variables.  
+If you already have your credentials/service principal you can export them as variables.
 
 ```bash
 export CLIENT_ID=""
-export PASSWORD="" 
+export PASSWORD=""
 export TENANT=""
 export SUBSCRIPTION=""
 export RESOURCEGROUP=""
@@ -153,11 +157,11 @@ export BASE64ENCODED_AZURE_PROVIDER_CREDS=$(cat ./crossplane/crossplane-provider
 
 ```
 
-OR  
+OR
 
 If you dont have created credentials, follow [steps](https://github.com/crossplane/crossplane/blob/master/docs/cloud-providers/azure/azure-provider.md)
 
-Create Azure ProviderConfig  
+Create Azure ProviderConfig
 
 ```bash
 cat ./crossplane/crossplane-providerconfig-templates/azure_provider.yaml | envsubst | oc apply -f -
@@ -168,7 +172,7 @@ TODO
 
 3 Create Crossplane Resources required for specific xKS Cluster. See Samples for Provider Resources and Clusters below.
 
-**EKS Cluster Sample**  
+**EKS Cluster Sample**
 
 Edit the ./crossplane-resources/aws/manifests folder as required for your own situation.A tested minimal example is provided.
 
