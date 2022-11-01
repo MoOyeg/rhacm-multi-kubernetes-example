@@ -96,7 +96,7 @@ Repo also contains examples of using crossplane for Provisoning with ACM install
 
 - ACM will install crossplane from crossplane helm repo.
 - ACM will also create crossplane providers for aws,azure,gcp.
-- ACM will also use crossplane to create xKS clusters.
+- ACM will also use crossplane to create xKS clusters(non-composition).
 - ACM will also attempt to import created clusters into ACM for management
 
 ### Prerequisites
