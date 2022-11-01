@@ -190,6 +190,23 @@ Edit the ./crossplane-resources/aws/manifests folder as required for your own si
 
 - To create new clusters make copies of the eks-cluster-1 sample under acm-app and crossplane-eks-cluster1 under eks-cluster-overlays.
 
+**AKS Cluster Sample**
+
+Edit the ./crossplane-resources/azure/manifests folder as required for your own situation.A tested minimal example is provided.Example provided does not create resourcegroup, change kustomization file if you require resourcegroup
+
+- Use ACM application to create Azure Resources:
+
+  ```bash
+  oc apply -k ./crossplane/crossplane-resources/azure/acm-app/ 
+  ```
+
+- Use ACM application to create xKS Clusters.**_Please note there seems to be a bug where the cluster application appears blank._**
+
+  ```bash
+  oc apply -k ./crossplane/crossplane-clusters/acm-app/
+  ```
+
+
 ## Attach Subscription Admin Policy to your user if necessary
 
 ```bash
