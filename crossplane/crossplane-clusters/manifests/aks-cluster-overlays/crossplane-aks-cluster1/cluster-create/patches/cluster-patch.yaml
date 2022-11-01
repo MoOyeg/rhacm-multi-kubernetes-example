@@ -13,7 +13,7 @@ spec:
   vnetSubnetIDRef:
     name: crossplane-azure-subnet-eastus
   location: East US
-  version: "1.19.11"
+  version: "1.24.6"
   nodeCount: 2
   nodeVMSize: Standard_B2s
   dnsNamePrefix: aks-cluster-1
