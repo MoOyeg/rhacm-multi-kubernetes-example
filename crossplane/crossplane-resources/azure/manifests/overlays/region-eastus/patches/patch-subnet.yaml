@@ -7,4 +7,4 @@ spec:
   # resourceGroupNameRef:
   #   name: example-rg
   virtualNetworkNameRef:
-    name: crossplane-azure-vnet
+    name: crossplane-eastus-azure-vnet
