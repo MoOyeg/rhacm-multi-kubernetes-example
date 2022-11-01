@@ -2,7 +2,7 @@
 apiVersion: compute.azure.crossplane.io/v1alpha3
 kind: AKSCluster
 metadata:
-  name: crossplane-aks-cluster1
+  name: crossplane-aks-cluster
   labels:
     app: "crossplane"
     provider: azure
