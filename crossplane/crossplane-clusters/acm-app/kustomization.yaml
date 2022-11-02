@@ -6,3 +6,4 @@ resources:
 - ./eks-cluster-1/subscription-eks-cluster-1-attach.yaml
 #Create aks-cluster-1(folder manifests/overlays/eastus1)
 - ./aks-cluster-1/subscription-aks-cluster-1.yaml
+- ./aks-cluster-1/subscription-aks-cluster-1-attach.yaml
