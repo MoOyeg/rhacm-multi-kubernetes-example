@@ -40,7 +40,7 @@ spec:
               sleep ${sleepval}
               if [ $count -le 0 ]
               then
-                echo "We couldnt find secret ${SECRETNAME}"                
+                echo "EKS Cluster ${SECRETNAME} did not become ready"                
                 exit 1;
               fi
               done
@@ -56,7 +56,7 @@ spec:
               sleep ${sleepval}
               if [ $count -le 0 ]
               then
-                echo "We couldnt find secret ${SECRETNAME}"                
+                echo "NodeGroup ${SECRETNAME}-nodegroup did not become ready"                
                 exit 1;
               fi
               done
@@ -93,13 +93,15 @@ spec:
               fi
               done
 
+              #Echo Adding Sleep to give everything time to process
+              sleepval=$(setsleep)
+              echo "Will Sleep ${sleepval} to give everything time to process"
+              sleep ${sleepval}
+
+
               #Enable our ManagedClusterPolicy
               oc patch policy/policy-attach-${SECRETNAME} -n crossplane-system -p '{"spec":{"disabled":false}}' --type=merge
 
-              #Echo Adding Sleep to give everything time to process
-              sleepval=$(setsleep)
-              echo "Will Sleep ${sleepval}"
-              sleep ${sleepval}
 
               #Delete our Import Secret Policy - ACM will delete the auto-import-secret we create
               oc delete policy/policy-secret-attach-${SECRETNAME} -n crossplane-system

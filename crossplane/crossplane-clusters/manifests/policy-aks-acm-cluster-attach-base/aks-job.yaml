@@ -29,34 +29,18 @@ spec:
                   echo $sleepval
               }
               
-              #Check if eks cluster is created before continuing
+              #Check if aks cluster is created before continuing
 
               count=$(setcount)
               sleepval=$(setsleep)
-              until [ $(oc get clusters.eks.aws.crossplane.io/${SECRETNAME} -o jsonpath='{.status.atProvider.status}') = "ACTIVE" ]
+              until [ $(oc get aksclusters/${SECRETNAME} -o jsonpath='{.status.state}') = "Succeeded" ]
               do
               count=$((count-1))
-              echo "Sleep for ${sleepval} seconds, Will check for eks-cluster ${SECRETNAME} Active - $count more times"
+              echo "Sleep for ${sleepval} seconds, Will check for aks-cluster ${SECRETNAME} Succeeded - $count more times"
               sleep ${sleepval}
               if [ $count -le 0 ]
               then
-                echo "We couldnt find secret ${SECRETNAME}"                
-                exit 1;
-              fi
-              done
-
-              #Check if eks nodegroup is created before continuing
-
-              count=$(setcount)
-              sleepval=$(setsleep)
-              until [ $(oc get nodegroups.eks.aws.crossplane.io/${SECRETNAME}-nodegroup -o jsonpath='{.status.atProvider.status}') = "ACTIVE" ]
-              do
-              count=$((count-1))
-              echo "Sleep for ${sleepval} seconds, Will check for ${SECRETNAME}-nodegroup Active - $count more times"
-              sleep ${sleepval}
-              if [ $count -le 0 ]
-              then
-                echo "We couldnt find secret ${SECRETNAME}"                
+                echo "Cluster ${SECRETNAME} did not become ready"                
                 exit 1;
               fi
               done
@@ -92,6 +76,11 @@ spec:
                 break
               fi
               done
+
+              #Echo Adding Sleep to give everything time to process
+              sleepval=$(setsleep)
+              echo "Will Sleep ${sleepval} to give everything time to process"
+              sleep ${sleepval}
 
               #Enable our ManagedClusterPolicy
               oc patch policy/policy-attach-${SECRETNAME} -n crossplane-system -p '{"spec":{"disabled":false}}' --type=merge
