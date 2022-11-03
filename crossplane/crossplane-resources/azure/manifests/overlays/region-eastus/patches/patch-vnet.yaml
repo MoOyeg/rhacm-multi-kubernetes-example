@@ -3,8 +3,8 @@ kind: VirtualNetwork
 metadata:
   name: crossplane-eastus-azure-vnet
 spec:
-  # resourceGroupNameRef:
-  #   name: use resource group name from previous yaml is using
-  resourceGroupName: openenv-ppltr  
+  #resourceGroupNameRef:
+  #  name: use resource group name from previous yaml is using
+  resourceGroupName: resourcegroup-replaceme  
   location: East US
 

@@ -33,7 +33,7 @@ If you would like to use ACM to create clusters here is some tooling to help
 
 **xKS Clusters - Crossplane**
 
-- Use crossplane to create your clusters - [see crossplane section below](https://github.com/MoOyeg/rhacm-multi-kubernetes-example#crossplane-provisioning)
+- Use crossplane to create your clusters - [see crossplane section below](#crossplane-provisioning)
 
 ### Cluster Configuration
 
@@ -90,9 +90,9 @@ This Pacman App deployment will show a High Availibility use case. -->
 
 ## Crossplane Provisioning
 
-Repo also contains examples of using crossplane for Provisoning with ACM installing.
+Repo contains examples of using crossplane with ACM.
 
-### What does this do?
+### What example does repo provide?
 
 - ACM will install crossplane from crossplane helm repo.
 - ACM will also create crossplane providers for aws,azure,gcp.
@@ -101,11 +101,11 @@ Repo also contains examples of using crossplane for Provisoning with ACM install
 
 ### Prerequisites
 
-- [Cluster Configuration](https://github.com/MoOyeg/rhacm-multi-kubernetes-example#cluster-configuration)
+- Run [Cluster Configuration](https://github.com/MoOyeg/rhacm-multi-kubernetes-example#cluster-configuration) steps from above.
 
 ### Steps
 
-1 Run ACM Policies and Applications to create repo and install crossplane.
+**1 Run ACM Policies and Applications to create repo and install crossplane.Make sure to run prerequisites above first.**
 
 - Create via the pre-generated yaml
 
@@ -121,11 +121,11 @@ OR
   kustomize build --enable-alpha-plugins ./crossplane/ | oc create -f -
   ```
 
-2 When Crossplane is installed and crossplane providers created. We need to create credentials for respective cloud providers that crossplane can use to access the cloudprovider API.
+**2 When Crossplane is installed and crossplane providers created. We need to create credentials for respective cloud providers that crossplane can use to access the cloudprovider API.**
 
-**[Setup AWS Provider](https://crossplane.io/docs/v1.9/cloud-providers/aws/aws-provider.html)**:
+**_[Setup AWS Provider](https://crossplane.io/docs/v1.9/cloud-providers/aws/aws-provider.html)_**:
 
-**_Sample Setup_**
+**_*Sample Setup*_**
 
 ```bash
 export aws_profile=...
@@ -141,40 +141,42 @@ Create AWS ProviderConfig
 cat ./crossplane/crossplane-providerconfig-templates/aws_provider.yaml | envsubst | oc apply -f -
 ```
 
-**[Setup Azure Provider](https://github.com/crossplane-contrib/provider-azure/blob/master/examples/azure-provider.yaml)**:
+**_[Setup Azure Provider](https://github.com/crossplane-contrib/provider-azure/blob/master/examples/azure-provider.yaml)_**:
 
-**_Sample Setup_**  
-If you already have your credentials/service principal you can export them as variables.
+**_*Sample Setup*_**
 
-```bash
-export CLIENT_ID=""
-export PASSWORD=""
-export TENANT=""
-export SUBSCRIPTION=""
-export RESOURCEGROUP=""
+- If you already have your credentials/service principal/resourcegroup you can export them as variables.
 
-export BASE64ENCODED_AZURE_PROVIDER_CREDS=$(cat ./crossplane/crossplane-providerconfig-templates/azure_credentials.json | envsubst | base64 | tr -d "\n")
+  ```bash
+  export CLIENT_ID=""
+  export PASSWORD=""
+  export TENANT=""
+  export SUBSCRIPTION=""
+  export RESOURCEGROUP=""
 
-```
+  export BASE64ENCODED_AZURE_PROVIDER_CREDS=$(cat ./crossplane/crossplane-providerconfig-templates/azure_credentials.json | envsubst | base64 | tr -d "\n")
 
-OR
+  ```
 
-If you dont have created credentials, follow [steps](https://github.com/crossplane/crossplane/blob/master/docs/cloud-providers/azure/azure-provider.md)
+  OR  
+   If you dont have created credentials, follow ProviderConfig [steps](https://github.com/crossplane/crossplane/blob/master/docs/cloud-providers/azure/azure-provider.md)
 
-Create Azure ProviderConfig
+- With your credentials from step above create your Azure ProviderConfig
 
-```bash
-cat ./crossplane/crossplane-providerconfig-templates/azure_provider.yaml | envsubst | oc apply -f -
-```
+  ```bash
+  cat ./crossplane/crossplane-providerconfig-templates/azure_provider.yaml | envsubst | oc apply -f -
+  ```
 
-**[Setup GCP Provider](https://github.com/crossplane-contrib/provider-gcp)**:
+**_[Setup GCP Provider](https://github.com/crossplane-contrib/provider-gcp)_**:  
+ **_*Sample Setup*_**
+
 TODO
 
-3 Create Crossplane Resources required for specific xKS Cluster. See Samples for Provider Resources and Clusters below.
+**3 Create Crossplane Resources required for specific xKS Cluster. See Samples for Provider Resources and Clusters below.**
 
-**EKS Cluster Sample**
+**_EKS Cluster Sample_**
 
-Edit the ./crossplane-resources/aws/manifests folder as required for your own situation.A tested minimal example is provided.
+Edit the [aws resources manifests](./crossplane/crossplane-resources/aws/manifests) folder as required for your own situation.A tested minimal example is provided.
 
 - Use ACM application to create AWS Resources:
 
@@ -182,30 +184,52 @@ Edit the ./crossplane-resources/aws/manifests folder as required for your own si
   oc apply -k ./crossplane/crossplane-resources/aws/acm-app/
   ```
 
-- Use ACM application to create xKS Clusters.**_Please note there seems to be a bug where the cluster application appears blank._**
+- Use ACM application to create xKS Clusters.This will provision all the defined xKS clusters.To edit which clusters you want created, edit the [kustomization.yaml](./crossplane/crossplane-clusters/acm-app/kustomization.yaml).  
+  **_Please note there seems to be a bug where the cluster application appears blank.Application still works,will file a bug._**
 
   ```bash
   oc apply -k ./crossplane/crossplane-clusters/acm-app/
   ```
 
-- To create new clusters make copies of the eks-cluster-1 sample under acm-app and crossplane-eks-cluster1 under eks-cluster-overlays.
+- To create new clusters make copies of the eks-cluster-1 sample under `./crossplane/crossplane-clusters/acm-app/` and crossplane-eks-cluster1 under eks-cluster-overlays.
 
 **AKS Cluster Sample**
 
-Edit the ./crossplane-resources/azure/manifests folder as required for your own situation.A tested minimal example is provided.Example provided does not create resourcegroup, change kustomization file if you require resourcegroup
+Edit the [azure resources manifests](./crossplane/crossplane-resources/azure/manifests) folder as required for your own situation.A tested minimal example is provided.
+
+- Example provided does not create resourcegroup, and hardcodes the value of the resourcegroupname
+
+- To replace the hardcoded value of resourcegroupname with your pre-created resourgroup.
+
+  ```bash
+  grep -rli 'resourcegroup-replaceme' * | grep yaml | xargs -i@ sed -i 's/resourcegroup-replaceme/your-resourcegroup/g' @
+  ```
+
+  OR
+
+- If you would like to use crossplane to create your resourcegroup and then use created resourcegroup in objects.
+
+  Run Utility script for it
+
+  ```bash
+   ./crossplane/crossplane-utlility-scripts/switch-azure-create-rg.sh
+  ```
 
 - Use ACM application to create Azure Resources:
 
   ```bash
-  oc apply -k ./crossplane/crossplane-resources/azure/acm-app/ 
+  oc apply -k ./crossplane/crossplane-resources/azure/acm-app/
   ```
 
-- Use ACM application to create xKS Clusters.**_Please note there seems to be a bug where the cluster application appears blank._**
+- Use ACM application to create xKS Clusters.This will provision all the defined xKS clusters.To edit which clusters you want created, edit the [kustomization.yaml](./crossplane/crossplane-clusters/acm-app/kustomization.yaml).  
+  **_Please note there seems to be a bug where the cluster application appears blank.Application still works,will file a bug._**
 
   ```bash
   oc apply -k ./crossplane/crossplane-clusters/acm-app/
   ```
 
+**GKE Cluster Sample**  
+TODO
 
 ## Attach Subscription Admin Policy to your user if necessary
 
