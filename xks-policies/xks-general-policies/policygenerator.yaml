@@ -1,16 +1,16 @@
 apiVersion: policy.open-cluster-management.io/v1
 kind: PolicyGenerator
 metadata:
-  name: policy-generator-olm
-  labels:
-    custom: olm-policies
+  name: policy-generator-xks-olm
 placementBindingDefaults:
-  name: xks-general-olm-pb
+  name: xks-olm-binding
 policyDefaults:
-  namespace: global-policies
-  # Use an existing placement rule so that placement bindings can be consolidated
   placement:
-    placementRulePath: ../placementrules/non-openshift-placementrule.yaml
+    placementRuleName: non-openshift-placementrule
+  controls:
+    - "CM-2 Baseline Configuration"
+  pruneObjectBehavior: "DeleteIfCreated"
+  namespace: global-policies
   remediationAction: enforce
   severity: medium
 policies:
@@ -20,7 +20,6 @@ policies:
     - path: ./crds
 - name: policy-xks-olm-deploy
   disabled: false
-  pruneObjectBehavior: DeleteAll
   manifests:
     - path: ./olm_deploy
   remediationAction: enforce

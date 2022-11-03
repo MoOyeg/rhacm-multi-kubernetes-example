@@ -33,30 +33,45 @@ If you would like to use ACM to create clusters here is some tooling to help
 
 - Use crossplane to create your clusters - [see crossplane section below](#crossplane-provisioning)
 
-### Cluster Configuration
+## Basic Cluster Configuration
 
-**1) Apply our Base Configuration Policies via ACM**  
-This will create a namespace on every cluster that will serve as a base for any policies we wish to apply:
+### Apply our Base Configuration Policies via ACM  
 
-```bash
-oc apply -k ./policy-global-namespace
-```
+- This will create a namespace on every cluster that will serve as a base for any other policies we wish to apply:
 
-A list of Placementrules we can pre-create to allow other policies leverage. PlacementRules are used as selectors to determine which clusters a policy should be applied to.
+  ```bash
+  oc apply -k ./policy-global-namespace
+  ```
 
-```bash
-oc apply -k ./placementrules/
-```
+### Global Placment Rules  
 
-### 2) Base xKS Policies
+- Create List Of PlacementRules we want ACM to use and can be leveraged by other policies. PlacementRules are used as selectors to determine which clusters a policy should be applied to.
+
+  ```bash
+  oc apply -k ./placementrules/
+  ```
+
+## Base xKS Policy Configuration
+
+### Install OLM on xKS Clusters
 
 This will policy will install [Operator Lifecyle Manager](https://olm.operatorframework.io/) on every xKS cluster added into ACM:
 
-```bash
-kustomize build ./xks-general-policies/ --enable-alpha-plugins | oc create -f -
-```
+- Install OLM via the pre-generated yaml
 
-### Base ACM Hub Policies
+  ```bash
+  oc create -f ./xks-policies/xks-general-policies/generated-olm-policy.yaml
+  ```
+
+OR
+
+- Generate your own policy and then create
+
+  ```bash
+  kustomize build ./xks-policies/xks-general-policies/ --enable-alpha-plugins | oc create -f -
+  ```
+
+<!-- ### Base ACM Hub Policies
 
 This will policy will install some policies we are likely to need for later steps.
 
@@ -64,7 +79,7 @@ This will policy will install some policies we are likely to need for later step
 - Installs a policy for Nginx Helm Repo
 - Installs a policy for Ansible Automation Operator
 
-`kustomize build ./hub-policies --enable-alpha-plugins | oc create -f -`
+`kustomize build ./hub-policies --enable-alpha-plugins | oc create -f -` -->
 
 <!-- ## Operator Installs
 
@@ -100,11 +115,11 @@ Repo contains examples of using crossplane with ACM.
 
 ### Prerequisites
 
-- Run [Cluster Configuration](https://github.com/MoOyeg/rhacm-multi-kubernetes-example#cluster-configuration) steps from above.
+- Run [Basic Cluster Configuration](#basic-cluster-configuration) steps from above.
 
 ### Steps
 
-**1 Run ACM Policies and Applications to create repo and install crossplane.Make sure to run prerequisites above first.**
+**1 Run ACM Policies and Applications to create repo and install crossplane. Make sure to run prerequisites above first.**
 
 - Create via the pre-generated yaml
 
