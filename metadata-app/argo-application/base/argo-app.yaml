@@ -9,7 +9,7 @@ spec:
   source:
     path: gitops/base/
     repoURL: https://github.com/MoOyeg/kubernetes-cloud-metadata-tool.git
-    targetRevision: main
+    targetRevision: working
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
