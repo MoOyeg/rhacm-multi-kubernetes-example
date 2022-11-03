@@ -5,6 +5,6 @@ metadata:
 spec:
   #resourceGroupNameRef:
   #  name: use resource group name from previous yaml is using
-  resourceGroupName: resourcegroup-replaceme  
+  resourceGroupName: openenv-ppltr  
   location: East US
 
