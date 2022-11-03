@@ -11,7 +11,7 @@ spec:
   source:
     path: advanced-cluster-security-operator/operator/overlays/latest/
     repoURL: https://github.com/redhat-cop/gitops-catalog.git
-    targetRevision: main
+    targetRevision: working
   syncPolicy:
     automated:
       prune: true
