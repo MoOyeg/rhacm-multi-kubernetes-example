@@ -5,4 +5,3 @@ metadata:
 spec:
   package: "crossplane/provider-aws@sha256:f26dd6486d3e079eaf09ffbb31332dc367857cd97a281b578683c648472a7c63"
   packagePullPolicy: Always
-  revisionActivationPolicy: Manual
