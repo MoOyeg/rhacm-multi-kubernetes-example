@@ -1,7 +1,5 @@
 # rhacm-multi-kubernetes-example
 
-## Status: Not Ready
-
 Purpose of this repo is to demo an example of what is possible with Red Hat Advanced Cluster Management(ACM) running on OpenShift configuring other OpenShift clusters and xKS clusters.
 Repo is structured as a series of steps that can be followed for a particular example.
 Some steps can be skipped while others have a dependency on pre-completed steps.
