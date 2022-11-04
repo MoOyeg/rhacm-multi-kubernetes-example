@@ -1,0 +1,16 @@
+name: Build
+on:
+  push:
+    branches:
+      - "test"
+      - "!main"
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        id: my-script
+        with:
+          result-encoding: string
+          script: return "I will be string (not JSON) encoded!"
