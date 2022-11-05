@@ -1,27 +1,7 @@
-apiVersion: apps.open-cluster-management.io/v1
-kind: PlacementRule
-metadata:
-  labels:
-    custom: olm-policies
-  name: non-openshift-placementrule
-  namespace: global-policies
-spec:
-  clusterConditions:
-  - status: "True"
-    type: ManagedClusterConditionAvailable
-  clusterSelector:
-    matchExpressions:
-    - key: vendor
-      operator: In
-      values:
-      - AKS
-      - EKS
-      - GKS
----
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
 metadata:
-  name: xks-general-olm-pb
+  name: xks-olm-binding
   namespace: global-policies
 placementRef:
   apiGroup: apps.open-cluster-management.io
@@ -20957,6 +20937,7 @@ spec:
                 storage: true
                 subresources:
                   status: {}
+        pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce
         severity: medium
 ---
@@ -21375,5 +21356,6 @@ spec:
             metadata:
               name: olm-operator-serviceaccount
               namespace: olm
+        pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce
         severity: medium

@@ -1,7 +1,5 @@
 # rhacm-multi-kubernetes-example
 
-## Status: Not Ready
-
 Purpose of this repo is to demo an example of what is possible with Red Hat Advanced Cluster Management(ACM) running on OpenShift configuring other OpenShift clusters and xKS clusters.
 Repo is structured as a series of steps that can be followed for a particular example.
 Some steps can be skipped while others have a dependency on pre-completed steps.
@@ -12,9 +10,8 @@ Some steps can be skipped while others have a dependency on pre-completed steps.
 - [oc client](https://docs.openshift.com/container-platform/4.9/cli_reference/openshift_cli/getting-started-cli.html) >= 4.9
 - [Red Hat ACM Policy Generator Kustomize Plugin](https://github.com/stolostron/policy-generator-plugin)
 - [Red Hat Advanced Cluster Management - ACM](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.0/html-single/install/index#installing) - Version>=2.5
-- [ACM MultiClusterHub must be created with Pull Secret Option](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html/install/installing#custom-image-pull-secret)
 - [User running commands must have subscription-admin privilege](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#granting-subscription-admin-privilege). [Sample Solution](https://access.redhat.com/solutions/6010251)  
-- [If creating xKS clusters you must add your custom pull secret to multiclusterhub object](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html/install/installing#custom-image-pull-secret)
+- [If creating xKS clusters you must add your custom pull secret to ACM multiclusterhub object](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html/install/installing#custom-image-pull-secret)
 
 ## Steps to Run
 
@@ -36,30 +33,45 @@ If you would like to use ACM to create clusters here is some tooling to help
 
 - Use crossplane to create your clusters - [see crossplane section below](#crossplane-provisioning)
 
-### Cluster Configuration
+## Basic Cluster Configuration
 
-**1) Apply our Base Configuration Policies via ACM**  
-This will create a namespace on every cluster that will serve as a base for any policies we wish to apply:
+### Apply our Base Configuration Policies via ACM  
 
-```bash
-oc apply -k ./policy-global-namespace
-```
+- This will create a namespace on every cluster that will serve as a base for any other policies we wish to apply:
 
-A list of Placementrules we can pre-create to allow other policies leverage. PlacementRules are used as selectors to determine which clusters a policy should be applied to.
+  ```bash
+  oc apply -k ./policy-global-namespace
+  ```
 
-```bash
-oc apply -k ./placementrules/
-```
+### Global Placment Rules  
 
-### 2) Base xKS Policies
+- Create List Of PlacementRules we want ACM to use and can be leveraged by other policies. PlacementRules are used as selectors to determine which clusters a policy should be applied to.
+
+  ```bash
+  oc apply -k ./placementrules/
+  ```
+
+## Base xKS Policy Configuration
+
+### Install OLM on xKS Clusters
 
 This will policy will install [Operator Lifecyle Manager](https://olm.operatorframework.io/) on every xKS cluster added into ACM:
 
-```bash
-kustomize build ./xks-general-policies/ --enable-alpha-plugins | oc create -f -
-```
+- Install OLM via the pre-generated yaml
 
-### Base ACM Hub Policies
+  ```bash
+  oc create -f ./xks-policies/xks-general-policies/generated-olm-policy.yaml
+  ```
+
+OR
+
+- Generate your own policy and then create
+
+  ```bash
+  kustomize build ./xks-policies/xks-general-policies/ --enable-alpha-plugins | oc create -f -
+  ```
+
+<!-- ### Base ACM Hub Policies
 
 This will policy will install some policies we are likely to need for later steps.
 
@@ -67,7 +79,7 @@ This will policy will install some policies we are likely to need for later step
 - Installs a policy for Nginx Helm Repo
 - Installs a policy for Ansible Automation Operator
 
-`kustomize build ./hub-policies --enable-alpha-plugins | oc create -f -`
+`kustomize build ./hub-policies --enable-alpha-plugins | oc create -f -` -->
 
 <!-- ## Operator Installs
 
@@ -99,14 +111,15 @@ Repo contains examples of using crossplane with ACM.
 - ACM will also create crossplane providers for aws,azure,gcp.
 - ACM will also use crossplane to create xKS clusters(non-composition).
 - ACM will also attempt to import created clusters into ACM for management
+- Running steps in reverse should also delete/detach objects in ACM and Cloud Provider
 
 ### Prerequisites
 
-- Run [Cluster Configuration](https://github.com/MoOyeg/rhacm-multi-kubernetes-example#cluster-configuration) steps from above.
+- Run [Basic Cluster Configuration](#basic-cluster-configuration) steps from above.
 
 ### Steps
 
-**1 Run ACM Policies and Applications to create repo and install crossplane.Make sure to run prerequisites above first.**
+**1 Run ACM Policies and Applications to create repo and install crossplane. Make sure to run prerequisites above first.**
 
 - Create via the pre-generated yaml
 
