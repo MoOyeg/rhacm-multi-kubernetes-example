@@ -3,13 +3,12 @@ on: [push, fork]
 jobs:
   update-manifests:
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
-      - uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GIT_ACTION_TOKEN }}      
+      - uses: actions/checkout@v3  
       - run: |
           export BRANCH=$(git rev-parse --abbrev-ref HEAD)
-          ./utility-scripts/change_branch_manifests.sh ${BRANCH}
+          ./utility-scripts/change_branch_manifests_pointer.sh ${BRANCH}
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
