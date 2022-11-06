@@ -1,13 +1,15 @@
 name: Update Manifests to match Branch
 on: [push, fork]
-permissions: read-all|write-all
 jobs:
+  permissions:
+    - read-all
+    - write-all
   update-manifests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GIT_ACTION_TOKEN }}      
+        # with:
+        #   token: ${{ secrets.GIT_ACTION_TOKEN }}      
       - run: |
           export BRANCH=$(git rev-parse --abbrev-ref HEAD)
           ./utility-scripts/change_branch_manifests_pointer.sh ${BRANCH}
