@@ -1,5 +1,6 @@
 name: Update Manifests to match Branch
 on: [push, fork]
+permissions: read-all|write-all
 jobs:
   update-manifests:
     runs-on: ubuntu-latest
