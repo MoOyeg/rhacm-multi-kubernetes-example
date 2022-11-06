@@ -9,7 +9,7 @@ jobs:
           token: ${{ secrets.GIT_ACTION_TOKEN }}      
       - run: |
           export BRANCH=$(git rev-parse --abbrev-ref HEAD)
-          ./utility-scripts/change_branch_manifests.sh ${BRANCH}
+          ./utility-scripts/change_branch_manifests_pointer.sh ${BRANCH}
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
