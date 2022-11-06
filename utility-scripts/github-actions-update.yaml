@@ -1,8 +1,5 @@
-name: Update Repo to
-on:
-  push:
-    branches:
-      - "!main"
+name: Update Manifests to match Branch
+on: [push, fork]
 jobs:
   comment:
     runs-on: ubuntu-latest
