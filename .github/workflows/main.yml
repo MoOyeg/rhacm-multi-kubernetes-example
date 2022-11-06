@@ -1,11 +1,9 @@
 name: Update Manifests to match Branch
 on: [push, fork]
 jobs:
-  permissions:
-    - read-all
-    - write-all
   update-manifests:
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
       - uses: actions/checkout@v3
         # with:
