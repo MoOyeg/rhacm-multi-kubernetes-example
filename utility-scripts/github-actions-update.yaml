@@ -1,0 +1,17 @@
+name: Update Manifests to match Branch
+on: [push, fork]
+jobs:
+  update-manifests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GIT_ACTION_TOKEN }}      
+      - run: |
+          export BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          ./utility-scripts/change_branch_manifests.sh ${BRANCH}
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "Automated action to make manifests match branch"
+          git push
