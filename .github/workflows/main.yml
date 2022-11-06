@@ -6,7 +6,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          token: ${{ GIT_ACTION_TOKEN }}      
+          token: ${{ secrets.GIT_ACTION_TOKEN }}      
       - run: |
           export BRANCH=$(git rev-parse --abbrev-ref HEAD)
           ./utility-scripts/change_branch_manifests.sh ${BRANCH}
