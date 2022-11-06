@@ -9,9 +9,13 @@ jobs:
       - run: |
           export BRANCH=$(git rev-parse --abbrev-ref HEAD)
           ./utility-scripts/change_branch_manifests_pointer.sh ${BRANCH}
-          exit $( git status --porcelain | head -255 | wc -l )
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add .
-          git commit -m "Automated action to make manifests match branch"
-          git push
+          if [ $( git status --porcelain | head -255 | wc -l ) -ne 0 ]
+          then 
+            git config user.name github-actions
+            git config user.email github-actions@github.com
+            git add .
+            git commit -m "Automated action to make manifests match branch"
+            git push
+          else
+            exit 0
+          fi
