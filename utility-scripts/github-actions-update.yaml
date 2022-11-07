@@ -9,12 +9,12 @@ jobs:
       - run: |
           export BRANCH=$(git rev-parse --abbrev-ref HEAD)
           #Exit if demo Branch
-          if [[ "${BRANCH}" == *"demo"* ]] || [[ "${BRANCH}" == *"test"* ]]
+          if [[ "${BRANCH}" == *"demo"* || "${BRANCH}" == *"test"* ]]
           then
             echo "Update only pointers on demo/test branches"
             ./utility-scripts/change_branch_manifests_pointer.sh ${BRANCH} "no"         
           else
-            echo "No limits on updates"
+            echo "Not a Test or Demo Branch"
             ./utility-scripts/change_branch_manifests_pointer.sh ${BRANCH}
           fi          
           if [ $( git status --porcelain | head -255 | wc -l ) -ne 0 ]
