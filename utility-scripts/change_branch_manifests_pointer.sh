@@ -16,7 +16,7 @@ grep -rli 'apps.open-cluster-management.io/git-branch:' * | grep yaml | xargs -i
 
 grep -rli 'targetRevision:' * |  grep -rli ${REPO_NAME} | grep yaml | xargs -i@ sed -E -i 's/^( *targetRevision:) .*/\1 '${BRANCH}'/g' @
 
-if [ "${NONPOINTER_CHANGE}" == "yes" ]
+if [ "${NONPOINTER_CHANGE}" = "yes" ]
 then
     #Reset resourcegroupname to default
     grep -rli 'resourceGroupName:' * | grep yaml | xargs -i@ sed -E -i 's/^( +)resourceGroupName: .*/\1resourceGroupName: '${RESOURCEGROUP}'/g' @
