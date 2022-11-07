@@ -3,8 +3,8 @@ kind: Subnet
 metadata:
   name: crossplane-azure-subnet-eastus
 spec:
-  resourceGroupName: openenv-dtfwn
+  resourceGroupName: openenv-dzk47
   #resourceGroupNameRef:
-  #  name: resourcegroup-replaceme
+  #  name: openenv-dzk47
   virtualNetworkNameRef:
     name: crossplane-eastus-azure-vnet
