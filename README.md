@@ -226,9 +226,9 @@ Edit the [azure resources manifests](./crossplane/crossplane-resources/azure/man
 
   OR
 
-- If you do not have a pre-created resourgreoup, and would like the resourcegroup to be created as part of the list o
+- If you do not have a pre-created resourgreoup, and would like the resourcegroup to be created as part of the list of objects.
 
-  Run Utility script to update maanifests or update manifests manually
+  Run Utility script to update manifests or update manifests manually
 
   ```bash
    ./crossplane/crossplane-utlility-scripts/switch-azure-create-rg.sh ${RESOURCEGROUP}
@@ -255,7 +255,3 @@ TODO
 ```bash
  oc adm policy add-cluster-role-to-user open-cluster-management:subscription-admin $(oc whoami)
 ```
-
-### Prerequisites
-
-- None
