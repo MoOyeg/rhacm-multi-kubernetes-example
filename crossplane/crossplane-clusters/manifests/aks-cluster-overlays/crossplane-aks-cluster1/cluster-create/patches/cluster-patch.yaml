@@ -9,7 +9,7 @@ metadata:
 spec: 
   resourceGroupName: openenv-dtfwn
   #resourceGroupNameRef:
-  #  name: openenv-ppltr
+  #  name: resourcegroup-replaceme
   vnetSubnetIDRef:
     name: crossplane-azure-subnet-eastus
   location: East US
