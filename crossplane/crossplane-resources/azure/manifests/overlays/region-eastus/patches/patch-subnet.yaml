@@ -3,7 +3,7 @@ kind: Subnet
 metadata:
   name: crossplane-azure-subnet-eastus
 spec:
-  resourceGroupName: resourcegroup-replaceme
+  resourceGroupName: openenv-dtfwn
   #resourceGroupNameRef:
   #  name: openenv-ppltr
   virtualNetworkNameRef:

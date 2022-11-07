@@ -7,7 +7,7 @@ metadata:
     app: "crossplane"
     provider: azure
 spec: 
-  resourceGroupName: resourcegroup-replaceme
+  resourceGroupName: openenv-dtfwn
   #resourceGroupNameRef:
   #  name: openenv-ppltr
   vnetSubnetIDRef:
