@@ -5,6 +5,6 @@ metadata:
 spec:
   resourceGroupName: resourcegroup-replaceme
   #resourceGroupNameRef:
-  #  name: openenv-ppltr
+  #  name: resourcegroup-replaceme
   virtualNetworkNameRef:
     name: crossplane-eastus-azure-vnet

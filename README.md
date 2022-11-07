@@ -10,7 +10,9 @@ Some steps can be skipped while others have a dependency on pre-completed steps.
 - [oc client](https://docs.openshift.com/container-platform/4.9/cli_reference/openshift_cli/getting-started-cli.html) >= 4.9
 - [Red Hat ACM Policy Generator Kustomize Plugin](https://github.com/stolostron/policy-generator-plugin)
 - [Red Hat Advanced Cluster Management - ACM](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.0/html-single/install/index#installing) - Version>=2.5
-- [User running commands must have subscription-admin privilege](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#granting-subscription-admin-privilege). [Sample Solution](https://access.redhat.com/solutions/6010251)  
+- [User running commands must have subscription-admin privilege](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#granting-subscription-admin-privilege).
+  - [Sample Solution](https://access.redhat.com/solutions/6010251)
+  - [CLI Example](https://github.com/MoOyeg/rhacm-multi-kubernetes-example#attach-subscription-admin-policy-to-your-user-if-necessary)
 - [If creating xKS clusters you must add your custom pull secret to ACM multiclusterhub object](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html/install/installing#custom-image-pull-secret)
 
 ## Steps to Run
@@ -35,7 +37,7 @@ If you would like to use ACM to create clusters here is some tooling to help
 
 ## Basic Cluster Configuration
 
-### Apply our Base Configuration Policies via ACM  
+### Apply our Base Configuration Policies via ACM
 
 - This will create a namespace on every cluster that will serve as a base for any other policies we wish to apply:
 
@@ -43,7 +45,7 @@ If you would like to use ACM to create clusters here is some tooling to help
   oc apply -k ./policy-global-namespace
   ```
 
-### Global Placment Rules  
+### Global Placment Rules
 
 - Create List Of PlacementRules we want ACM to use and can be leveraged by other policies. PlacementRules are used as selectors to determine which clusters a policy should be applied to.
 
@@ -116,6 +118,7 @@ Repo contains examples of using crossplane with ACM.
 ### Prerequisites
 
 - Run [Basic Cluster Configuration](#basic-cluster-configuration) steps from above.
+- [User running commands must have subscription-admin privilege](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#granting-subscription-admin-privilege). [Sample Solution](https://access.redhat.com/solutions/6010251)
 
 ### Steps
 
@@ -167,7 +170,9 @@ cat ./crossplane/crossplane-providerconfig-templates/aws_provider.yaml | envsubs
   export TENANT=""
   export SUBSCRIPTION=""
   export RESOURCEGROUP=""
+  ```
 
+  ```bash
   export BASE64ENCODED_AZURE_PROVIDER_CREDS=$(cat ./crossplane/crossplane-providerconfig-templates/azure_credentials.json | envsubst | base64 | tr -d "\n")
 
   ```
@@ -216,17 +221,17 @@ Edit the [azure resources manifests](./crossplane/crossplane-resources/azure/man
 - To replace the hardcoded value of resourcegroupname with your pre-created resourgroup.
 
   ```bash
-  grep -rli 'resourcegroup-replaceme' * | grep yaml | xargs -i@ sed -i 's/resourcegroup-replaceme/your-resourcegroup/g' @
+  grep -rli 'resourcegroup-replaceme' * | grep yaml | xargs -i@ sed -i 's/resourcegroup-replaceme/'${RESOURCEGROUP}'/g' @
   ```
 
   OR
 
-- If you would like to use crossplane to create your resourcegroup and then use created resourcegroup in objects.
+- If you do not have a pre-created resourgreoup, and would like the resourcegroup to be created as part of the list o
 
-  Run Utility script for it
+  Run Utility script to update maanifests or update manifests manually
 
   ```bash
-   ./crossplane/crossplane-utlility-scripts/switch-azure-create-rg.sh
+   ./crossplane/crossplane-utlility-scripts/switch-azure-create-rg.sh ${RESOURCEGROUP}
   ```
 
 - Use ACM application to create Azure Resources:
