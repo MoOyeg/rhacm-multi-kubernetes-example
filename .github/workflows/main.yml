@@ -9,12 +9,12 @@ jobs:
       - run: |
           export BRANCH=$(git rev-parse --abbrev-ref HEAD)
           #Exit if demo Branch
-          if [[ "demo" == *"${BRANCH}"* ]]; then
+          if [[ "${BRANCH}" == *"demo"* ]]; then
             echo "Exiting no updates to demo branches"
             exit 0
           fi
           #Exit if test Branch
-          if [[ "test" == *"${BRANCH}"* ]]; then
+          if [[ "${BRANCH}" == *"test"* ]]; then
             echo "Exiting no updates to test branches"
             exit 0
           fi
