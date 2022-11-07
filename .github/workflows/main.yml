@@ -9,16 +9,14 @@ jobs:
       - run: |
           export BRANCH=$(git rev-parse --abbrev-ref HEAD)
           #Exit if demo Branch
-          if [[ "${BRANCH}" == *"demo"* ]]; then
-            echo "Exiting no updates to demo branches"
-            exit 0
-          fi
-          #Exit if test Branch
-          if [[ "${BRANCH}" == *"test"* ]]; then
-            echo "Exiting no updates to test branches"
-            exit 0
-          fi
-          ./utility-scripts/change_branch_manifests_pointer.sh ${BRANCH}
+          if [[ "${BRANCH}" == *"demo"* ]] || [[ "${BRANCH}" == *"test"* ]]
+          then
+            echo "Update only pointers on demo/test branches"
+            ./utility-scripts/change_branch_manifests_pointer.sh ${BRANCH} "no"         
+          else
+            echo "No limits on updates"
+            ./utility-scripts/change_branch_manifests_pointer.sh ${BRANCH}
+          fi          
           if [ $( git status --porcelain | head -255 | wc -l ) -ne 0 ]
           then 
             git config user.name github-actions
@@ -28,4 +26,3 @@ jobs:
             git push
           else
             exit 0
-          fi
