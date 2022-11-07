@@ -56,5 +56,6 @@ spec:
           pruneObjectBehavior: "DeleteIfCreated"     
           remediationAction: enforce
           severity: medium
-
+          evaluationInterval:
+            compliant: never  
 
