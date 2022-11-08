@@ -1,22 +1,21 @@
 apiVersion: policy.open-cluster-management.io/v1
 kind: PolicyGenerator
 metadata:
-  name: policy-install-openshift-operators
+  name: policy-generator-xks-acs
 placementBindingDefaults:
-  name: openshift-operators-binding
+  name: xks-acs-binding
 policyDefaults:
   placement:
     placementRuleName: hub-placementrule
   controls:
     - "CM-2 Baseline Configuration"
   pruneObjectBehavior: "DeleteIfCreated"
-  namespace: global-policies
+  namespace: stackrox
   remediationAction: enforce
   severity: medium
 policies:
-  - name: policy-ocp-gitops-operator
-    manifests:
-      - path: openshift-gitops-subscription.yaml
-  - name: policy-ocp-pipelines-operator
-    manifests:
-      - path: openshift-pipelines-subscription.yaml
+- name: policy-xks-acs-secured
+  disabled: false
+  manifests:
+    - path: ./manifests
+

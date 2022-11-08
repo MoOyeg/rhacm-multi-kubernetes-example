@@ -1,0 +1,10 @@
+apiVersion: apps.open-cluster-management.io/v1
+kind: Channel
+metadata:
+  name: rhacs-charts
+  namespace: rhacs-charts-ns
+  annotations:
+    apps.open-cluster-management.io/reconcile-rate: medium
+spec:
+  pathname: https://mirror.openshift.com/pub/rhacs/charts
+  type: HelmRepo

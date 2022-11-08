@@ -4,7 +4,7 @@ metadata:
   annotations:
     apps.open-cluster-management.io/git-branch: demo2
     apps.open-cluster-management.io/git-path: crossplane/crossplane-clusters/manifests/eks-cluster-overlays/crossplane-eks-cluster1/cluster-create 
-    apps.open-cluster-management.io/reconcile-option: merge
+    apps.open-cluster-management.io/reconcile-option: "off"
   labels:
     app: crossplane-clusters
   name: crossplane-cluster-eks-cluster-1
