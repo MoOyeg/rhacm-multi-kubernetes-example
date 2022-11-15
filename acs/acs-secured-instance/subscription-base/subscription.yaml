@@ -4,14 +4,14 @@ metadata:
   annotations: null
   labels:
     app: stackrox-secured-cluster-services
-  name: stackrox-secured-cluster-services
+  name: stackrox-secured-cluster-services-managedcluster-replace-me
   namespace: stackrox
 spec:
-  channel: rhacs-charts-ns/rhacs-charts
+  channel: channel-helm-rhacs/rhacs-charts
   placement:
     placementRef:
       kind: PlacementRule
-      name: non-openshift-placementrule
+      name: managedcluster-replace-me-placementrule
   name: stackrox-secured-cluster-services
   packageOverrides:
   - packageAlias: stackrox-secured-cluster-svcs
@@ -34,9 +34,7 @@ spec:
             {{hub (index (lookup "v1" "Secret" "stackrox" "admission-control-tls").data "ca.pem") | base64dec | indent 16 hub}}
         centralEndpoint: '{{hub (lookup "route.openshift.io/v1" "Route"
           "stackrox" "central").spec.host hub}}:443'
-        clusterName: |
-          {{ '{{ (lookup "v1alpha1" "cluster.open-cluster-management.io" "ClusterClaim").metadata.annotations }}' }}
-          #{{ fromSecret "open-cluster-management-agent" "hub-kubeconfig-secret" "cluster-name" | base64dec }}
+        clusterName: managedcluster-replace-me
         collector:
           serviceTLS:
             cert: |
