@@ -1,0 +1,25 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-generator-acs-hub
+placementBindingDefaults:
+  name: acs-central-binding
+policyDefaults:
+  placement:
+    placementRuleName: hub-placementrule
+  controls:
+    - "CM-2 Baseline Configuration"
+  pruneObjectBehavior: "DeleteIfCreated"
+  namespace: global-policies
+  remediationAction: enforce
+  severity: medium
+policies:
+- name: policy-acs-operator-install
+  disabled: false
+  manifests:
+    - path: ./policy-central/manifests
+- name: policy-acs-central
+  disabled: false
+  manifests:
+    - path: ./policy-operator/manifests
+  remediationAction: enforce
