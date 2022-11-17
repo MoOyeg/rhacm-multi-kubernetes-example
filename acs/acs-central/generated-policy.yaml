@@ -1,0 +1,187 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: binding-policy-acs-central
+  namespace: global-policies
+placementRef:
+  apiGroup: apps.open-cluster-management.io
+  kind: PlacementRule
+  name: hub-placementrule
+subjects:
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: policy-acs-central
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: policy-acs-central
+  namespace: global-policies
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-acs-central
+      spec:
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: platform.stackrox.io/v1alpha1
+            kind: Central
+            metadata:
+              name: stackrox-central-services
+              namespace: stackrox
+            spec:
+              central:
+                exposure:
+                  loadBalancer:
+                    enabled: false
+                    port: 443
+                  nodePort:
+                    enabled: false
+                  route:
+                    enabled: true
+                persistence:
+                  persistentVolumeClaim:
+                    claimName: stackrox-db
+              egress:
+                connectivityPolicy: Online
+              scanner:
+                analyzer:
+                  scaling:
+                    autoScaling: Enabled
+                    maxReplicas: 5
+                    minReplicas: 2
+                    replicas: 3
+                scannerComponent: Enabled
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: batch/v1
+            kind: Job
+            metadata:
+              name: create-cluster-init-bundle
+              namespace: stackrox
+            spec:
+              template:
+                spec:
+                  containers:
+                  - command:
+                    - /bin/bash
+                    - -c
+                    - |
+                      #!/usr/bin/env bash
+                      if kubectl get secret/sensor-tls &> /dev/null; then
+                        echo "cluster-init bundle has already been configured, doing nothing"
+                        exit 0
+                      else
+
+                        # Wait for central to be ready
+                        attempt_counter=0
+                        max_attempts=20
+                        echo "Waiting for central to be available..."
+                        until $(curl -k --output /dev/null --silent --head --fail https://central); do
+                            if [ ${attempt_counter} -eq ${max_attempts} ];then
+                              echo "Max attempts reached"
+                              exit 1
+                            fi
+
+                            printf '.'
+                            attempt_counter=$(($attempt_counter+1))
+                            echo "Made attempt $attempt_counter, waiting..."
+                            sleep 5
+                        done
+
+                        echo "Configuring cluster-init bundle"
+                        export DATA={\"name\":\"local-cluster\"}
+                        curl -k -o /tmp/bundle.json -X POST -u "admin:$PASSWORD" -H "Content-Type: application/json" --data $DATA https://central/v1/cluster-init/init-bundles
+
+                        echo "Bundle received"
+                        cat /tmp/bundle.json
+
+                        echo "Applying bundle"
+                        # No jq in container, python to the rescue
+                        cat /tmp/bundle.json | python3 -c "import sys, json; print(json.load(sys.stdin)['kubectlBundle'])" | base64 -d | oc apply -f -
+                        # Touch SecuredCluster to force operator to reconcile
+                        oc label SecuredCluster local-cluster cluster-init-job-status=created
+
+                        echo "ACS Cluster init bundle generated and applied"
+                      fi
+                    env:
+                    - name: PASSWORD
+                      valueFrom:
+                        secretKeyRef:
+                          key: password
+                          name: central-htpasswd
+                    image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+                    imagePullPolicy: Always
+                    name: create-cluster-init-bundle
+                  dnsPolicy: ClusterFirst
+                  restartPolicy: Never
+                  serviceAccount: create-cluster-init
+                  serviceAccountName: create-cluster-init
+                  terminationGracePeriodSeconds: 30
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: rbac.authorization.k8s.io/v1
+            kind: Role
+            metadata:
+              name: create-cluster-init
+              namespace: stackrox
+            rules:
+            - apiGroups:
+              - ""
+              resources:
+              - secrets
+              verbs:
+              - get
+              - list
+              - create
+              - patch
+              - update
+            - apiGroups:
+              - platform.stackrox.io
+              resources:
+              - securedclusters
+              verbs:
+              - get
+              - list
+              - patch
+              - update
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: rbac.authorization.k8s.io/v1
+            kind: RoleBinding
+            metadata:
+              name: create-cluster-init
+              namespace: stackrox
+            roleRef:
+              apiGroup: rbac.authorization.k8s.io
+              kind: Role
+              name: create-cluster-init
+            subjects:
+            - kind: ServiceAccount
+              name: create-cluster-init
+              namespace: stackrox
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: v1
+            kind: ServiceAccount
+            metadata:
+              name: create-cluster-init
+              namespace: stackrox
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: v1
+            kind: Namespace
+            metadata:
+              name: stackrox
+        pruneObjectBehavior: DeleteIfCreated
+        remediationAction: enforce
+        severity: medium

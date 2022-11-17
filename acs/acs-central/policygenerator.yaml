@@ -1,7 +1,7 @@
 apiVersion: policy.open-cluster-management.io/v1
 kind: PolicyGenerator
 metadata:
-  name: policy-generator-acs-hub
+  name: policy-generator-acs-central
 placementBindingDefaults:
   name: acs-central-binding
 policyDefaults:
@@ -14,12 +14,8 @@ policyDefaults:
   remediationAction: enforce
   severity: medium
 policies:
-- name: policy-acs-operator-install
-  disabled: false
-  manifests:
-    - path: ./policy-central/manifests
 - name: policy-acs-central
   disabled: false
   manifests:
-    - path: ./policy-operator/manifests
+    - path: ./manifests
   remediationAction: enforce

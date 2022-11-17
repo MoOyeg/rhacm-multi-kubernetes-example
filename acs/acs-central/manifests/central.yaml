@@ -1,4 +1,5 @@
 #Source https://github.com/stolostron/policy-collection/blob/main/community/CM-Configuration-Management/policy-acs-operator-central.yaml
+#Source https://github.com/redhat-cop/gitops-catalog/blob/main/advanced-cluster-security-operator/instance/base/central.yaml
 apiVersion: platform.stackrox.io/v1alpha1
 kind: Central
 metadata:

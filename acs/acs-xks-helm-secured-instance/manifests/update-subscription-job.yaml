@@ -1,0 +1,55 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: update-subscription-cronjob
+spec:
+  schedule: 0/5 * * * *
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: update-subscription-job
+        spec:
+          volumes:
+            - name: configmap-policy-template
+              configMap:
+                name: configmap-policy-template
+                defaultMode: 420
+          containers:
+          - name: update-securedcluster-subscription-job
+            image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+            volumeMounts:
+              - name: configmap-policy-template
+                mountPath: /tmp
+            command:
+              - "/bin/bash"
+            args:
+              - -c 
+              - |
+                #!/usr/bin/env bash
+                BASEDIR="${2:-$(dirname "$0")}"
+
+                # Get list of managed clusters 
+                readarray -t CLUSTER_LIST_NAME < <(oc get managedcluster -l vendor!=OpenShift -o name | cut -d "/" -f2)
+
+                #Exit if not enough clusters
+                if [ "${#CLUSTER_LIST_NAME[@]}" -lt 1 ]
+                then
+                  exit_message "Did not get any other clusters(apart from maybe the local cluster), exiting"
+                fi
+
+                #Create New Policies
+                for cluster_name in "${CLUSTER_LIST_NAME[@]}"
+                do
+                  if oc get subscription stackrox-secured-cluster-services-$cluster_name -n stackrox
+                  then
+                    exit 0
+                  fi
+                  sed "s/managedcluster-replace-me/$cluster_name/g" /tmp/configmap-policy-template | oc create -f -
+                done
+          restartPolicy: OnFailure
+          dnsPolicy: ClusterFirst
+          serviceAccount: update-subscription-job-sa
+          serviceAccountName: update-subscription-job-sa

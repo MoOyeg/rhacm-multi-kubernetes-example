@@ -1,3 +1,4 @@
+#source: https://github.com/nasx/umbrella-gitops/blob/main/manifests/advanced-cluster-management-policies/acs/securedcluster/securedcluster.yaml
 apiVersion: platform.stackrox.io/v1alpha1
 kind: SecuredCluster
 metadata:
@@ -26,6 +27,5 @@ spec:
       collection: KernelModule
       imageFlavor: Regular
     taintToleration: TolerateTaints
-  clusterName: |
-    {{ (lookup "cluster.open-cluster-management.io/v1alpha1" "ClusterClaim" "" "name").spec.value }}
+  clusterName: '{{ (index (lookup "cluster.open-cluster-management.io/v1alpha1" "ClusterClaim" "" "name").spec.value) }}'
   centralEndpoint: '{{hub (lookup "route.openshift.io/v1" "Route" "stackrox" "central").spec.host hub}}:443'
