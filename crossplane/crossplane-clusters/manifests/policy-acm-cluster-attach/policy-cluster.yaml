@@ -1,0 +1,61 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: policy-replace-me
+  namespace: crossplane-system
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+    policy.open-cluster-management.io/trigger-update: 0
+spec:
+  disabled: false
+  remediationAction: inform
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: policy-replace-me
+        spec:
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: cluster.open-cluster-management.io/v1
+                kind: ManagedCluster
+                metadata:
+                  labels:
+                    cloud: auto-detect
+                    vendor: auto-detect
+                  name: cluster-name-replace-me
+                spec:
+                  hubAcceptsClient: true
+                  leaseDurationSeconds: 60
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: agent.open-cluster-management.io/v1
+                kind: KlusterletAddonConfig
+                metadata:
+                  name: cluster-name-replace-me
+                  namespace: cluster-name-replace-me
+                spec:
+                  clusterName: cluster-name-replace-me
+                  clusterNamespace: cluster-name-replace-me
+                  clusterLabels:
+                    cloud: auto-detect
+                    vendor: auto-detect
+                  applicationManager:
+                    enabled: true
+                  policyController:
+                    enabled: true
+                  searchCollector:
+                    enabled: true
+                  certPolicyController:
+                    enabled: true
+                  iamPolicyController:
+                    enabled: true   
+          pruneObjectBehavior: "DeleteIfCreated"        
+          severity: medium
+          evaluationInterval:
+            compliant: never  
+

@@ -1,6 +1,7 @@
 bases:
 #ACM Attach Cluster Files
-- ../../../policy-aks-acm-cluster-attach-base
+- ../../../policy-acm-cluster-attach
+- ../../../job-acm-cluster-attach/aks
 namespace: crossplane-system
 patchesJson6902:
   - target:
