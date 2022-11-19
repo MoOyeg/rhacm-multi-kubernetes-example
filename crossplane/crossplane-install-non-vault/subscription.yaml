@@ -16,7 +16,7 @@ spec:
     - path: spec
       value:
       # Update Values in Helm values.yaml file
-        replicas: 2
+        replicas: 1
       # Commenting this out to use provider yaml files instead
         # provider:
         #   packages:
