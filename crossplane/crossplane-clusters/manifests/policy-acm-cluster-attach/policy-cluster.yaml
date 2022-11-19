@@ -59,7 +59,7 @@ spec:
                 kind: Namespace
                 metadata:
                   name: namespace-replace-me  
-          pruneObjectBehavior: "DeleteIfCreated"        
+          pruneObjectBehavior: "DeleteAll"        
           severity: medium
           evaluationInterval:
             compliant: never
