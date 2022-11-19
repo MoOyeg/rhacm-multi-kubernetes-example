@@ -97,7 +97,7 @@ spec:
               sleepval=$(setsleep)
               echo "Will Sleep ${sleepval} to give everything time to process"
               sleep ${sleepval}
-
+              sleep ${sleepval}
 
               #Enable our ManagedClusterPolicy
               oc patch policy/policy-attach-${SECRETNAME} -n crossplane-system -p '{"spec":{"remediationAction":"enforce"}}' --type=merge

@@ -81,13 +81,13 @@ spec:
               sleepval=$(setsleep)
               echo "Will Sleep ${sleepval} to give everything time to process"
               sleep ${sleepval}
+              sleep ${sleepval}
 
               #Enable our ManagedClusterPolicy
               oc patch policy/policy-attach-${SECRETNAME} -n crossplane-system -p '{"spec":{"remediationAction":"enforce"}}' --type=merge
 
               #Delete our Import Secret Policy - ACM will delete the auto-import-secret we create
-              oc delete policy/policy-secret-attach-${SECRETNAME} -n crossplane-system
-              
+              oc delete policy/policy-secret-attach-${SECRETNAME} -n crossplane-system       
 
           imagePullPolicy: Always
           name: until-cluster-ready
