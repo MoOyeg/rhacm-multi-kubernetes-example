@@ -88,7 +88,7 @@ spec:
               sleep ${sleepval}
               if [ $count -le 0 ]
               then
-                echo "Policy not validated for Policy ${SECRETNAME}"
+                echo "Policy not validated for Policy-secret-attach-${SECRETNAME}"
                 break
               fi
               done
@@ -97,11 +97,23 @@ spec:
               sleepval=$(setsleep)
               echo "Will Sleep ${sleepval} to give everything time to process"
               sleep ${sleepval}
-              sleep ${sleepval}
 
               #Enable our ManagedClusterPolicy
               oc patch policy/policy-attach-${SECRETNAME} -n crossplane-system -p '{"spec":{"remediationAction":"enforce"}}' --type=merge
 
+              count=$(setcount)
+              sleepval=$(setsleep)
+              until [ $(oc get policy/policy-attach-${SECRETNAME}  -n crossplane-system -o jsonpath='{.status.compliant}') == "Compliant" ]
+              do
+              count=$((count-1))
+              echo "Sleep for ${sleepval} seconds, Will check attach policy $count more times"
+              sleep ${sleepval}
+              if [ $count -le 0 ]
+              then
+                echo "Policy not validated for Policy-attach-${SECRETNAME}"
+                break
+              fi
+              done
 
               #Delete our Import Secret Policy - ACM will delete the auto-import-secret we create
               oc delete policy/policy-secret-attach-${SECRETNAME} -n crossplane-system
