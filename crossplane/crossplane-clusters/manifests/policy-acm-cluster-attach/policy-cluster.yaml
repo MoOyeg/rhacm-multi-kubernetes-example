@@ -52,8 +52,14 @@ spec:
                   certPolicyController:
                     enabled: true
                   iamPolicyController:
-                    enabled: true   
+                    enabled: true
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: v1
+                kind: Namespace
+                metadata:
+                  name: namespace-replace-me  
           pruneObjectBehavior: "DeleteIfCreated"        
           severity: medium
- 
-
+          evaluationInterval:
+            compliant: never

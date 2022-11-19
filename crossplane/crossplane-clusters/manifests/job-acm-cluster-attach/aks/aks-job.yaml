@@ -100,7 +100,7 @@ spec:
               done
 
               #Disable our Import Secret Policy - ACM will delete the auto-import-secret we create
-              oc patch policy/policy-secret-attach-${SECRETNAME} -n crossplane-system -p '{"spec":{"disabled":true}}' --type=merge       
+              oc patch policy/policy-secret-attach-${SECRETNAME} -n crossplane-system -p '{"spec":{"disabled":true}}' --type=merge  
 
           imagePullPolicy: Always
           name: until-cluster-ready
