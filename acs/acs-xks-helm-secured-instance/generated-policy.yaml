@@ -62,7 +62,29 @@ spec:
           objectDefinition:
             apiVersion: v1
             data:
-              configmap-policy-template: |
+              configmap-placement-template.yaml: |
+                apiVersion: apps.open-cluster-management.io/v1
+                kind: PlacementRule
+                metadata:
+                  name: managedcluster-replace-me-placementrule
+                  namespace: stackrox
+                spec:
+                  clusterConditions:
+                    - status: "True"
+                      type: ManagedClusterConditionAvailable
+                  clusterSelector:
+                    matchLabels:
+                      'name': 'managedcluster-replace-me'
+            immutable: false
+            kind: ConfigMap
+            metadata:
+              name: configmap-placement-template
+              namespace: stackrox
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: v1
+            data:
+              configmap-policy-template.yaml: |
                 apiVersion: policy.open-cluster-management.io/v1
                 kind: PlacementBinding
                 metadata:
@@ -75,7 +97,7 @@ spec:
                 subjects:
                 - apiGroup: policy.open-cluster-management.io
                   kind: Policy
-                  name: policy-managedcluster-replace-me-acs-helm-secured
+                  name: policy-xks-acs-helm-secured-managedcluster-replace-me
                 ---
                 apiVersion: policy.open-cluster-management.io/v1
                 kind: Policy
@@ -84,7 +106,7 @@ spec:
                     policy.open-cluster-management.io/categories: CM Configuration Management
                     policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
                     policy.open-cluster-management.io/standards: NIST SP 800-53
-                  name: policy-managedcluster-replace-me-acs-helm-secured
+                  name: policy-xks-acs-helm-secured-managedcluster-replace-me
                   namespace: stackrox
                 spec:
                   disabled: false
@@ -93,23 +115,9 @@ spec:
                       apiVersion: policy.open-cluster-management.io/v1
                       kind: ConfigurationPolicy
                       metadata:
-                        name: policy-managedcluster-replace-me-acs-helm-secured
+                        name: policy-xks-acs-helm-secured-managedcluster-replace-me
                       spec:
                         object-templates:
-                        - complianceType: musthave
-                          objectDefinition:
-                            apiVersion: apps.open-cluster-management.io/v1
-                            kind: PlacementRule
-                            metadata:
-                              name: managedcluster-replace-me-placementrule
-                              namespace: stackrox
-                            spec:
-                              clusterConditions:
-                              - status: "True"
-                                type: ManagedClusterConditionAvailable
-                              clusterSelector:
-                                matchLabels:
-                                  name: managedcluster-replace-me
                         - complianceType: musthave
                           objectDefinition:
                             apiVersion: apps.open-cluster-management.io/v1
@@ -135,30 +143,30 @@ spec:
                                           {{hub (index (lookup "v1" "Secret" "stackrox"
                                           "admission-control-tls").data
                                           "admission-control-cert.pem") | base64dec |
-                                          indent 18 hub}}
+                                          indent 30 hub}}
                                         key: |
-                                          {{hub (index (lookup "v1" "Secret" "stackrox" "admission-control-tls").data "admission-control-key.pem") | base64dec | indent 18 hub}}
+                                          {{hub (index (lookup "v1" "Secret" "stackrox" "admission-control-tls").data "admission-control-key.pem") | base64dec | indent 30 hub}}
                                     allowNonstandardReleaseName: true
                                     ca:
                                       cert: |
-                                        {{hub (index (lookup "v1" "Secret" "stackrox" "admission-control-tls").data "ca.pem") | base64dec | indent 16 hub}}
+                                        {{hub (index (lookup "v1" "Secret" "stackrox" "admission-control-tls").data "ca.pem") | base64dec | indent 28 hub}}
                                     centralEndpoint: '{{hub (lookup "route.openshift.io/v1" "Route"
                                       "stackrox" "central").spec.host hub}}:443'
                                     clusterName: managedcluster-replace-me
                                     collector:
                                       serviceTLS:
                                         cert: |
-                                          {{hub (index (lookup "v1" "Secret" "stackrox" "collector-tls").data "collector-cert.pem") | base64dec | indent 18 hub}}
+                                          {{hub (index (lookup "v1" "Secret" "stackrox" "collector-tls").data "collector-cert.pem") | base64dec | indent 30 hub}}
                                         key: |
-                                          {{hub (index (lookup "v1" "Secret" "stackrox" "collector-tls").data "collector-key.pem") | base64dec | indent 18 hub}}
+                                          {{hub (index (lookup "v1" "Secret" "stackrox" "collector-tls").data "collector-key.pem") | base64dec | indent 30 hub}}
                                     imagePullSecrets:
                                       useExisting: pull-secret
                                     sensor:
                                       serviceTLS:
                                         cert: |
-                                          {{hub (index (lookup "v1" "Secret" "stackrox" "sensor-tls").data "sensor-cert.pem") | base64dec | indent 18 hub}}
+                                          {{hub (index (lookup "v1" "Secret" "stackrox" "sensor-tls").data "sensor-cert.pem") | base64dec | indent 30 hub}}
                                         key: |
-                                          {{hub (index (lookup "v1" "Secret" "stackrox" "sensor-tls").data "sensor-key.pem") | base64dec | indent 18 hub}}
+                                          {{hub (index (lookup "v1" "Secret" "stackrox" "sensor-tls").data "sensor-key.pem") | base64dec | indent 30 hub}}
                               placement:
                                 placementRef:
                                   kind: PlacementRule
@@ -276,51 +284,52 @@ spec:
               namespace: stackrox
         - complianceType: musthave
           objectDefinition:
-            apiVersion: batch/v1beta1
-            kind: CronJob
+            apiVersion: batch/v1
+            kind: Job
             metadata:
-              name: update-subscription-cronjob
+              name: update-acs-xks-managedcluster-subscription-job
               namespace: stackrox
             spec:
-              concurrencyPolicy: Forbid
-              jobTemplate:
+              template:
                 spec:
-                  template:
-                    metadata:
-                      labels:
-                        app: update-subscription-job
-                    spec:
-                      containers:
-                      - args:
-                        - -c
-                        - "#!/usr/bin/env bash\nBASEDIR=\"${2:-$(dirname \"$0\")}\"\n\n#
-                          Get list of managed clusters \nreadarray -t CLUSTER_LIST_NAME
-                          < <(oc get managedcluster -l vendor!=OpenShift -o name |
-                          cut -d \"/\" -f2)\n\n#Exit if not enough clusters\nif [
-                          \"${#CLUSTER_LIST_NAME[@]}\" -lt 1 ]\nthen\n  exit_message
-                          \"Did not get any other clusters(apart from maybe the local
-                          cluster), exiting\"\nfi\n\n#Create New Policies\nfor cluster_name
-                          in \"${CLUSTER_LIST_NAME[@]}\"\ndo\n  if oc get subscription
-                          stackrox-secured-cluster-services-$cluster_name -n stackrox\n
-                          \ then\n    exit 0\n  fi\n  sed \"s/managedcluster-replace-me/$cluster_name/g\"
-                          /tmp/configmap-policy-template | oc create -f -\ndone\n"
-                        command:
-                        - /bin/bash
-                        image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
-                        name: update-securedcluster-subscription-job
-                        volumeMounts:
-                        - mountPath: /tmp
-                          name: configmap-policy-template
-                      dnsPolicy: ClusterFirst
-                      restartPolicy: OnFailure
-                      serviceAccount: update-subscription-job-sa
-                      serviceAccountName: update-subscription-job-sa
-                      volumes:
-                      - configMap:
-                          defaultMode: 420
-                          name: configmap-policy-template
-                        name: configmap-policy-template
-              schedule: 0/5 * * * *
+                  containers:
+                  - args:
+                    - -c
+                    - "#!/usr/bin/env bash -x\nBASEDIR=\"${2:-$(dirname \"$0\")}\"\n\n#
+                      Get list of managed clusters \nreadarray -t CLUSTER_LIST_NAME
+                      < <(oc get managedcluster -l vendor!=OpenShift -o name | cut
+                      -d \"/\" -f2)\n\n#Exit if not enough clusters\nif [ \"${#CLUSTER_LIST_NAME[@]}\"
+                      -lt 1 ]\nthen\n  exit_message \"Did not get any other clusters(apart
+                      from maybe the local cluster), exiting\"\nfi\n\n#Create New
+                      Policies\nfor cluster_name in \"${CLUSTER_LIST_NAME[@]}\"\ndo\n
+                      \ if oc get subscription stackrox-secured-cluster-services-$cluster_name
+                      -n stackrox\n  then\n    continue\n  fi\n  sed \"s/managedcluster-replace-me/$cluster_name/g\"
+                      /tmp/placement/configmap-placement-template.yaml | oc create
+                      -f -\n  sed \"s/managedcluster-replace-me/$cluster_name/g\"
+                      /tmp/policy/configmap-policy-template.yaml | oc create -f -\ndone\n"
+                    command:
+                    - /bin/bash
+                    image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+                    imagePullPolicy: Always
+                    name: update-securedcluster-subscription-job
+                    volumeMounts:
+                    - mountPath: /tmp/policy
+                      name: configmap-policy-template
+                    - mountPath: /tmp/placement
+                      name: configmap-placement-template
+                  dnsPolicy: ClusterFirst
+                  restartPolicy: Never
+                  serviceAccount: update-subscription-job-sa
+                  serviceAccountName: update-subscription-job-sa
+                  volumes:
+                  - configMap:
+                      defaultMode: 420
+                      name: configmap-policy-template
+                    name: configmap-policy-template
+                  - configMap:
+                      defaultMode: 420
+                      name: configmap-placement-template
+                    name: configmap-placement-template
         pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce
         severity: medium
