@@ -17,6 +17,8 @@ spec:
         metadata:
           name: policy-replace-me
         spec:
+          evaluationInterval:
+            compliant: never
           object-templates:
             - complianceType: musthave
               objectDefinition:
@@ -61,5 +63,3 @@ spec:
                   name: namespace-replace-me  
           pruneObjectBehavior: "DeleteAll"        
           severity: medium
-          evaluationInterval:
-            compliant: never
