@@ -174,6 +174,28 @@ OR
   kustomize build --enable-alpha-plugins ./acs/acs-ocp-operator-secured-instance | oc create -f -
   ```
 
+**4 Create ACS SecuredClusters Policy for xKS Clusters.**
+
+- Create policy to allow ACS pods access pull-secret
+  
+  ```bash
+  oc create -f ./acs/acs-xks-helm-secured-instance/policy-pullsecret.yaml
+  ```
+
+- Create via the pre-generated yaml
+
+  ```bash
+  oc create -f ./acs/acs-xks-helm-secured-instance/generated-policy.yaml
+  ```
+
+OR
+
+- Generate your own policy and then create
+
+  ```bash
+  kustomize build --enable-alpha-plugins ./acs/acs-xks-helm-secured-instance/ | oc create -f -
+  ```
+
 ## Crossplane Provisioning
 
 Repo contains examples of using crossplane with ACM.

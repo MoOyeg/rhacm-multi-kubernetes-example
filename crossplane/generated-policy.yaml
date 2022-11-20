@@ -110,6 +110,26 @@ spec:
 apiVersion: apps.open-cluster-management.io/v1
 kind: PlacementRule
 metadata:
+  name: ocp-non-hub-placementrule
+  namespace: crossplane-system
+spec:
+  clusterConditions:
+  - status: "True"
+    type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+    - key: name
+      operator: NotIn
+      values:
+      - local-cluster
+    - key: vendor
+      operator: In
+      values:
+      - OpenShift
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
   name: ocp-placementrule
   namespace: crossplane-system
 spec:
@@ -500,7 +520,7 @@ spec:
                   value:
                     customAnnotations:
                       deployed.via.acm.subscription: crossplane-install-subscription
-                    replicas: 2
+                    replicas: 1
                     serviceAccount:
                       customAnnotations:
                         deployed.via.acm.subscription: crossplane-install-subscription
