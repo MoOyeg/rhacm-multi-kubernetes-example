@@ -1,0 +1,4 @@
+resources:
+- policy-cluster.yaml
+- policy-secret.yaml
+- placementbinding.yaml

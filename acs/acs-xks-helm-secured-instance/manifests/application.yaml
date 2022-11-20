@@ -1,0 +1,13 @@
+apiVersion: app.k8s.io/v1beta1
+kind: Application
+metadata:
+  name: rhacs-securedcluster-helm
+  namespace: stackrox
+spec:
+  componentKinds:
+    - group: apps.open-cluster-management.io
+      kind: Subscription
+  descriptor: {}
+  selector:
+    matchLabels:
+      app: stackrox-secured-cluster-services

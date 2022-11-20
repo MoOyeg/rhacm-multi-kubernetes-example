@@ -7,15 +7,15 @@ metadata:
     app: "crossplane"
     provider: azure
 spec: 
-  resourceGroupName: resourcegroup-replaceme
+  resourceGroupName: openenv-g8khn
   #resourceGroupNameRef:
-  #  name: resourcegroup-replaceme
+  #  name: openenv-g8khn
   vnetSubnetIDRef:
     name: crossplane-azure-subnet-eastus
   location: East US
   version: "1.24.6"
-  nodeCount: 2
-  nodeVMSize: Standard_B2s
+  nodeCount: 3
+  nodeVMSize: Standard_D8s_v3
   dnsNamePrefix: aks-cluster-1
   disableRBAC: false
   writeConnectionSecretToRef:

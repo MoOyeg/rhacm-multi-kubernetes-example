@@ -1,0 +1,20 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: configmap-placement-template
+  namespace: stackrox
+immutable: false
+data:
+  configmap-placement-template.yaml: |
+    apiVersion: apps.open-cluster-management.io/v1
+    kind: PlacementRule
+    metadata:
+      name: managedcluster-replace-me-placementrule
+      namespace: stackrox
+    spec:
+      clusterConditions:
+        - status: "True"
+          type: ManagedClusterConditionAvailable
+      clusterSelector:
+        matchLabels:
+          'name': 'managedcluster-replace-me'

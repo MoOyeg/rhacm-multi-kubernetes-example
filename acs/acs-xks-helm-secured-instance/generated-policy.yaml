@@ -1,0 +1,335 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: binding-policy-xks-acs-helm-secured
+  namespace: stackrox
+placementRef:
+  apiGroup: apps.open-cluster-management.io
+  kind: PlacementRule
+  name: hub-placementrule
+subjects:
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: policy-xks-acs-helm-secured
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: policy-xks-acs-helm-secured
+  namespace: stackrox
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-xks-acs-helm-secured
+      spec:
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: app.k8s.io/v1beta1
+            kind: Application
+            metadata:
+              name: rhacs-securedcluster-helm
+              namespace: stackrox
+            spec:
+              componentKinds:
+              - group: apps.open-cluster-management.io
+                kind: Subscription
+              descriptor: {}
+              selector:
+                matchLabels:
+                  app: stackrox-secured-cluster-services
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: apps.open-cluster-management.io/v1
+            kind: Channel
+            metadata:
+              annotations:
+                apps.open-cluster-management.io/reconcile-rate: medium
+              name: rhacs-charts
+              namespace: channel-helm-rhacs
+            spec:
+              pathname: https://mirror.openshift.com/pub/rhacs/charts
+              type: HelmRepo
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: v1
+            data:
+              configmap-placement-template.yaml: |
+                apiVersion: apps.open-cluster-management.io/v1
+                kind: PlacementRule
+                metadata:
+                  name: managedcluster-replace-me-placementrule
+                  namespace: stackrox
+                spec:
+                  clusterConditions:
+                    - status: "True"
+                      type: ManagedClusterConditionAvailable
+                  clusterSelector:
+                    matchLabels:
+                      'name': 'managedcluster-replace-me'
+            immutable: false
+            kind: ConfigMap
+            metadata:
+              name: configmap-placement-template
+              namespace: stackrox
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: v1
+            data:
+              configmap-policy-template.yaml: |
+                apiVersion: policy.open-cluster-management.io/v1
+                kind: PlacementBinding
+                metadata:
+                  name: binding-managedcluster-replace-me-acs-helm-secured
+                  namespace: stackrox
+                placementRef:
+                  apiGroup: apps.open-cluster-management.io
+                  kind: PlacementRule
+                  name: hub-placementrule
+                subjects:
+                - apiGroup: policy.open-cluster-management.io
+                  kind: Policy
+                  name: policy-xks-acs-helm-secured-managedcluster-replace-me
+                ---
+                apiVersion: policy.open-cluster-management.io/v1
+                kind: Policy
+                metadata:
+                  annotations:
+                    policy.open-cluster-management.io/categories: CM Configuration Management
+                    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+                    policy.open-cluster-management.io/standards: NIST SP 800-53
+                  name: policy-xks-acs-helm-secured-managedcluster-replace-me
+                  namespace: stackrox
+                spec:
+                  disabled: false
+                  policy-templates:
+                  - objectDefinition:
+                      apiVersion: policy.open-cluster-management.io/v1
+                      kind: ConfigurationPolicy
+                      metadata:
+                        name: policy-xks-acs-helm-secured-managedcluster-replace-me
+                      spec:
+                        object-templates:
+                        - complianceType: musthave
+                          objectDefinition:
+                            apiVersion: apps.open-cluster-management.io/v1
+                            kind: Subscription
+                            metadata:
+                              annotations: null
+                              labels:
+                                app: stackrox-secured-cluster-services
+                              name: stackrox-secured-cluster-services-managedcluster-replace-me
+                              namespace: stackrox
+                            spec:
+                              channel: channel-helm-rhacs/rhacs-charts
+                              name: stackrox-secured-cluster-services
+                              packageOverrides:
+                              - packageAlias: stackrox-secured-cluster-svcs
+                                packageName: stackrox-secured-cluster-services
+                                packageOverrides:
+                                - path: spec
+                                  value:
+                                    admissionControl:
+                                      serviceTLS:
+                                        cert: |
+                                          {{hub (index (lookup "v1" "Secret" "stackrox"
+                                          "admission-control-tls").data
+                                          "admission-control-cert.pem") | base64dec |
+                                          indent 30 hub}}
+                                        key: |
+                                          {{hub (index (lookup "v1" "Secret" "stackrox" "admission-control-tls").data "admission-control-key.pem") | base64dec | indent 30 hub}}
+                                    allowNonstandardReleaseName: true
+                                    ca:
+                                      cert: |
+                                        {{hub (index (lookup "v1" "Secret" "stackrox" "admission-control-tls").data "ca.pem") | base64dec | indent 28 hub}}
+                                    centralEndpoint: '{{hub (lookup "route.openshift.io/v1" "Route"
+                                      "stackrox" "central").spec.host hub}}:443'
+                                    clusterName: managedcluster-replace-me
+                                    collector:
+                                      serviceTLS:
+                                        cert: |
+                                          {{hub (index (lookup "v1" "Secret" "stackrox" "collector-tls").data "collector-cert.pem") | base64dec | indent 30 hub}}
+                                        key: |
+                                          {{hub (index (lookup "v1" "Secret" "stackrox" "collector-tls").data "collector-key.pem") | base64dec | indent 30 hub}}
+                                    imagePullSecrets:
+                                      useExisting: pull-secret
+                                    sensor:
+                                      serviceTLS:
+                                        cert: |
+                                          {{hub (index (lookup "v1" "Secret" "stackrox" "sensor-tls").data "sensor-cert.pem") | base64dec | indent 30 hub}}
+                                        key: |
+                                          {{hub (index (lookup "v1" "Secret" "stackrox" "sensor-tls").data "sensor-key.pem") | base64dec | indent 30 hub}}
+                              placement:
+                                placementRef:
+                                  kind: PlacementRule
+                                  name: managedcluster-replace-me-placementrule
+                        pruneObjectBehavior: DeleteIfCreated
+                        remediationAction: enforce
+                        severity: medium
+            immutable: false
+            kind: ConfigMap
+            metadata:
+              name: configmap-policy-template
+              namespace: stackrox
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: v1
+            kind: Namespace
+            metadata:
+              name: channel-helm-rhacs
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: rbac.authorization.k8s.io/v1
+            kind: Role
+            metadata:
+              name: update-subscription-job
+              namespace: stackrox
+            rules:
+            - apiGroups:
+              - apps.open-cluster-management.io
+              resources:
+              - subscriptions
+              verbs:
+              - get
+              - list
+              - create
+              - patch
+              - update
+              - delete
+            - apiGroups:
+              - apps.open-cluster-management.io
+              resources:
+              - placementrules
+              verbs:
+              - get
+              - list
+              - create
+              - update
+            - apiGroups:
+              - policy.open-cluster-management.io
+              resources:
+              - placementbindings
+              verbs:
+              - get
+              - list
+              - create
+              - delete
+            - apiGroups:
+              - policy.open-cluster-management.io
+              resources:
+              - policies
+              verbs:
+              - get
+              - list
+              - create
+              - delete
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRole
+            metadata:
+              name: update-subscription-job-clusterrole
+            rules:
+            - apiGroups:
+              - cluster.open-cluster-management.io
+              resources:
+              - managedclusters
+              verbs:
+              - get
+              - watch
+              - list
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: rbac.authorization.k8s.io/v1
+            kind: RoleBinding
+            metadata:
+              name: update-subscription-job-binding
+              namespace: stackrox
+            roleRef:
+              apiGroup: rbac.authorization.k8s.io
+              kind: Role
+              name: update-subscription-job
+            subjects:
+            - kind: ServiceAccount
+              name: update-subscription-job-sa
+              namespace: stackrox
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRoleBinding
+            metadata:
+              name: update-subscription-job-binding-mangedcluster
+            roleRef:
+              apiGroup: rbac.authorization.k8s.io
+              kind: ClusterRole
+              name: update-subscription-job-clusterrole
+            subjects:
+            - kind: ServiceAccount
+              name: update-subscription-job-sa
+              namespace: stackrox
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: v1
+            kind: ServiceAccount
+            metadata:
+              name: update-subscription-job-sa
+              namespace: stackrox
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: batch/v1
+            kind: Job
+            metadata:
+              name: update-acs-xks-managedcluster-subscription-job
+              namespace: stackrox
+            spec:
+              template:
+                spec:
+                  containers:
+                  - args:
+                    - -c
+                    - "#!/usr/bin/env bash -x\nBASEDIR=\"${2:-$(dirname \"$0\")}\"\n\n#
+                      Get list of managed clusters \nreadarray -t CLUSTER_LIST_NAME
+                      < <(oc get managedcluster -l vendor!=OpenShift -o name | cut
+                      -d \"/\" -f2)\n\n#Exit if not enough clusters\nif [ \"${#CLUSTER_LIST_NAME[@]}\"
+                      -lt 1 ]\nthen\n  exit_message \"Did not get any other clusters(apart
+                      from maybe the local cluster), exiting\"\nfi\n\n#Create New
+                      Policies\nfor cluster_name in \"${CLUSTER_LIST_NAME[@]}\"\ndo\n
+                      \ if oc get subscription stackrox-secured-cluster-services-$cluster_name
+                      -n stackrox\n  then\n    continue\n  fi\n  sed \"s/managedcluster-replace-me/$cluster_name/g\"
+                      /tmp/placement/configmap-placement-template.yaml | oc create
+                      -f -\n  sed \"s/managedcluster-replace-me/$cluster_name/g\"
+                      /tmp/policy/configmap-policy-template.yaml | oc create -f -\ndone\n"
+                    command:
+                    - /bin/bash
+                    image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+                    imagePullPolicy: Always
+                    name: update-securedcluster-subscription-job
+                    volumeMounts:
+                    - mountPath: /tmp/policy
+                      name: configmap-policy-template
+                    - mountPath: /tmp/placement
+                      name: configmap-placement-template
+                  dnsPolicy: ClusterFirst
+                  restartPolicy: Never
+                  serviceAccount: update-subscription-job-sa
+                  serviceAccountName: update-subscription-job-sa
+                  volumes:
+                  - configMap:
+                      defaultMode: 420
+                      name: configmap-policy-template
+                    name: configmap-policy-template
+                  - configMap:
+                      defaultMode: 420
+                      name: configmap-placement-template
+                    name: configmap-placement-template
+        pruneObjectBehavior: DeleteIfCreated
+        remediationAction: enforce
+        severity: medium

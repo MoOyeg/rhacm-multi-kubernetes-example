@@ -4,6 +4,11 @@ Purpose of this repo is to demo an example of what is possible with Red Hat Adva
 Repo is structured as a series of steps that can be followed for a particular example.
 Some steps can be skipped while others have a dependency on pre-completed steps.
 
+## Contents
+
+- [Use Red Hat Advanced Cluster Security(ACS) with xKS via ACM](#red-hat-advanced-cluster-securityrhacs)
+- [Use Crossplane with ACM for xKS Provisioning](#crossplane-provisioning)
+
 ## Prerequisites
 
 - [OpenShift Cluster](https://docs.openshift.com/container-platform/4.9/welcome/index.html) - Version>=4.9
@@ -47,7 +52,7 @@ If you would like to use ACM to create clusters here is some tooling to help
 
 ### Global Placment Rules
 
-- Create List Of PlacementRules we want ACM to use and can be leveraged by other policies. PlacementRules are used as selectors to determine which clusters a policy should be applied to.
+- Create List Of PlacementRules we want ACM to use and can be leveraged by other policies. PlacementRules are used as selectors to determine which clusters a policy should be applied to.Might need to run this command twice to allow the previous policy to be enforced.
 
   ```bash
   oc apply -k ./placementrules/
@@ -102,6 +107,103 @@ oc apply -k ./acs-operator-central-gitops
 ## Deploy an Application
 
 This Pacman App deployment will show a High Availibility use case. -->
+
+## Red Hat Advanced Cluster Security(RHACS)  
+
+Repo provides an example of using ACM to install Red Hat Advanced Cluster Security on OCP Clusters and on xKS Clusters.
+
+### What example does repo provide?  
+
+- ACM will install ACS Operator on OCP Clusters
+- ACM will install ACS Central on OCP Hub
+- ACM will install ACS SecuredCluster on OCP Clusters
+- ACM will install ACS SecuredCluster via Helm on xKS Clusters
+
+### Prerequisites
+
+- Run [Basic Cluster Configuration](#basic-cluster-configuration) steps from above.
+- [User running commands must have subscription-admin privilege](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#granting-subscription-admin-privilege). [Sample Solution](https://access.redhat.com/solutions/6010251)
+
+### Steps  
+
+**1 Create Placementrules we will leverage for ACS Policies. Make sure to run prerequisites above first.**
+
+  ```bash
+  oc apply -k ./acs/acs-placementrules/
+  ```  
+
+**2 Create ACS Operator installation policy for all OpenShift Clusters.**
+
+- Create via the pre-generated yaml
+
+  ```bash
+  oc create -f ./acs/acs-operator/generated-policy.yaml
+  ```
+
+OR
+
+- Generate your own policy and then create
+
+  ```bash
+  kustomize build --enable-alpha-plugins ./acs/acs-operator | oc create -f -
+  ```  
+
+**3 Create ACS Central policy for only hub Openshift Cluster.**
+
+- Create via the pre-generated yaml
+
+  ```bash
+  oc create -f ./acs/acs-central/generated-policy.yaml
+  ```
+
+OR
+
+- Generate your own policy and then create
+
+  ```bash
+  kustomize build --enable-alpha-plugins ./acs/acs-central | oc create -f -
+
+**4 Create ACS SecuredClusters Policy for Openshift Clusters.**
+
+- Create via the pre-generated yaml
+
+  ```bash
+  oc create -f ./acs/acs-ocp-operator-secured-instance/generated-policy.yaml
+  ```
+
+OR
+
+- Generate your own policy and then create
+
+  ```bash
+  kustomize build --enable-alpha-plugins ./acs/acs-ocp-operator-secured-instance | oc create -f -
+  ```
+
+**5 Create Image Secret Pull Policy to allow ACS Pods pull required images.**
+
+- Create policy to allow ACS pods access pull-secret
+  
+  ```bash
+  oc create -f ./acs/acs-xks-helm-secured-instance/policy-pullsecret.yaml
+  ```
+
+**6 Create ACS SecuredClusters Policy for xKS Clusters.**
+Policy presently creates a job which then creates an ACM helm securedcluster application for each xks managedcluster.You can add new xks clusters by deleting the job and allowing ACM recreate it.  
+TODO: Research a way to accomplish without using a Job.  
+
+- Create via the pre-generated yaml
+
+  ```bash
+  oc create -f ./acs/acs-xks-helm-secured-instance/generated-policy.yaml
+  ```
+
+OR
+
+- Generate your own policy and then create
+
+  ```bash
+  kustomize build --enable-alpha-plugins ./acs/acs-xks-helm-secured-instance/ | oc create -f -
+  ```
 
 ## Crossplane Provisioning
 

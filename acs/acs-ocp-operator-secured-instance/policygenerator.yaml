@@ -1,0 +1,21 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-generator-ocp-securedcluster-acs
+placementBindingDefaults:
+  name: ocp-acs-securedcluster-binding
+policyDefaults:
+  placement:
+    placementRuleName: ocp-placementrule
+  controls:
+    - "CM-2 Baseline Configuration"
+  pruneObjectBehavior: "DeleteIfCreated"
+  namespace: stackrox
+  remediationAction: enforce
+  severity: medium
+policies:
+- name: policy-ocp-securedcluster-acs
+  disabled: false
+  manifests:
+    - path: ./manifests
+

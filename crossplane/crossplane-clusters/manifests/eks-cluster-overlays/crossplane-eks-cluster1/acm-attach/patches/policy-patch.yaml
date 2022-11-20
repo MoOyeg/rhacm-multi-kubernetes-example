@@ -22,3 +22,7 @@
 - op: replace
   path: /spec/policy-templates/0/objectDefinition/spec/object-templates/1/objectDefinition/spec/clusterNamespace
   value: eks-cluster-1
+#Namespace Changes
+- op: replace
+  path: /spec/policy-templates/0/objectDefinition/spec/object-templates/2/objectDefinition/metadata/name
+  value: eks-cluster-1

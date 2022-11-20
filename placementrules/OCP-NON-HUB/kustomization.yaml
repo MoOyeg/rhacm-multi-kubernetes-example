@@ -1,0 +1,4 @@
+resources:
+- ./ocp-non-hub-placementrule.yaml
+
+

@@ -1,0 +1,16 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: pb-replace-me
+  namespace: crossplane-system
+placementRef:
+  name: hub-placementrule
+  apiGroup: apps.open-cluster-management.io
+  kind: PlacementRule
+subjects:
+  - name: policy-replace-me
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+  - name: policy-secret-replace-me
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy

@@ -1,0 +1,5 @@
+resources:
+- namespace-stackrox.yaml
+bases:
+- ../../placementrules/
+namespace: stackrox

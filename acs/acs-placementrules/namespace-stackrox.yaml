@@ -1,0 +1,5 @@
+#Source https://github.com/stolostron/policy-collection/blob/main/community/CM-Configuration-Management/policy-acs-operator-central.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: stackrox

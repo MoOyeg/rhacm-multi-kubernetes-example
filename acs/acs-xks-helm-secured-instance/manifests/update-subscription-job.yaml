@@ -1,0 +1,57 @@
+kind: Job
+apiVersion: batch/v1
+metadata:
+  name: update-acs-xks-managedcluster-subscription-job
+  namespace: stackrox
+spec:
+  template:
+    spec:
+      volumes:
+        - name: configmap-policy-template
+          configMap:
+            name: configmap-policy-template
+            defaultMode: 420
+        - name: configmap-placement-template
+          configMap:
+            name: configmap-placement-template
+            defaultMode: 420
+      containers:
+      - name: update-securedcluster-subscription-job
+        image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+        imagePullPolicy: Always
+        volumeMounts:
+          - name: configmap-policy-template
+            mountPath: /tmp/policy
+          - name: configmap-placement-template
+            mountPath: /tmp/placement
+        command:
+          - "/bin/bash"
+        args:
+          - -c 
+          - |
+            #!/usr/bin/env bash -x
+            BASEDIR="${2:-$(dirname "$0")}"
+
+            # Get list of managed clusters 
+            readarray -t CLUSTER_LIST_NAME < <(oc get managedcluster -l vendor!=OpenShift -o name | cut -d "/" -f2)
+
+            #Exit if not enough clusters
+            if [ "${#CLUSTER_LIST_NAME[@]}" -lt 1 ]
+            then
+              exit_message "Did not get any other clusters(apart from maybe the local cluster), exiting"
+            fi
+
+            #Create New Policies
+            for cluster_name in "${CLUSTER_LIST_NAME[@]}"
+            do
+              if oc get subscription stackrox-secured-cluster-services-$cluster_name -n stackrox
+              then
+                continue
+              fi
+              sed "s/managedcluster-replace-me/$cluster_name/g" /tmp/placement/configmap-placement-template.yaml | oc create -f -
+              sed "s/managedcluster-replace-me/$cluster_name/g" /tmp/policy/configmap-policy-template.yaml | oc create -f -
+            done
+      restartPolicy: Never
+      dnsPolicy: ClusterFirst
+      serviceAccount: update-subscription-job-sa
+      serviceAccountName: update-subscription-job-sa

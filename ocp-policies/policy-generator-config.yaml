@@ -1,14 +1,16 @@
 apiVersion: policy.open-cluster-management.io/v1
 kind: PolicyGenerator
 metadata:
-  name: install-openshift-operators
+  name: policy-install-openshift-operators
 placementBindingDefaults:
-  name: openshift-operators-pb
+  name: openshift-operators-binding
 policyDefaults:
-  namespace: global-policies
-  # Use an existing placement rule so that placement bindings can be consolidated
   placement:
-    placementRulePath: ../placementrules/OCP/ocp-placementrule.yaml
+    placementRuleName: hub-placementrule
+  controls:
+    - "CM-2 Baseline Configuration"
+  pruneObjectBehavior: "DeleteIfCreated"
+  namespace: global-policies
   remediationAction: enforce
   severity: medium
 policies:

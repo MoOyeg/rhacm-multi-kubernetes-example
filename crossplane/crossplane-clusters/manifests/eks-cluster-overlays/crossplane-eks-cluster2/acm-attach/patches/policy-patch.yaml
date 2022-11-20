@@ -5,6 +5,9 @@
 - op: replace
   path: /spec/policy-templates/0/objectDefinition/metadata/name
   value: policy-attach-eks-cluster-2
+- op: replace
+  path: /spec/disabled
+  value: '{{ ne (lookup "policy.open-cluster-management.io/v1" "Policy" "crossplane-system" "policy-attach-eks-cluster-2").status.compliant "Compliant" |  print | toBool }}'
 #ManagedCluster Object Changes
 - op: replace
   path: /spec/policy-templates/0/objectDefinition/spec/object-templates/0/objectDefinition/metadata/name

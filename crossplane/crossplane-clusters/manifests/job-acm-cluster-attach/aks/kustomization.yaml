@@ -1,0 +1,2 @@
+resources:
+- ./aks-job.yaml

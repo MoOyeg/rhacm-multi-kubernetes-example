@@ -1,0 +1,91 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: update-subscription-job
+  namespace: stackrox
+rules:
+  - apiGroups:
+      - apps.open-cluster-management.io
+    resources:
+      - subscriptions
+    verbs:
+      - get
+      - list
+      - create
+      - patch
+      - update
+      - delete
+  - apiGroups:
+      - apps.open-cluster-management.io
+    resources:
+      - placementrules
+    verbs:
+      - get
+      - list
+      - create
+      - update
+  - apiGroups:
+      - policy.open-cluster-management.io
+    resources:
+      - placementbindings
+    verbs:
+      - get
+      - list
+      - create
+      - delete
+  - apiGroups:
+      - policy.open-cluster-management.io
+    resources:
+      - policies
+    verbs:
+      - get
+      - list
+      - create
+      - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: update-subscription-job-clusterrole
+rules:
+  - apiGroups:
+      - 'cluster.open-cluster-management.io'
+    resources:
+      - managedclusters
+    verbs:
+      - get
+      - watch
+      - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: update-subscription-job-binding
+  namespace: stackrox
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: update-subscription-job
+subjects:
+  - kind: ServiceAccount
+    name: update-subscription-job-sa
+    namespace: stackrox
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: update-subscription-job-binding-mangedcluster
+subjects:
+  - kind: ServiceAccount
+    name: update-subscription-job-sa
+    namespace: stackrox
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: update-subscription-job-clusterrole
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: update-subscription-job-sa
+  namespace: stackrox

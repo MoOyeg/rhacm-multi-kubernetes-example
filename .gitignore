@@ -2,3 +2,5 @@
 roxctl
 ansible/aap-setup/vault.yaml
 pacman-app/secret.yaml
+acs/acs-secured-instance/manifests/subscription-*.yaml
+acs/acs-secured-instance/manifests/placementrule-*.yaml

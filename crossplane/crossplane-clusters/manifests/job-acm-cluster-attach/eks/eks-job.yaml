@@ -1,0 +1,126 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: until-cluster-ready
+  namespace: crossplane-system
+spec:
+  template:
+    spec:
+      containers:
+        - image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+          env:
+            - name: SECRETNAME
+              value: replace-me
+          command:
+            - /bin/bash
+            - -c
+            - |
+              #!/usr/bin/env bash
+              
+              function setcount()
+              {
+                  local count='30'
+                  echo "$count"
+              }
+
+              function setsleep()
+              {
+                  local sleepval=60
+                  echo $sleepval
+              }
+              
+              #Check if eks cluster is created before continuing
+
+              count=$(setcount)
+              sleepval=$(setsleep)
+              until [ $(oc get clusters.eks.aws.crossplane.io/${SECRETNAME} -o jsonpath='{.status.atProvider.status}') = "ACTIVE" ]
+              do
+              count=$((count-1))
+              echo "Sleep for ${sleepval} seconds, Will check for eks-cluster ${SECRETNAME} Active - $count more times"
+              sleep ${sleepval}
+              if [ $count -le 0 ]
+              then
+                echo "EKS Cluster ${SECRETNAME} did not become ready"                
+                exit 1;
+              fi
+              done
+
+              #Check if eks nodegroup is created before continuing
+
+              count=$(setcount)
+              sleepval=$(setsleep)
+              until [ $(oc get nodegroups.eks.aws.crossplane.io/${SECRETNAME}-nodegroup -o jsonpath='{.status.atProvider.status}') = "ACTIVE" ]
+              do
+              count=$((count-1))
+              echo "Sleep for ${sleepval} seconds, Will check for ${SECRETNAME}-nodegroup Active - $count more times"
+              sleep ${sleepval}
+              if [ $count -le 0 ]
+              then
+                echo "NodeGroup ${SECRETNAME}-nodegroup did not become ready"                
+                exit 1;
+              fi
+              done
+              
+               #Check if Connection Secret Exists
+              count=$(setcount)
+              sleepval=$(setsleep)
+              until oc get secret/${SECRETNAME} -o name -n crossplane-system
+              do
+              count=$((count-1))
+              echo "Sleep for ${sleepval} seconds, Will check for connection secret - $count more times"
+              sleep ${sleepval}
+              if [ $count -le 0 ]
+              then
+                echo "We couldnt find secret ${SECRETNAME}"                
+                exit 1;
+              fi
+              done
+
+              #When Our xKS cluster secret is available we can create our auto import secret from it
+              oc patch policy/policy-secret-attach-${SECRETNAME} -n crossplane-system -p '{"spec":{"disabled":false}}' --type=merge
+              
+              count=$(setcount)
+              sleepval=$(setsleep)
+              until [ $(oc get policy/policy-secret-attach-${SECRETNAME} -n crossplane-system -o jsonpath='{.status.compliant}') == "Compliant" ]
+              do
+              count=$((count-1))
+              echo "Sleep for ${sleepval} seconds, Will check auto-import secret policy $count more times"
+              sleep ${sleepval}
+              if [ $count -le 0 ]
+              then
+                echo "Policy not validated for Policy ${SECRETNAME}"
+                break
+              fi
+              done
+
+              #Echo Adding Sleep to give everything time to process
+              sleepval=$(setsleep)
+              echo "Will Sleep ${sleepval} to give everything time to process"
+              sleep ${sleepval}
+
+              #Enable our ManagedClusterPolicy
+              oc patch policy/policy-attach-${SECRETNAME} -n crossplane-system -p '{"spec":{"remediationAction":"enforce"}}' --type=merge
+
+              count=$(setcount)
+              sleepval=$(setsleep)
+              until [ $(oc get policy/policy-attach-${SECRETNAME}  -n crossplane-system -o jsonpath='{.status.compliant}') == "Compliant" ]
+              do
+              count=$((count-1))
+              echo "Sleep for ${sleepval} seconds, Will check attach policy $count more times"
+              sleep ${sleepval}
+              if [ $count -le 0 ]
+              then
+                echo "Policy not validated for Policy-attach-${SECRETNAME}"
+                break
+              fi
+              done
+
+              #Disable our Import Secret Policy - ACM will delete the auto-import-secret we create
+              oc patch policy/policy-secret-attach-${SECRETNAME} -n crossplane-system -p '{"spec":{"disabled":true}}' --type=merge          
+
+          imagePullPolicy: Always
+          name: until-cluster-ready
+      dnsPolicy: ClusterFirst
+      restartPolicy: Never
+      serviceAccountName: crossplane
+      serviceAccount: crossplane
