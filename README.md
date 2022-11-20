@@ -4,6 +4,11 @@ Purpose of this repo is to demo an example of what is possible with Red Hat Adva
 Repo is structured as a series of steps that can be followed for a particular example.
 Some steps can be skipped while others have a dependency on pre-completed steps.
 
+## Contents
+
+- [Use Red Hat Advanced Cluster Security(ACS) with xKS via ACM](#red-hat-advanced-cluster-securityrhacs)
+- [Use Crossplane with ACM for xKS Provisioning](#crossplane-provisioning)
+
 ## Prerequisites
 
 - [OpenShift Cluster](https://docs.openshift.com/container-platform/4.9/welcome/index.html) - Version>=4.9
@@ -174,13 +179,17 @@ OR
   kustomize build --enable-alpha-plugins ./acs/acs-ocp-operator-secured-instance | oc create -f -
   ```
 
-**4 Create ACS SecuredClusters Policy for xKS Clusters.**
+**5 Create Image Secret Pull Policy to allow ACS Pods pull required images.**
 
 - Create policy to allow ACS pods access pull-secret
   
   ```bash
   oc create -f ./acs/acs-xks-helm-secured-instance/policy-pullsecret.yaml
   ```
+
+**6 Create ACS SecuredClusters Policy for xKS Clusters.**
+Policy presently creates a job which then creates an ACM helm securedcluster application for each xks managedcluster.You can add new xks clusters by deleting the job and allowing ACM recreate it.  
+TODO: Research a way to accomplish without using a Job.  
 
 - Create via the pre-generated yaml
 
