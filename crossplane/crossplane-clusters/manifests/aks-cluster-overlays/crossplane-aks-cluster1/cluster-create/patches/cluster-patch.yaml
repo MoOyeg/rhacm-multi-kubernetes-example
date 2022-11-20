@@ -7,7 +7,7 @@ metadata:
     app: "crossplane"
     provider: azure
 spec: 
-  resourceGroupName: openenv-g8khn
+  resourceGroupName: resourcegroup-replaceme
   #resourceGroupNameRef:
   #  name: openenv-g8khn
   vnetSubnetIDRef:
