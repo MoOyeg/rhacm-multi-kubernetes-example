@@ -1,0 +1,4 @@
+resources:
+- ./crossplane-lb-controller-iam-policy.yaml
+generators:
+- ./policygenerator.yaml
