@@ -1,0 +1,34 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: policy-crossplane-eks-lb-sa
+  namespace: crossplane-system
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-crossplane-eks-lb-sa
+      spec:
+        object-templates:
+          - complianceType: musthave
+            objectDefinition:
+              apiVersion: v1
+              kind: ServiceAccount
+              metadata:
+                labels:
+                  app.kubernetes.io/component: controller
+                  app.kubernetes.io/name: aws-load-balancer-controller
+                name: aws-load-balancer-controller
+                namespace: kube-system
+                annotations:
+                  eks.amazonaws.com/role-arn: '{{hub (lookup "iam.aws.crossplane.io/v1beta1" "Role" "" "aws-crossplane-lb-controller-eks-cluster-1").status.atProvider.arn hub}}'
+        pruneObjectBehavior: DeleteIfCreated
+        remediationAction: enforce
+        severity: medium

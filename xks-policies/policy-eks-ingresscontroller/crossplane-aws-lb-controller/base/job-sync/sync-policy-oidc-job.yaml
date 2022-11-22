@@ -1,0 +1,105 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: policy-oidc-job
+  namespace: crossplane-system
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-oidc-job
+      spec:
+        object-templates:
+          - complianceType: musthave
+            objectDefinition:
+              apiVersion: v1
+              kind: ServiceAccount
+              metadata:
+                name: sync-xks-oidc-job
+                namespace: stackrox
+          - complianceType: musthave
+            objectDefinition:
+              apiVersion: rbac.authorization.k8s.io/v1
+              kind: RoleBinding
+              metadata:
+                name: sync-xks-oidc-job-rolebinding
+                namespace: stackrox
+              roleRef:
+                apiGroup: rbac.authorization.k8s.io
+                kind: Role
+                name: sync-xks-oidc-job-role
+              subjects:
+                - kind: ServiceAccount
+                  name: sync-xks-oidc-job
+                  namespace: stackrox
+          - complianceType: musthave
+            objectDefinition:
+              apiVersion: rbac.authorization.k8s.io/v1
+              kind: RoleBinding
+              metadata:
+                name: sync-eks-oidc-job-rolebinding
+                namespace: stackrox
+              roleRef:
+                apiGroup: rbac.authorization.k8s.io
+                kind: Role
+                name: sync-xks-oidc-job-role
+              subjects:
+                - kind: ServiceAccount
+                  name: sync-xks-oidc-job
+                  namespace: stackrox
+          - complianceType: musthave
+            objectDefinition:
+              apiVersion: rbac.authorization.k8s.io/v1
+              kind: Role
+              metadata:
+                name: sync-eks-oidc-job-role
+                namespace: stackrox
+              rules:
+                - apiGroups:
+                    - apps.open-cluster-management.io
+                  resources:
+                    - subscriptions
+                  verbs:
+                    - get
+                    - list
+                    - create
+                    - patch
+                    - update
+                    - delete
+                - apiGroups:
+                    - apps.open-cluster-management.io
+                  resources:
+                    - placementrules
+                  verbs:
+                    - get
+                    - list
+                    - create
+                    - update
+                - apiGroups:
+                    - policy.open-cluster-management.io
+                  resources:
+                    - placementbindings
+                  verbs:
+                    - get
+                    - list
+                    - create
+                    - delete
+                - apiGroups:
+                    - policy.open-cluster-management.io
+                  resources:
+                    - policies
+                  verbs:
+                    - get
+                    - list
+                    - create
+                    - delete
+        pruneObjectBehavior: DeleteIfCreated
+        remediationAction: enforce
+        severity: medium

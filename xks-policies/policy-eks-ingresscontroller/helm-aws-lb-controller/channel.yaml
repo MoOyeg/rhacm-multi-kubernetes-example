@@ -1,0 +1,10 @@
+apiVersion: apps.open-cluster-management.io/v1
+kind: Channel
+metadata:
+  name: helm-crossplane
+  namespace: channel-helm-crossplane
+  labels:
+    app: crossplane
+spec:
+    pathname: https://charts.crossplane.io/stable
+    type: HelmRepo

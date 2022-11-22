@@ -4,3 +4,6 @@
 - op: replace
   path: /spec/policy-templates/0/objectDefinition/metadata/name
   value: policy-crossplane-oidc-eks-cluster-1
+- op: replace
+  path: /spec/policy-templates/0/objectDefinition/spec/object-templates/0/objectDefinition/metadata/name
+  value: crossplane-oidc-eks-cluster-1

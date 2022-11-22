@@ -1,0 +1,12 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: placementbinding-crossplane-eks-lb-sa
+placementRef:
+  name: eks-placementrule
+  apiGroup: apps.open-cluster-management.io
+  kind: PlacementRule
+subjects:
+  - name: policy-crossplane-lb-sa-eks-cluster-1
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy

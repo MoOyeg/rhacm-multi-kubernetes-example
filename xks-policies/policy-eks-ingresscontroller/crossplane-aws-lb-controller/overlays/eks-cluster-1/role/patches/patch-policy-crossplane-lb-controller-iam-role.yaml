@@ -1,0 +1,68 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: policy-crossplane-eks-role
+  namespace: crossplane-system
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-crossplane-eks-role
+      spec:
+        object-templates:
+          - complianceType: musthave
+            objectDefinition:
+              apiVersion: iam.aws.crossplane.io/v1beta1
+              kind: Role
+              metadata:
+                name: aws-crossplane-lb-controller-eks-cluster-1
+              spec:
+                forProvider:
+                  assumeRolePolicyDocument: |
+                    {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                            {
+                                "Effect": "Allow",
+                                "Principal": {
+                                    "Federated": "{{hub index (lookup "iam.aws.crossplane.io/v1beta1" "OpenIDConnectProvider" "" "crossplane-oidc-eks-cluster-1").metadata.annotations "crossplane.io/external-name" hub}}"
+                                },
+                                "Action": "sts:AssumeRoleWithWebIdentity",
+                                "Condition": {
+                                    "StringEquals": {
+                                        "{{hub (lookup "eks.aws.crossplane.io/v1beta1" "Cluster" "" "eks-cluster-1").status.atProvider.identity.oidc.issuer | replace "https://" "" hub}}:aud": "sts.amazonaws.com",
+                                        "{{hub (lookup "eks.aws.crossplane.io/v1beta1" "Cluster" "" "eks-cluster-1").status.atProvider.identity.oidc.issuer | replace "https://" "" hub}}:sub": "system:serviceaccount:kube-system:aws-load-balancer-controller"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                  tags:
+                    - key: crossplane-provider
+                      value: "true"
+                providerConfigRef:
+                  name: provider-aws
+          - complianceType: musthave
+            objectDefinition:
+              apiVersion: iam.aws.crossplane.io/v1beta1
+              kind: RolePolicyAttachment
+              metadata:
+                name: aws-crossplane-lb-controller-eks-cluster-1
+              spec:
+                forProvider:
+                  policyArnRef:
+                    name: crossplane-lb-controller-iam-policy
+                  roleNameRef:
+                    name: aws-crossplane-lb-controller-eks-cluster-1
+                providerConfigRef:
+                  name: provider-aws
+        pruneObjectBehavior: DeleteIfCreated
+        remediationAction: enforce
+        severity: medium

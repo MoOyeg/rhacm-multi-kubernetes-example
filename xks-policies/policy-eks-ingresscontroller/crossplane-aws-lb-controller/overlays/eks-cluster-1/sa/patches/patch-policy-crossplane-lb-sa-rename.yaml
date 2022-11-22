@@ -1,0 +1,6 @@
+- op: replace
+  path: /metadata/name
+  value: policy-crossplane-lb-sa-eks-cluster-1
+- op: replace
+  path: /spec/policy-templates/0/objectDefinition/metadata/name
+  value: policy-crossplane-lb-sa-eks-cluster-1

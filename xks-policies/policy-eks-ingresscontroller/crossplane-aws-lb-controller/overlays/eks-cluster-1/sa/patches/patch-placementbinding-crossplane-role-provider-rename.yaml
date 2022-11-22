@@ -1,0 +1,3 @@
+- op: replace
+  path: /metadata/name
+  value: pb-crossplane-lb-sa-eks-cluster-1

@@ -14,7 +14,7 @@ policyDefaults:
   remediationAction: enforce
   severity: medium
 policies:
-- name: policy-crossplane-lb-controller-iam-policy
+- name: pol-crossplane-lb-controller-iam-policy
   disabled: false
   manifests:
     - path: ./manifests

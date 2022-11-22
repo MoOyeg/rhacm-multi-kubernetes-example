@@ -1,5 +1,3 @@
-#thumbprint seems consistent for aws root CA for oidc.eks.any-region.amazonaws.com
-#starfield_services_root_certificate_authority-g2.pem => 9e99a48a9960b14926bb7f3b02e22da2b0ab7280
 apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
 metadata:
@@ -7,7 +5,7 @@ metadata:
     policy.open-cluster-management.io/categories: CM Configuration Management
     policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
     policy.open-cluster-management.io/standards: NIST SP 800-53
-  name: policy-crossplane-eks-oidc-provider
+  name: policy-crossplane-eks-role
   namespace: crossplane-system
 spec:
   disabled: false
@@ -16,22 +14,33 @@ spec:
       apiVersion: policy.open-cluster-management.io/v1
       kind: ConfigurationPolicy
       metadata:
-        name: policy-crossplane-eks-oidc-provider
-      spec:
+        name: policy-crossplane-role
         object-templates:
           - complianceType: musthave
             objectDefinition:
               apiVersion: iam.aws.crossplane.io/v1beta1
-              kind: OpenIDConnectProvider
+              kind: Role
               metadata:
-                name: crossplane-eks-oidc-provider
+                name: AmazonEKSLoadBalancerControllerRole
               spec:
                 forProvider:
-                  clientIDList:
-                    - sts.amazonaws.com
-                  thumbprintList:
-                    - "9e99a48a9960b14926bb7f3b02e22da2b0ab7280"
-                  url: '{{hub (lookup "eks.aws.crossplane.io/v1beta1" "Cluster" "" "eks-cluster-1").status.atProvider.identity.oidc.issuer hub}}'
+                  tags:
+                    - key: crossplane-provider
+                      value: "true"
+                providerConfigRef:
+                  name: provider-aws
+          - complianceType: musthave
+            objectDefinition:
+              apiVersion: iam.aws.crossplane.io/v1beta1
+              kind: RolePolicyAttachment
+              metadata:
+                name: policy-crossplane-role
+              spec:
+                forProvider:
+                  policyArnRef:
+                    name: crossplane-lb-controller-iam-policy
+                  roleNameRef:
+                    name: AmazonEKSLoadBalancerControllerRole
                 providerConfigRef:
                   name: provider-aws
         pruneObjectBehavior: DeleteIfCreated
