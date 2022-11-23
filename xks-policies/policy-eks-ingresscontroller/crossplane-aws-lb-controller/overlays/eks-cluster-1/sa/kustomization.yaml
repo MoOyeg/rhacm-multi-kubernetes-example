@@ -4,9 +4,12 @@ patches:
   - path: ./patches/patch-policy-crossplane-lb-sa.yaml
     target:
       kind: Policy
-  - path: ./patches/patch-placementbinding-crossplane-role-provider.yaml
+  - path: ./patches/patch-pb-crossplane-lb-sa.yaml
     target:
       kind: PlacementBinding
+  - path: ./patches/patch-placementrule.yaml
+    target:
+      kind: PlacementRule
 patchesJson6902:
   - target:
       group: policy.open-cluster-management.io
@@ -19,4 +22,10 @@ patchesJson6902:
       version: v1
       kind: PlacementBinding
       name: placementbinding-crossplane-eks-lb-sa
-    path: ./patches/patch-placementbinding-crossplane-role-provider-rename.yaml
+    path: ./patches/patch-pb-crossplane-lb-sa-rename.yaml
+  - target:
+      group: apps.open-cluster-management.io
+      version: v1
+      kind: PlacementRule
+      name: clustername-placementrule
+    path: ./patches/patch-placementrule-rename.yaml

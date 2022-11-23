@@ -1,4 +1,4 @@
 resources:
-- ./policy-sa.yaml
+- ./policy-sample-app.yaml
 - ./placementbinding.yaml
 - ./placementrule.yaml

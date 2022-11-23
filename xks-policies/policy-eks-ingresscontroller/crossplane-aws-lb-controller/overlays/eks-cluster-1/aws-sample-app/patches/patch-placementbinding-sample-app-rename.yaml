@@ -1,0 +1,3 @@
+- op: replace
+  path: /metadata/name
+  value: pb-aws-ingress-sample-eks-cluster-1

@@ -46,7 +46,7 @@ spec:
                 placement:
                   placementRef:
                     kind: PlacementRule
-                    name: eks-placementrule
+                    name: eks-cluster-1-placementrule
         pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce
         severity: medium

@@ -1,3 +1,4 @@
 resources:
 - ./policy-subscription.yaml
 - ./placementbinding.yaml
+- ./placementrule.yaml
