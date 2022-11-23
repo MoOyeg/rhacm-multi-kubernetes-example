@@ -296,7 +296,7 @@ spec:
               labels:
                 app: crossplane
               name: helm-eks-ingresscontroller
-              namespace: crossplane-system
+              namespace: kube-system
             spec:
               componentKinds:
               - group: apps.open-cluster-management.io
