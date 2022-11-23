@@ -18,3 +18,7 @@ policies:
   disabled: false
   manifests:
     - path: ./manifests
+- name: pol-helm-eks-repo
+  disabled: false
+  manifests:
+    - path: ./helm-aws-lb-controller

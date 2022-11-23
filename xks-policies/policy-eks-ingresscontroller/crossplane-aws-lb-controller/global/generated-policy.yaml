@@ -1,7 +1,7 @@
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
 metadata:
-  name: binding-pol-crossplane-lb-controller-iam-policy
+  name: crossplane-global-aws-lb
   namespace: crossplane-system
 placementRef:
   apiGroup: apps.open-cluster-management.io
@@ -11,6 +11,9 @@ subjects:
 - apiGroup: policy.open-cluster-management.io
   kind: Policy
   name: pol-crossplane-lb-controller-iam-policy
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: pol-helm-eks-repo
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
@@ -262,6 +265,69 @@ spec:
                 name: AWSLoadBalancerControllerIAMPolicy
               providerConfigRef:
                 name: provider-aws
+        pruneObjectBehavior: DeleteIfCreated
+        remediationAction: enforce
+        severity: medium
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: pol-helm-eks-repo
+  namespace: crossplane-system
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: pol-helm-eks-repo
+      spec:
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: app.k8s.io/v1beta1
+            kind: Application
+            metadata:
+              labels:
+                app: crossplane
+              name: helm-eks-ingresscontroller
+              namespace: crossplane-system
+            spec:
+              componentKinds:
+              - group: apps.open-cluster-management.io
+                kind: Subscription
+              descriptor: {}
+              selector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - helm-eks-ingresscontroller
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: v1
+            kind: Namespace
+            metadata:
+              labels:
+                app: helm-eks
+              name: channel-helm-eks
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: apps.open-cluster-management.io/v1
+            kind: Channel
+            metadata:
+              labels:
+                app: helm-eks
+              name: helm-eks
+              namespace: channel-helm-eks
+            spec:
+              pathname: https://aws.github.io/eks-charts
+              type: HelmRepo
         pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce
         severity: medium
