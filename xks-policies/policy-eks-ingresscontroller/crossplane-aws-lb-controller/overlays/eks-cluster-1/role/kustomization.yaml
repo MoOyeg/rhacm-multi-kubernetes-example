@@ -1,0 +1,22 @@
+bases:
+- ../../../base/role
+patches:
+  - path: ./patches/patch-policy-crossplane-lb-controller-iam-role.yaml
+    target:
+      kind: Policy
+  - path: ./patches/patch-placementbinding-crossplane-role-provider.yaml
+    target:
+      kind: PlacementBinding
+patchesJson6902:
+  - target:
+      group: policy.open-cluster-management.io
+      version: v1
+      kind: Policy
+      name: policy-crossplane-eks-role
+    path: ./patches/patch-policy-crossplane-lb-controller-iam-role-rename.yaml
+  - target:
+      group: policy.open-cluster-management.io
+      version: v1
+      kind: PlacementBinding
+      name: placementbinding-crossplane-eks-role-provider
+    path: ./patches/patch-placementbinding-crossplane-role-provider-rename.yaml

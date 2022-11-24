@@ -1,0 +1,3 @@
+resources:
+- ./policy-crossplane-oidc-provider.yaml
+- ./placementbinding.yaml

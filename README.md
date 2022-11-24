@@ -8,6 +8,7 @@ Some steps can be skipped while others have a dependency on pre-completed steps.
 
 - [Use Red Hat Advanced Cluster Security(ACS) with xKS via ACM](#red-hat-advanced-cluster-securityrhacs)
 - [Use Crossplane with ACM for xKS Provisioning](#crossplane-provisioning)
+- [Ancilliary Provisoning - EKS Ingress Controller](#crossplane-eks-ingresscontroller)
 
 ## Prerequisites
 
@@ -67,7 +68,7 @@ This will policy will install [Operator Lifecyle Manager](https://olm.operatorfr
 - Install OLM via the pre-generated yaml
 
   ```bash
-  oc create -f ./xks-policies/xks-general-policies/generated-olm-policy.yaml
+  oc create -f ./xks-policies/xks-general-policies/generated-policy.yaml
   ```
 
 OR
@@ -351,6 +352,71 @@ Edit the [azure resources manifests](./crossplane/crossplane-resources/azure/man
 
 **GKE Cluster Sample**  
 TODO
+
+## Crossplane EKS IngressController
+
+Leveraging crossplane and Red Hat Advanced Cluster Management we can also do anciliary provisioning steps like creating an EKS Ingress Controller.
+
+### Prerequisites
+
+- Run [Basic Cluster Configuration](#basic-cluster-configuration) steps from above.
+- [User running commands must have subscription-admin privilege](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#granting-subscription-admin-privilege). [Sample Solution](https://access.redhat.com/solutions/6010251)
+- Example provided here only works with clusters provisioned via [Crossplane Provisioning example in this repo](#crossplane-provisioning).
+- VPC Subnets used by EKS Ingress Controller must be tagged with certain tags. Example [Subnet Files](./crossplane/crossplane-resources/aws/manifests/overlays/region-us-east-1/patches/patch-subnet1.yaml) are tagged for eks-cluster-1 sample. Kindly update if yours are different.
+- The sample provided is for eks-cluster-1, you can make a copy of the overlay.
+
+### Steps
+
+- Use ACM/Crossplane to create the IAM Role Permission Policy and Helm EKS Charts Repo.Make sure created ACM policy object is compliant before next steps.  
+    Create via the pre-generated yaml
+
+    ```bash
+    oc create -f ./xks-policies/policy-eks-ingresscontroller/crossplane-aws-lb-controller/global/generated-policy.yaml
+    ```
+
+  OR
+
+    Generate your own policy and then create
+
+    ```bash
+    kustomize build --enable-alpha-plugins ./xks-policies/policy-eks-ingresscontroller/crossplane-aws-lb-controller/global/ | oc create -f -
+    ```
+
+- Use ACM/Crossplane to create the OpenID Provider in AWS.Make sure created ACM policy object is compliant before next steps.  
+
+  ```bash
+  oc apply -k ./xks-policies/policy-eks-ingresscontroller/crossplane-aws-lb-controller/overlays/eks-cluster-1/oidc/
+  ```
+
+- Use ACM/Crossplane to create the AWS LoadBalancer Control Role and attach our previously created IAM permission policy.Make sure created ACM policy object is compliant before next steps.  
+
+  ```bash
+  oc apply -k ./xks-policies/policy-eks-ingresscontroller/crossplane-aws-lb-controller/overlays/eks-cluster-1/role/
+  ```
+
+- Use ACM/Crossplane to create the AWS LoadBalancer ServiceAccount on EKS-Clusters.  
+
+  ```bash
+  oc apply -k ./xks-policies/policy-eks-ingresscontroller/crossplane-aws-lb-controller/overlays/eks-cluster-1/sa/
+  ```
+
+- Use ACM subscription to install helm eks ingress-controller application.  
+
+  ```bash
+  oc apply -k ./xks-policies/policy-eks-ingresscontroller/crossplane-aws-lb-controller/overlays/eks-cluster-1/subscription/
+  ```
+
+- OPTIONAL: Use ACM to deploy AWS Sample Ingress Application.  
+
+  ```bash
+  oc apply -k ./xks-policies/policy-eks-ingresscontroller/crossplane-aws-lb-controller/overlays/eks-cluster-1/aws-sample-app/
+  ```
+
+- OPTIONAL: Verify Sample APP URL.Please note it might take a few minutes for the url of the sample nlb to become resolvable/accessible.  
+
+  ```bash
+  mkdir /tmp/kubeconfig && oc extract secret/eks-cluster-1 -n crossplane-system --keys=kubeconfig --to=/tmp/kubeconfig && oc get svc/nlb-sample-service -n nlb-sample-app -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' --kubeconfig /tmp/kubeconfig/kubeconfig
+  ```
 
 ## Attach Subscription Admin Policy to your user if necessary
 

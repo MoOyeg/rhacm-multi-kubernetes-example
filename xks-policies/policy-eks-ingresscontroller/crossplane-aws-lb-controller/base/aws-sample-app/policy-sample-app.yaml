@@ -1,0 +1,71 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: policy-aws-ingress-sample
+  namespace: crossplane-system
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-aws-ingress-sample
+      spec:
+        object-templates:
+          - complianceType: musthave
+            objectDefinition:
+              kind: Namespace
+              apiVersion: v1
+              metadata:
+                name: nlb-sample-app
+              spec: {}
+          - complianceType: musthave
+            objectDefinition:
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: nlb-sample-app
+                namespace: nlb-sample-app
+              spec:
+                replicas: 1
+                selector:
+                  matchLabels:
+                    app: nginx
+                template:
+                  metadata:
+                    labels:
+                      app: nginx
+                  spec:
+                    containers:
+                      - name: nginx
+                        image: public.ecr.aws/nginx/nginx:1.21
+                        ports:
+                          - name: tcp
+                            containerPort: 80
+          - complianceType: musthave
+            objectDefinition:                            
+              apiVersion: v1
+              kind: Service
+              metadata:
+                name: nlb-sample-service
+                namespace: nlb-sample-app
+                annotations:
+                  service.beta.kubernetes.io/aws-load-balancer-type: external
+                  service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+                  service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+              spec:
+                ports:
+                  - port: 80
+                    targetPort: 80
+                    protocol: TCP
+                type: LoadBalancer
+                selector:
+                  app: nginx
+        pruneObjectBehavior: DeleteIfCreated
+        remediationAction: enforce
+        severity: medium

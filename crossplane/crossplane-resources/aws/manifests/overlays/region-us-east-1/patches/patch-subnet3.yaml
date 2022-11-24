@@ -8,3 +8,9 @@ spec:
     availabilityZone: us-east-1c
     vpcIdRef:
       name: crossplane-vpc-us-east-1
+#Tagged for eks-cluster-1 usage
+    tags:
+      - key: kubernetes.io/cluster/eks-cluster-1
+        value: ""
+      - key: kubernetes.io/role/elb
+        value: ""

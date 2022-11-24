@@ -1,0 +1,10 @@
+apiVersion: apps.open-cluster-management.io/v1
+kind: Channel
+metadata:
+  name: helm-eks
+  namespace: channel-helm-eks
+  labels:
+    app: helm-eks
+spec:
+    pathname: https://aws.github.io/eks-charts
+    type: HelmRepo

@@ -1,0 +1,13 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: placementbinding-crossplane-sample-app
+  namespace: crossplane-system
+placementRef:
+  name: clustername-placementrule
+  apiGroup: apps.open-cluster-management.io
+  kind: PlacementRule
+subjects:
+  - name: policy-aws-ingress-sample
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy

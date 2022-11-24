@@ -1,0 +1,31 @@
+bases:
+- ../../../base/aws-sample-app
+patches:
+  - path: ./patches/patch-policy-sample-app.yaml
+    target:
+      kind: Policy
+  - path: ./patches/patch-placementbinding-sample-app.yaml
+    target:
+      kind: PlacementBinding
+  - path: ./patches/patch-placementrule.yaml
+    target:
+      kind: PlacementRule
+patchesJson6902:
+  - target:
+      group: policy.open-cluster-management.io
+      version: v1
+      kind: Policy
+      name: policy-aws-ingress-sample
+    path: ./patches/patch-policy-sample-app-rename.yaml
+  - target:
+      group: policy.open-cluster-management.io
+      version: v1
+      kind: PlacementBinding
+      name: placementbinding-crossplane-sample-app
+    path: ./patches/patch-placementbinding-sample-app-rename.yaml
+  - target:
+      group: apps.open-cluster-management.io
+      version: v1
+      kind: PlacementRule
+      name: clustername-placementrule
+    path: ./patches/patch-placementrule-rename.yaml

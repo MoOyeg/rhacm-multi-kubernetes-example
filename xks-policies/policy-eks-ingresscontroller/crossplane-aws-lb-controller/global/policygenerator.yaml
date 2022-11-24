@@ -1,0 +1,24 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policygeneratorcrossplane-global-aws-lb
+placementBindingDefaults:
+  name: crossplane-global-aws-lb
+policyDefaults:
+  placement:
+    placementRuleName: hub-placementrule
+  controls:
+    - "CM-2 Baseline Configuration"
+  pruneObjectBehavior: "DeleteIfCreated"
+  namespace: crossplane-system
+  remediationAction: enforce
+  severity: medium
+policies:
+- name: pol-crossplane-lb-controller-iam-policy
+  disabled: false
+  manifests:
+    - path: ./manifests
+- name: pol-helm-eks-repo
+  disabled: false
+  manifests:
+    - path: ./helm-aws-lb-controller
