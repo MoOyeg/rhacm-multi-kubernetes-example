@@ -8,6 +8,7 @@ Some steps can be skipped while others have a dependency on pre-completed steps.
 
 - [Use Red Hat Advanced Cluster Security(ACS) with xKS via ACM](#red-hat-advanced-cluster-securityrhacs)
 - [Use Crossplane with ACM for xKS Provisioning](#crossplane-provisioning)
+- [Ancilliary Provisoning - EKS Ingress Controller](#crossplane-eks-ingresscontroller)
 
 ## Prerequisites
 
@@ -411,7 +412,7 @@ Leveraging crossplane and Red Hat Advanced Cluster Management we can also do anc
   oc apply -k ./xks-policies/policy-eks-ingresscontroller/crossplane-aws-lb-controller/overlays/eks-cluster-1/aws-sample-app/
   ```
 
-- OPTIONAL: Verify Sample APP URL.  
+- OPTIONAL: Verify Sample APP URL.Please note it might take a few minutes for the url of the sample nlb to become resolvable/accessible.  
 
   ```bash
   mkdir /tmp/kubeconfig && oc extract secret/eks-cluster-1 -n crossplane-system --keys=kubeconfig --to=/tmp/kubeconfig && oc get svc/nlb-sample-service -n nlb-sample-app -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' --kubeconfig /tmp/kubeconfig/kubeconfig
