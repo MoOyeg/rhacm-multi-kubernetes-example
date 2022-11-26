@@ -8,7 +8,7 @@ Some steps can be skipped while others have a dependency on pre-completed steps.
 
 - [Use Red Hat Advanced Cluster Security(ACS) with xKS via ACM](#red-hat-advanced-cluster-securityrhacs)
 - [Use Crossplane with ACM for xKS Provisioning](#crossplane-provisioning)
-- [Ancilliary Provisoning - EKS Ingress Controller](#crossplane-eks-ingresscontroller)
+- [Ancilliary Provisoning - AWS Load Balancer Controller add-on](#crossplane-aws-lb-controller-addon)
 
 ## Prerequisites
 
@@ -51,7 +51,7 @@ If you would like to use ACM to create clusters here is some tooling to help
   oc apply -k ./policy-global-namespace
   ```
 
-### Global Placment Rules
+### Global Placement Rules
 
 - Create List Of PlacementRules we want ACM to use and can be leveraged by other policies. PlacementRules are used as selectors to determine which clusters a policy should be applied to.Might need to run this command twice to allow the previous policy to be enforced.
 
@@ -59,8 +59,15 @@ If you would like to use ACM to create clusters here is some tooling to help
   oc apply -k ./placementrules/
   ```
 
-## Base xKS Policy Configuration
+## Install Operators on xKS
 
+With OLM provided we can run operators from operatorhub.io on xKS clusters.
+
+### Prerequisites
+
+- Run [Basic Cluster Configuration](#basic-cluster-configuration) steps from above.
+- [User running commands must have subscription-admin privilege](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#granting-subscription-admin-privilege). [Sample Solution](https://access.redhat.com/solutions/6010251)
+  
 ### Install OLM on xKS Clusters
 
 This will policy will install [Operator Lifecyle Manager](https://olm.operatorframework.io/) on every xKS cluster added into ACM:
@@ -78,6 +85,9 @@ OR
   ```bash
   kustomize build ./xks-policies/xks-general-policies/ --enable-alpha-plugins | oc create -f -
   ```
+
+# Install ArgoCD Operator on xKS clusters
+
 
 <!-- ### Base ACM Hub Policies
 
@@ -353,7 +363,7 @@ Edit the [azure resources manifests](./crossplane/crossplane-resources/azure/man
 **GKE Cluster Sample**  
 TODO
 
-## Crossplane EKS IngressController
+## Crossplane AWS LB Controller Addon
 
 Leveraging crossplane and Red Hat Advanced Cluster Management we can also do anciliary provisioning steps like creating an EKS Ingress Controller.
 

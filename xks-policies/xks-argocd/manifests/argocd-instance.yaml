@@ -5,4 +5,8 @@ metadata:
   namespace: argocd-operator
 spec:
   server:
-    insecure: true
+    grpc:
+      ingress:
+        enabled: true
+    ingress:
+      enabled: true

@@ -1,36 +1,16 @@
-apiVersion: apps.open-cluster-management.io/v1
-kind: PlacementRule
-metadata:
-  labels:
-    custom: olm-policies
-  name: non-openshift-placementrule
-  namespace: global-policies
-spec:
-  clusterConditions:
-  - status: "True"
-    type: ManagedClusterConditionAvailable
-  clusterSelector:
-    matchExpressions:
-    - key: vendor
-      operator: In
-      values:
-      - AKS
-      - EKS
-      - GKS
----
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
 metadata:
-  name: xkm-argocd-non-openshift-pb
+  name: binding-policy-helm-nginx-repo
   namespace: global-policies
 placementRef:
   apiGroup: apps.open-cluster-management.io
   kind: PlacementRule
-  name: non-openshift-placementrule
+  name: hub-placementrule
 subjects:
 - apiGroup: policy.open-cluster-management.io
   kind: Policy
-  name: policy-xks-argocd
+  name: policy-helm-nginx-repo
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
@@ -39,7 +19,7 @@ metadata:
     policy.open-cluster-management.io/categories: CM Configuration Management
     policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
     policy.open-cluster-management.io/standards: NIST SP 800-53
-  name: policy-xks-argocd
+  name: policy-helm-nginx-repo
   namespace: global-policies
 spec:
   disabled: false
@@ -48,28 +28,29 @@ spec:
       apiVersion: policy.open-cluster-management.io/v1
       kind: ConfigurationPolicy
       metadata:
-        name: policy-xks-argocd
+        name: policy-helm-nginx-repo
       spec:
-        pruneObjectBehavior: DeleteAll
         object-templates:
         - complianceType: musthave
           objectDefinition:
-            apiVersion: argoproj.io/v1alpha1
-            kind: ArgoCD
+            apiVersion: apps.open-cluster-management.io/v1
+            kind: Channel
             metadata:
-              name: xks-argocd
-            spec: {}
+              labels:
+                app: helm-ingress-nginx
+              name: channel-helm-ingress-nginx
+              namespace: namespace-helm-ingress-nginx
+            spec:
+              pathname: https://kubernetes.github.io/ingress-nginx
+              type: HelmRepo
         - complianceType: musthave
           objectDefinition:
-            apiVersion: operators.coreos.com/v1alpha1
-            kind: Subscription
+            apiVersion: v1
+            kind: Namespace
             metadata:
-              name: my-argocd-operator
-              namespace: operators
-            spec:
-              channel: alpha
-              name: argocd-operator
-              source: operatorhubio-catalog
-              sourceNamespace: olm
+              labels:
+                app: helm-ingress-nginx
+              name: namespace-helm-ingress-nginx
+        pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce
         severity: medium

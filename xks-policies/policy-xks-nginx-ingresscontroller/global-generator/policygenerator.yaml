@@ -1,21 +1,20 @@
 apiVersion: policy.open-cluster-management.io/v1
 kind: PolicyGenerator
 metadata:
-  name: policy-generator-xks-argocd
+  name: policygenerator-nginx-helm
 placementBindingDefaults:
-  name: xks-argocd-operator
+  name: nginx-helm-repo
 policyDefaults:
   placement:
-    placementRuleName: non-openshift-placementrule
+    placementRuleName: hub-placementrule
   controls:
     - "CM-2 Baseline Configuration"
   pruneObjectBehavior: "DeleteIfCreated"
-  remediationAction: enforce
   namespace: global-policies
+  remediationAction: enforce
   severity: medium
 policies:
-- name: policy-xks-argocd-operator
+- name: policy-helm-nginx-repo
   disabled: false
   manifests:
     - path: ./manifests
-

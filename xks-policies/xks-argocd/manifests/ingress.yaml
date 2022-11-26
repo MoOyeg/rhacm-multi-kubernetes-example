@@ -9,16 +9,10 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   ingressClassName: nginx
-  # defaultBackend:
-  #   resource:
-  #     apiGroup: v1
-  #     kind: Service
-  #     name: pacman
   rules:
-  - host: argo.test.oyegunle.com
-    http:
+  - http:
       paths:
-      - path: /
+      - path: /argocd(/|$)(.*)
         pathType: Prefix
         backend:
           service:
