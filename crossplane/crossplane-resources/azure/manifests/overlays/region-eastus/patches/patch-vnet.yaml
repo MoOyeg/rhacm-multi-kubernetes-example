@@ -5,6 +5,6 @@ metadata:
 spec:
   #resourceGroupNameRef:
   #  name: use resource group name from previous yaml is using
-  resourceGroupName: openenv-g8khn
+  resourceGroupName: openenv-b75vd
   location: East US
 
