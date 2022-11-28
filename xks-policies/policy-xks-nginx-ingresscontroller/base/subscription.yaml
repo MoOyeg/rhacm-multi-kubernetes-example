@@ -16,5 +16,6 @@ spec:
     - path: spec
       value:
         controller.replicaCount: "1"
+        controller.setAsDefaultIngress: true
   packageFilter:
     version: "4.2.5"

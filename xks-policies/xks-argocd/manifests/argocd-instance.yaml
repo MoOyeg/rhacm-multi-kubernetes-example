@@ -7,6 +7,7 @@ spec:
   server:
     grpc:
       ingress:
-        enabled: true
+        enabled: false
     ingress:
-      enabled: true
+      enabled: false
+    insecure: true

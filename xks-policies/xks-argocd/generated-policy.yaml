@@ -42,9 +42,9 @@ spec:
               server:
                 grpc:
                   ingress:
-                    enabled: true
+                    enabled: false
                 ingress:
-                  enabled: true
+                  enabled: false
         - complianceType: musthave
           objectDefinition:
             apiVersion: v1
@@ -99,7 +99,7 @@ spec:
                       service:
                         name: argocd-server
                         port:
-                          number: 443
+                          number: 80
                     path: /argocd(/|$)(.*)
                     pathType: Prefix
         pruneObjectBehavior: DeleteIfCreated
