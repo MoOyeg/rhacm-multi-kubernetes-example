@@ -42,9 +42,9 @@ spec:
               server:
                 grpc:
                   ingress:
-                    enabled: false
+                    enabled: true
                 ingress:
-                  enabled: false
+                  enabled: true
                 insecure: true
         - complianceType: musthave
           objectDefinition:
@@ -80,29 +80,6 @@ spec:
               name: argocd-operator
               source: operatorhubio-catalog
               sourceNamespace: olm
-        - complianceType: musthave
-          objectDefinition:
-            apiVersion: networking.k8s.io/v1
-            kind: Ingress
-            metadata:
-              annotations:
-                nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-                nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-                nginx.ingress.kubernetes.io/use-regex: "true"
-              name: argocd-ingress-test-2
-              namespace: argocd-operator
-            spec:
-              ingressClassName: nginx
-              rules:
-              - http:
-                  paths:
-                  - backend:
-                      service:
-                        name: argocd-server
-                        port:
-                          number: 80
-                    path: /argocd-test(/|$)(.*)
-                    pathType: Prefix
         pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce
         severity: medium

@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/backend-protocol: HTTP
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  labels:
+    app.kubernetes.io/managed-by: argocd
+    app.kubernetes.io/name: argocd-server
+    app.kubernetes.io/part-of: argocd
+  name: argocd-server
+  namespace: argocd-operator
+spec:
+  rules:
+  - host: {{ .ManagedClusterName }}
+    http:
+      paths:
+      - backend:
+          service:
+            name: argocd-server
+            port:
+              name: http
+        path: /argocd-server
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - argocd
+    secretName: argocd-secret

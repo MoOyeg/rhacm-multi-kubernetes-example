@@ -6,11 +6,12 @@ Some steps can be skipped while others have a dependency on pre-completed steps.
 
 ## Contents
 
-- [Use Red Hat Advanced Cluster Security(ACS) with xKS via ACM](#red-hat-advanced-cluster-securityrhacs)
-- [Use Crossplane with ACM for xKS Provisioning](#crossplane-provisioning)
-- [Ancilliary Provisoning - AWS Load Balancer Controller add-on](#crossplane-aws-lb-controller-addon)
+- [Use Red Hat Advanced Cluster Security(ACS) to secure xKS clusters installed via ACM](#red-hat-advanced-cluster-securityrhacs)
+- [Use Crossplane with ACM to provision xKS Clusters](#crossplane-provisioning)
+- [Ancillary Provisoning: ACM+Crossplane can be used to implement the AWS Load Balancer Controller add-on](#crossplane-aws-lb-controller-addon)
+- [Ancillary Provisoning:ACM can be used to deploy the Nginx Ingress Controller on xKS Clusters](#nginx-ingress-controller)
 
-## Prerequisites
+## General Prerequisites
 
 - [OpenShift Cluster](https://docs.openshift.com/container-platform/4.9/welcome/index.html) - Version>=4.9
 - [oc client](https://docs.openshift.com/container-platform/4.9/cli_reference/openshift_cli/getting-started-cli.html) >= 4.9
@@ -59,11 +60,11 @@ If you would like to use ACM to create clusters here is some tooling to help
   oc apply -k ./placementrules/
   ```
 
-## Install Operators on xKS
+## Install Operator Framework on xKS
 
 With OLM provided we can run operators from operatorhub.io on xKS clusters.
 
-### Prerequisites
+### Operator Framework Steps Prerequisites
 
 - Run [Basic Cluster Configuration](#basic-cluster-configuration) steps from above.
 - [User running commands must have subscription-admin privilege](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#granting-subscription-admin-privilege). [Sample Solution](https://access.redhat.com/solutions/6010251)
@@ -75,7 +76,7 @@ This will policy will install [Operator Lifecyle Manager](https://olm.operatorfr
 - Install OLM via the pre-generated yaml
 
   ```bash
-  oc create -f ./xks-policies/xks-general-policies/generated-policy.yaml
+  oc create -f ./xks-policies/xks-olm/generated-policy.yaml
   ```
 
 OR
@@ -83,10 +84,8 @@ OR
 - Generate your own policy and then create
 
   ```bash
-  kustomize build ./xks-policies/xks-general-policies/ --enable-alpha-plugins | oc create -f -
+  kustomize build ./xks-policies/xks-olm/ --enable-alpha-plugins | oc create -f -
   ```
-
-# Install ArgoCD Operator on xKS clusters
 
 
 <!-- ### Base ACM Hub Policies
@@ -130,7 +129,7 @@ Repo provides an example of using ACM to install Red Hat Advanced Cluster Securi
 - ACM will install ACS SecuredCluster on OCP Clusters
 - ACM will install ACS SecuredCluster via Helm on xKS Clusters
 
-### Prerequisites
+### Red Hat Advanced Cluster Security Prerequisites
 
 - Run [Basic Cluster Configuration](#basic-cluster-configuration) steps from above.
 - [User running commands must have subscription-admin privilege](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#granting-subscription-admin-privilege). [Sample Solution](https://access.redhat.com/solutions/6010251)
@@ -228,7 +227,7 @@ Repo contains examples of using crossplane with ACM.
 - ACM will also attempt to import created clusters into ACM for management
 - Running steps in reverse should also delete/detach objects in ACM and Cloud Provider
 
-### Prerequisites
+### Crossplane Provisioning Steps Prerequisites
 
 - Run [Basic Cluster Configuration](#basic-cluster-configuration) steps from above.
 - [User running commands must have subscription-admin privilege](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#granting-subscription-admin-privilege). [Sample Solution](https://access.redhat.com/solutions/6010251)
@@ -365,9 +364,9 @@ TODO
 
 ## Crossplane AWS LB Controller Addon
 
-Leveraging crossplane and Red Hat Advanced Cluster Management we can also do anciliary provisioning steps like creating an EKS Ingress Controller.
+Leveraging crossplane and Red Hat Advanced Cluster Management we can also do ancillary provisioning steps like creating an EKS Ingress Controller.
 
-### Prerequisites
+### Crossplane AWS LB Controller Addon Prerequisites
 
 - Run [Basic Cluster Configuration](#basic-cluster-configuration) steps from above.
 - [User running commands must have subscription-admin privilege](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#granting-subscription-admin-privilege). [Sample Solution](https://access.redhat.com/solutions/6010251)
@@ -375,7 +374,7 @@ Leveraging crossplane and Red Hat Advanced Cluster Management we can also do anc
 - VPC Subnets used by EKS Ingress Controller must be tagged with certain tags. Example [Subnet Files](./crossplane/crossplane-resources/aws/manifests/overlays/region-us-east-1/patches/patch-subnet1.yaml) are tagged for eks-cluster-1 sample. Kindly update if yours are different.
 - The sample provided is for eks-cluster-1, you can make a copy of the overlay.
 
-### Steps
+### Crossplane AWS LB Controller Addon Steps
 
 - Use ACM/Crossplane to create the IAM Role Permission Policy and Helm EKS Charts Repo.Make sure created ACM policy object is compliant before next steps.  
     Create via the pre-generated yaml
@@ -428,6 +427,63 @@ Leveraging crossplane and Red Hat Advanced Cluster Management we can also do anc
   mkdir /tmp/kubeconfig && oc extract secret/eks-cluster-1 -n crossplane-system --keys=kubeconfig --to=/tmp/kubeconfig && oc get svc/nlb-sample-service -n nlb-sample-app -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' --kubeconfig /tmp/kubeconfig/kubeconfig
   ```
 
+## Nginx Ingress Controller
+
+Leveraging Red Hat Advanced Cluster Management we can also do ancillary provisioning steps like creating an Nginx Ingress Controller on our xKS Clusters.
+
+### Nginx Ingress Controller Prerequisites
+
+- Run [Install Operator Framework on xKS](#install-operator-framework-on-xks) steps.
+- Run [Basic Cluster Configuration](#basic-cluster-configuration) steps.
+- [User running commands must have subscription-admin privilege](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#granting-subscription-admin-privilege). [Sample Solution](https://access.redhat.com/solutions/6010251)
+
+### Nginx Ingress Controller Steps
+
+- Use ACM to create Helm Nginx Charts Repo.Make sure created ACM policy object is compliant before next steps.  
+    Create via the pre-generated yaml
+
+    ```bash
+    oc create -f ./xks-policies/policy-xks-nginx-ingresscontroller/global-generator/generated-policy.yaml
+    ```
+
+  OR
+
+    Generate your own policy and then create
+
+    ```bash
+    kustomize build --enable-alpha-plugins ./xks-policies/policy-xks-nginx-ingresscontroller/global-generator | oc create -f -
+    ```
+
+- Use ACM to to install Nginx IngressController Chart on EKS.Make sure created ACM policy object is compliant before next steps.  
+    Create via the pre-generated yaml
+
+    ```bash
+    oc create -f ./xks-policies/policy-xks-nginx-ingresscontroller/eks-overlay-generator/generated-policy.yaml
+    ```
+
+  OR
+
+    Generate your own policy and then create
+
+    ```bash
+    kustomize build --enable-alpha-plugins ./xks-policies/policy-xks-nginx-ingresscontroller/eks-overlay-generator/ | oc create -f -
+    ```
+
+- Use ACM to to install Nginx IngressController Chart on AKS.Make sure created ACM policy object is compliant before next steps.  
+    Create via the pre-generated yaml
+
+    ```bash
+    oc create -f ./xks-policies/policy-xks-nginx-ingresscontroller/aks-overlay-generator/generated-policy.yaml
+    ```
+
+  OR
+
+    Generate your own policy and then create
+
+    ```bash
+    kustomize build --enable-alpha-plugins ./xks-policies/policy-xks-nginx-ingresscontroller/aks-overlay-generator/ | oc create -f -
+    ```  
+    
 ## Attach Subscription Admin Policy to your user if necessary
 
 ```bash

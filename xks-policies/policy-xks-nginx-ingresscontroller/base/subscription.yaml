@@ -11,11 +11,6 @@ spec:
   name: ingress-nginx
   packageOverrides:
   - packageName: ingress-nginx
-    packageAlias: ingress-nginx
-    packageOverrides:
-    - path: spec
-      value:
-        controller.replicaCount: "1"
-        controller.setAsDefaultIngress: true
+    packageAlias: ingress-nginx       
   packageFilter:
     version: "4.2.5"

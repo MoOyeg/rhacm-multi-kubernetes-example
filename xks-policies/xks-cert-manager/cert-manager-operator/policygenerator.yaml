@@ -1,0 +1,21 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-generator-xks-cert-manager-operator
+placementBindingDefaults:
+  name: xks-cert-manager-operator
+policyDefaults:
+  placement:
+    placementRuleName: non-openshift-placementrule
+  controls:
+    - "CM-2 Baseline Configuration"
+  pruneObjectBehavior: "DeleteIfCreated"
+  remediationAction: enforce
+  namespace: global-policies
+  severity: medium
+policies:
+- name: policy-xks-cert-manager-operator
+  disabled: false
+  manifests:
+    - path: ./manifests
+

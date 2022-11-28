@@ -69,8 +69,10 @@ spec:
                 packageOverrides:
                 - path: spec
                   value:
-                    controller.replicaCount: "2"
-                    controller.service.annotations.service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
+                    controller:
+                      replicaCount: "2"
+                      service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path: /healthz
+                      setAsDefaultIngress: true
               placement:
                 placementRef:
                   kind: PlacementRule
