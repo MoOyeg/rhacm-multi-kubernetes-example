@@ -45,6 +45,7 @@ spec:
                     enabled: false
                 ingress:
                   enabled: false
+                insecure: true
         - complianceType: musthave
           objectDefinition:
             apiVersion: v1
@@ -88,7 +89,7 @@ spec:
                 nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
                 nginx.ingress.kubernetes.io/ssl-passthrough: "true"
                 nginx.ingress.kubernetes.io/use-regex: "true"
-              name: argocd-ingress
+              name: argocd-ingress-test-2
               namespace: argocd-operator
             spec:
               ingressClassName: nginx
@@ -100,7 +101,7 @@ spec:
                         name: argocd-server
                         port:
                           number: 80
-                    path: /argocd(/|$)(.*)
+                    path: /argocd-test(/|$)(.*)
                     pathType: Prefix
         pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce
