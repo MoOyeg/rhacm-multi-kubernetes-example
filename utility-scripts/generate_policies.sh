@@ -13,3 +13,5 @@ kustomize build --enable-alpha-plugins ./xks-policies/policy-xks-nginx-ingressco
 kustomize build --enable-alpha-plugins ./xks-policies/xks-argocd/ > ./xks-policies/xks-argocd/generated-policy.yaml
 kustomize build --enable-alpha-plugins ./xks-policies/xks-cert-manager/cert-manager-operator/ > ./xks-policies/xks-cert-manager/cert-manager-operator/generated-policy.yaml
 kustomize build --enable-alpha-plugins ./xks-policies/xks-cert-manager/cert-manager-self-signed/ > ./xks-policies/xks-cert-manager/cert-manager-self-signed/generated-policy.yaml
+kustomize build --enable-alpha-plugins ./ocp-policies/ocp-cert-manager-operator > ./ocp-policies/ocp-cert-manager-operator/generated-policy.yaml
+kustomize build --enable-alpha-plugins ./ocp-policies/ocp-cert-manager-ocp-service-ca/ > ./ocp-policies/ocp-cert-manager-ocp-service-ca/generated-policy.yaml

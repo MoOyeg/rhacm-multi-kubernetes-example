@@ -1,0 +1,8 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: ca-issuer
+  namespace: openshift-cert-manager
+spec:
+  ca:
+    secretName: pki-key-pair

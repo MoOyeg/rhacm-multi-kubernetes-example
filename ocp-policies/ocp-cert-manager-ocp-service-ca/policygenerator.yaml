@@ -1,22 +1,21 @@
 apiVersion: policy.open-cluster-management.io/v1
 kind: PolicyGenerator
 metadata:
-  name: policy-install-openshift-cert-manager
+  name: policy-install-openshift-cert-manager-service-ca
 placementBindingDefaults:
   name: openshift-operators-binding
 policyDefaults:
   placement:
-    placementRuleName: ocp-placementrule
+    placementRuleName: hub-placementrule
   controls:
     - "CM-2 Baseline Configuration"
   pruneObjectBehavior: "DeleteIfCreated"
-  namespace: global-policies
+  namespace: openshift-service-ca
   remediationAction: enforce
   severity: medium
 policies:
-  - name: policy-ocp-gitops-operator
+  - name: policy-ocp-cert-service-ca
     manifests:
-      - path: openshift-gitops-subscription.yaml
-  - name: policy-ocp-pipelines-operator
-    manifests:
-      - path: openshift-pipelines-subscription.yaml
+      - path: ./manifests
+
+            

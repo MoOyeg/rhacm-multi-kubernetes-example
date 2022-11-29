@@ -1,16 +1,16 @@
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
 metadata:
-  name: binding-policy-xks-cert-manager-selfsigned
+  name: binding-policy-ocp-cert-service-ca
   namespace: global-policies
 placementRef:
   apiGroup: apps.open-cluster-management.io
   kind: PlacementRule
-  name: non-openshift-placementrule
+  name: hub-placementrule
 subjects:
 - apiGroup: policy.open-cluster-management.io
   kind: Policy
-  name: policy-xks-cert-manager-selfsigned
+  name: policy-ocp-cert-service-ca
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
@@ -19,7 +19,7 @@ metadata:
     policy.open-cluster-management.io/categories: CM Configuration Management
     policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
     policy.open-cluster-management.io/standards: NIST SP 800-53
-  name: policy-xks-cert-manager-selfsigned
+  name: policy-ocp-cert-service-ca
   namespace: global-policies
 spec:
   disabled: false
@@ -28,41 +28,32 @@ spec:
       apiVersion: policy.open-cluster-management.io/v1
       kind: ConfigurationPolicy
       metadata:
-        name: policy-xks-cert-manager-selfsigned
+        name: policy-ocp-cert-service-ca
       spec:
         object-templates:
         - complianceType: musthave
           objectDefinition:
             apiVersion: cert-manager.io/v1
-            kind: Certificate
+            kind: Issuer
             metadata:
-              name: selfsigned-ca-{{hub .ManagedClusterName hub}}
-              namespace: cert-manager
+              name: ca-issuer
+              namespace: openshift-cert-manager
             spec:
-              commonName: selfsigned-ca-{{hub .ManagedClusterName hub}}
-              isCA: true
-              issuerRef:
-                group: cert-manager.io
-                kind: ClusterIssuer
-                name: issuer-{{hub .ManagedClusterName hub}}
-              privateKey:
-                algorithm: ECDSA
-                size: 256
-              secretName: secret-{{hub .ManagedClusterName hub}}
-        - complianceType: musthave
-          objectDefinition:
-            apiVersion: cert-manager.io/v1
-            kind: ClusterIssuer
-            metadata:
-              name: issuer-{{hub .ManagedClusterName hub}}
-            spec:
-              selfSigned: {}
+              ca:
+                secretName: pki-key-pair
         - complianceType: musthave
           objectDefinition:
             apiVersion: v1
-            kind: Namespace
+            data:
+              tls.crt: '{{hub fromSecret "openshift-serving-ca" "signing-key" "tls.crt"
+                hub}}'
+              tls.key: '{{hub fromSecret "openshift-serving-ca" "signing-key" "tls.key"
+                hub}}'
+            kind: Secret
             metadata:
-              name: cert-manager
+              name: pki-key-pair
+              namespace: openshift-cert-manger
+            type: Opaque
         pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce
         severity: medium
