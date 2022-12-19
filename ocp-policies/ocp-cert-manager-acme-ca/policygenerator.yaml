@@ -1,0 +1,21 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-install-openshift-acme-ca
+placementBindingDefaults:
+  name: openshift-acme-ca-binding
+policyDefaults:
+  placement:
+    placementRuleName: ocp-placementrule
+  controls:
+    - "CM-2 Baseline Configuration"
+  pruneObjectBehavior: "DeleteIfCreated"
+  namespace: global-policies
+  remediationAction: enforce
+  severity: medium
+policies:
+  - name: policy-openshift-acme-ca
+    manifests:
+      - path: ./manifests-aws
+
+            

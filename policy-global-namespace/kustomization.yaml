@@ -1,2 +1,2 @@
-resources:
-- policy.yaml
+generators:
+- ./policygenerator.yaml

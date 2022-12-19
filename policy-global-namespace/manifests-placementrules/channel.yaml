@@ -1,0 +1,10 @@
+apiVersion: apps.open-cluster-management.io/v1
+kind: Channel
+metadata:
+  labels:
+    app: rhacm-git
+  name: rhacm-git
+  namespace: channel-rhacm-git-ns
+spec:
+  pathname: https://github.com/MoOyeg/rhacm-multi-kubernetes-example.git
+  type: Git

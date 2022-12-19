@@ -33,13 +33,13 @@ spec:
         object-templates:
         - complianceType: musthave
           objectDefinition:
-            apiVersion: project.openshift.io/v1
-            kind: Project
+            kind: Namespace
+            apiVersion: v1
             metadata:
+              name: openshift-cert-manager-operator
               labels:
                 kubernetes.io/metadata.name: openshift-cert-manager-operator
-                openshift.io/cluster-monitoring: "true"
-              name: openshift-cert-manager-operator
+                openshift.io/cluster-monitoring: 'true'
             spec: {}
         - complianceType: musthave
           objectDefinition:
@@ -47,7 +47,7 @@ spec:
             kind: Subscription
             metadata:
               labels:
-                operators.coreos.com/openshift-cert-manager-operator.openshift-cert-manager-operator: ""
+                operators.coreos.com/openshift-cert-manager-operator.openshift-cert-manager-operator: ''
               name: openshift-cert-manager-operator
               namespace: openshift-cert-manager-operator
             spec:

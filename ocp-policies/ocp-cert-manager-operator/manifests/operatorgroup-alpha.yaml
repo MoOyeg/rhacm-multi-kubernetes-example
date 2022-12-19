@@ -1,0 +1,9 @@
+apiVersion: operators.coreos.com/v1alpha2
+kind: OperatorGroup
+metadata:
+  generateName: openshift-cert-manager-operator-cert-og
+  annotations:
+    olm.providedAPIs: >-
+      CertManager.v1alpha1.config.openshift.io,CertManager.v1alpha1.operator.openshift.io,Certificate.v1.cert-manager.io,CertificateRequest.v1.cert-manager.io,Challenge.v1.acme.cert-manager.io,ClusterIssuer.v1.cert-manager.io,Issuer.v1.cert-manager.io,Order.v1.acme.cert-manager.io
+  namespace: openshift-cert-manager-operator
+spec: {}

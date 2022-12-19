@@ -1,0 +1,33 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policygeneratorbaseconfig
+placementBindingDefaults:
+  name: global-baseconfig
+policyDefaults:
+  controls:
+    - "CM-2 Baseline Configuration"
+  pruneObjectBehavior: "DeleteIfCreated"
+  remediationAction: enforce
+  severity: medium
+  namespace: global-policies
+policies:
+- name: policy-globalpolicy-namespace
+  disabled: false
+  manifests:
+    - path: ./manifests-namespace
+- name: policy-placementrules
+  disabled: false
+  manifests:
+    - path: ./manifests-placementrules
+  placement:
+    clusterSelectors:
+      name: local-cluster
+- name: policy-subscription-admin
+  disabled: false
+  manifests:
+    - path: ./manifests-rbac
+  placement:
+    clusterSelectors:
+      name: local-cluster
+    

@@ -1,0 +1,53 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: binding-policy-openshift-acme-ca
+  namespace: global-policies
+placementRef:
+  apiGroup: apps.open-cluster-management.io
+  kind: PlacementRule
+  name: ocp-placementrule
+subjects:
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: policy-openshift-acme-ca
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: policy-openshift-acme-ca
+  namespace: global-policies
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-openshift-acme-ca
+      spec:
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: cert-manager.io/v1
+            kind: ClusterIssuer
+            metadata:
+              name: letsencrypt-staging
+            spec:
+              acme:
+                email: ${EMAIL_ADDRESS}
+                preferredChain: ""
+                privateKeySecretRef:
+                  name: letsencrypt-secret
+                server: https://acme-staging-v02.api.letsencrypt.org/directory
+                solvers:
+                - http01:
+                    ingress:
+                      class: openshift-default
+        pruneObjectBehavior: DeleteIfCreated
+        remediationAction: enforce
+        severity: medium

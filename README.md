@@ -10,6 +10,7 @@ Some steps can be skipped while others have a dependency on pre-completed steps.
 - [Use Crossplane with ACM to provision xKS Clusters](#crossplane-provisioning)
 - [Ancillary Provisoning: ACM+Crossplane can be used to implement the AWS Load Balancer Controller add-on](#crossplane-aws-lb-controller-addon)
 - [Ancillary Provisoning:ACM can be used to deploy the Nginx Ingress Controller on xKS Clusters](#nginx-ingress-controller)
+- [Certificate Management with cert-manager](#cert-manager-example)
 
 ## General Prerequisites
 
@@ -483,7 +484,45 @@ Leveraging Red Hat Advanced Cluster Management we can also do ancillary provisio
     ```bash
     kustomize build --enable-alpha-plugins ./xks-policies/policy-xks-nginx-ingresscontroller/aks-overlay-generator/ | oc create -f -
     ```  
-    
+
+## cert-manager-example  
+
+Example provided uses cert-manager with ACME and Route53 so requires AWS Credentials.
+
+- Use ACM to to install the Cert-Manager Operator On OpenShift.Example presently uses Tech-Preview Version, update manifest if GA.
+  
+    Create via the pre-generated yaml
+
+    ```bash
+    oc create -f ./ocp-policies/ocp-cert-manager-operator/generated-policy.yaml
+    ```
+
+  OR
+
+    Generate your own policy and then create
+
+    ```bash
+    kustomize build --enable-alpha-plugins ./ocp-policies/ocp-cert-manager-operator | oc create -f -
+    ```
+
+- Use ACM to to install the Community Cert-Manager Operator On xKS.
+  
+    Create via the pre-generated yaml
+
+    ```bash
+    oc create -f ./xks-policies/xks-cert-manager/cert-manager-operator/generated-policy.yaml
+    ```
+
+  OR
+
+    Generate your own policy and then create
+
+    ```bash
+    kustomize build --enable-alpha-plugins ./xks-policies/xks-cert-manager/cert-manager-operator/ | oc create -f -
+    ```
+
+- Use ACM to create .
+
 ## Attach Subscription Admin Policy to your user if necessary
 
 ```bash

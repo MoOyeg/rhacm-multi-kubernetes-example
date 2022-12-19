@@ -1,5 +1,5 @@
-kind: Project
-apiVersion: project.openshift.io/v1
+kind: Namespace
+apiVersion: v1
 metadata:
   name: openshift-cert-manager-operator
   labels:

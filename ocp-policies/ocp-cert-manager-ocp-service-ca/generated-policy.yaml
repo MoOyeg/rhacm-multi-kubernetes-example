@@ -1,8 +1,28 @@
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: hub-placementrule
+  namespace: openshift-service-ca
+spec:
+  clusterConditions:
+  - status: "True"
+    type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+    - key: name
+      operator: In
+      values:
+      - local-cluster
+    - key: vendor
+      operator: In
+      values:
+      - OpenShift
+---
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
 metadata:
   name: binding-policy-ocp-cert-service-ca
-  namespace: global-policies
+  namespace: openshift-service-ca
 placementRef:
   apiGroup: apps.open-cluster-management.io
   kind: PlacementRule
@@ -20,7 +40,7 @@ metadata:
     policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
     policy.open-cluster-management.io/standards: NIST SP 800-53
   name: policy-ocp-cert-service-ca
-  namespace: global-policies
+  namespace: openshift-service-ca
 spec:
   disabled: false
   policy-templates:
@@ -45,14 +65,14 @@ spec:
           objectDefinition:
             apiVersion: v1
             data:
-              tls.crt: '{{hub fromSecret "openshift-serving-ca" "signing-key" "tls.crt"
+              tls.crt: '{{hub fromSecret "openshift-service-ca" "signing-key" "tls.crt"
                 hub}}'
-              tls.key: '{{hub fromSecret "openshift-serving-ca" "signing-key" "tls.key"
+              tls.key: '{{hub fromSecret "openshift-service-ca" "signing-key" "tls.key"
                 hub}}'
             kind: Secret
             metadata:
               name: pki-key-pair
-              namespace: openshift-cert-manger
+              namespace: openshift-cert-manager
             type: Opaque
         pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce

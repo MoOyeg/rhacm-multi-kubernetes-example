@@ -27,6 +27,24 @@ spec:
                 kind: Namespace
                 metadata:
                   name: global-policies
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: v1
+                kind: Namespace
+                metadata:
+                  name: channel-rhacm-git-ns
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: apps.open-cluster-management.io/v1
+                kind: Channel
+                metadata:
+                  labels:
+                    app: rhacm-git
+                  name: rhacm-git
+                  namespace: channel-rhacm-git-ns
+                spec:
+                  pathname: https://github.com/MoOyeg/rhacm-multi-kubernetes-example.git
+                  type: Git
           pruneObjectBehavior: DeleteAll
           remediationAction: enforce
           severity: high
