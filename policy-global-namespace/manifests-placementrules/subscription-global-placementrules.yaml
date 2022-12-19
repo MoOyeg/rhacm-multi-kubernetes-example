@@ -13,4 +13,4 @@ spec:
   placement:
     placementRef:
       kind: PlacementRule
-      name: hub-placementrule
+      name: bootstrap-hub-placementrule
