@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging
+  namespace: kube-system
+spec:
+  acme:
+    email: ${EMAIL_ADDRESS}
+    preferredChain: ''
+    privateKeySecretRef:
+      name: letsencrypt-secret
+    server: 'https://acme-staging-v02.api.letsencrypt.org/directory'
+
+

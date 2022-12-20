@@ -1,0 +1,48 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-certmanager-clusterissuer-acme
+placementBindingDefaults:
+  name: certmanager-clusterissuer-acme
+policyDefaults:
+  controls:
+    - "CM-2 Baseline Configuration"
+  pruneObjectBehavior: "DeleteIfCreated"
+  namespace: global-policies
+  remediationAction: enforce
+  severity: medium
+policies:
+  - name: policy-openshift-acme-ca-route53
+    placement:
+      clusterSelectors:
+        cloud: Amazon
+        vendor: OpenShift
+    manifests:
+      - path: ./manifests
+        patches:
+          - apiVersion: cert-manager.io/v1
+            kind: ClusterIssuer
+            metadata:
+              name: letsencrypt-staging
+            spec:
+              acme:
+                solvers:
+                  - http01:
+                      ingress:
+                        class: openshift-default
+                    selector:
+                      matchLabels:
+                        "use-route-solver": "true"
+                  - dns01:
+                      route53:
+                        region: '{{ (lookup "config.openshift.io/v1" "Infrastructure" "" "cluster").status.platformStatus.aws.region }}'
+                        hostedZoneID: '{{ (lookup "config.openshift.io/v1" "DNS" "" "cluster").spec.publicZone.id }}'
+                        accessKeyID: '{{ fromSecret "kube-system" "aws-creds" "aws_access_key_id"}}'
+                        secretAccessKeySecretRef:
+                          name: aws-creds
+                          key: '{{ fromSecret "kube-system" "aws-creds" "aws_secret_access_key"}}'
+                    selector:
+                      matchLabels:
+                        "use-dns-solver": "true"
+
+            

@@ -190,9 +190,6 @@ subjects:
   name: policy-crossplane-helm-repo
 - apiGroup: policy.open-cluster-management.io
   kind: Policy
-  name: policy-crossplane-git-repo
-- apiGroup: policy.open-cluster-management.io
-  kind: Policy
   name: policy-crossplane-app-install
 - apiGroup: policy.open-cluster-management.io
   kind: Policy
@@ -560,49 +557,6 @@ spec:
                 placementRef:
                   kind: PlacementRule
                   name: hub-placementrule
-        pruneObjectBehavior: DeleteIfCreated
-        remediationAction: enforce
-        severity: medium
----
-apiVersion: policy.open-cluster-management.io/v1
-kind: Policy
-metadata:
-  annotations:
-    policy.open-cluster-management.io/categories: CM Configuration Management
-    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
-    policy.open-cluster-management.io/standards: NIST SP 800-53
-  name: policy-crossplane-git-repo
-  namespace: global-policies
-spec:
-  disabled: false
-  policy-templates:
-  - objectDefinition:
-      apiVersion: policy.open-cluster-management.io/v1
-      kind: ConfigurationPolicy
-      metadata:
-        name: policy-crossplane-git-repo
-      spec:
-        object-templates:
-        - complianceType: musthave
-          objectDefinition:
-            apiVersion: v1
-            kind: Namespace
-            metadata:
-              labels:
-                app: crossplane
-              name: channel-git-crossplane
-        - complianceType: musthave
-          objectDefinition:
-            apiVersion: apps.open-cluster-management.io/v1
-            kind: Channel
-            metadata:
-              labels:
-                app: crossplane
-              name: git-crossplane
-              namespace: channel-git-crossplane
-            spec:
-              pathname: https://github.com/MoOyeg/rhacm-multi-kubernetes-example.git
-              type: Git
         pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce
         severity: medium

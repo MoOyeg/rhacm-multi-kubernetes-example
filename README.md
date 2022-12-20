@@ -232,7 +232,7 @@ Edit the [aws resources manifests](./crossplane/crossplane-resources/aws/manifes
   oc apply -k ./crossplane/crossplane-resources/aws/acm-app/
   ```
 
-- Use ACM application to create xKS Clusters.This will provision all the defined xKS clusters.To edit which clusters you want created, edit the [kustomization.yaml](./crossplane/crossplane-clusters/acm-app/kustomization.yaml).  
+- Use ACM application to create xKS Clusters.This will provision all the defined xKS clusters so if you are creating other xks clusters you might want to run the resources commands like above for those clouds.To edit which clusters you want created, edit the [kustomization.yaml](./crossplane/crossplane-clusters/acm-app/kustomization.yaml).  
   **_Please note there seems to be a bug where the cluster application appears blank.Application still works,will file a bug._**
 
   ```bash
@@ -535,7 +535,7 @@ Example provided uses cert-manager with ACME and Route53 so requires AWS Credent
   kustomize build --enable-alpha-plugins ./xks-policies/xks-cert-manager/cert-manager-operator/ | oc create -f -
   ```
 
-- Use ACM to create .
+- Use ACM to create
 
 ## Attach Subscription Admin Policy to your user if necessary
 
