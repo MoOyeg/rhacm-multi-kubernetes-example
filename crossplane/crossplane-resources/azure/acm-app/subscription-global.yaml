@@ -10,7 +10,7 @@ metadata:
   name: crossplane-azure-resources-subscription
   namespace: crossplane-system
 spec:
-  channel: channel-git-crossplane/git-crossplane
+  channel: channel-rhacm-git-ns/rhacm-git
   placement:
     placementRef:
       kind: PlacementRule

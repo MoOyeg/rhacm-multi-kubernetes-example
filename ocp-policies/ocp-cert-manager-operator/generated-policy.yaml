@@ -33,21 +33,42 @@ spec:
         object-templates:
         - complianceType: musthave
           objectDefinition:
-            kind: Namespace
             apiVersion: v1
+            kind: Namespace
             metadata:
-              name: openshift-cert-manager-operator
               labels:
                 kubernetes.io/metadata.name: openshift-cert-manager-operator
-                openshift.io/cluster-monitoring: 'true'
+                openshift.io/cluster-monitoring: "true"
+              name: openshift-cert-manager-operator
             spec: {}
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: operators.coreos.com/v1alpha2
+            kind: OperatorGroup
+            metadata:
+              annotations:
+                olm.providedAPIs: CertManager.v1alpha1.config.openshift.io,CertManager.v1alpha1.operator.openshift.io,Certificate.v1.cert-manager.io,CertificateRequest.v1.cert-manager.io,Challenge.v1.acme.cert-manager.io,ClusterIssuer.v1.cert-manager.io,Issuer.v1.cert-manager.io,Order.v1.acme.cert-manager.io
+              generateName: openshift-cert-manager-operator-cert-og
+              namespace: openshift-cert-manager-operator
+            spec: {}
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: operators.coreos.com/v1
+            kind: OperatorGroup
+            metadata:
+              annotations:
+                olm.providedAPIs: CertManager.v1alpha1.config.openshift.io,CertManager.v1alpha1.operator.openshift.io,Certificate.v1.cert-manager.io,CertificateRequest.v1.cert-manager.io,Challenge.v1.acme.cert-manager.io,ClusterIssuer.v1.cert-manager.io,Issuer.v1.cert-manager.io,Order.v1.acme.cert-manager.io
+              name: openshift-cert-manager-operator-cert-og
+              namespace: openshift-cert-manager-operator
+            spec:
+              upgradeStrategy: Default
         - complianceType: musthave
           objectDefinition:
             apiVersion: operators.coreos.com/v1alpha1
             kind: Subscription
             metadata:
               labels:
-                operators.coreos.com/openshift-cert-manager-operator.openshift-cert-manager-operator: ''
+                operators.coreos.com/openshift-cert-manager-operator.openshift-cert-manager-operator: ""
               name: openshift-cert-manager-operator
               namespace: openshift-cert-manager-operator
             spec:
@@ -56,6 +77,7 @@ spec:
               name: openshift-cert-manager-operator
               source: redhat-operators
               sourceNamespace: openshift-marketplace
+            status: {}
         pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce
         severity: medium

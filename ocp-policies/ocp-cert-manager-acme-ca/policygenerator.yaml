@@ -16,6 +16,6 @@ policyDefaults:
 policies:
   - name: policy-openshift-acme-ca
     manifests:
-      - path: ./manifests-aws
+      - path: ./manifests
 
             

@@ -21,7 +21,7 @@ spec:
   - apiVersion: batch/v1
     kinds:
     - Job 
-  channel: channel-git-crossplane/git-crossplane
+  channel: channel-rhacm-git-ns/rhacm-git
   placement:
     placementRef:
       kind: PlacementRule

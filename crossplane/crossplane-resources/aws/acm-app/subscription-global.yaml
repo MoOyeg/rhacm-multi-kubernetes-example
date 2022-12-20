@@ -9,7 +9,7 @@ metadata:
     app: crossplane-aws-resources
   name: aws-subscription-global
 spec:
-  channel: channel-git-crossplane/git-crossplane
+  channel: channel-rhacm-git-ns/rhacm-git
   placement:
     placementRef:
       kind: PlacementRule

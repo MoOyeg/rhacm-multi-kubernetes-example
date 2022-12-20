@@ -1,6 +1,7 @@
 #!/bin/bash 
-#Run policy generator files to refresh generated policiey yamls
+#Run policy generator files to refresh generated policy yamls
 
+kustomize build --enable-alpha-plugins ./policy-global-base > ./policy-global-base/generated-policy.yaml
 kustomize build --enable-alpha-plugins ./crossplane/ > ./crossplane/generated-policy.yaml
 kustomize build --enable-alpha-plugins ./acs/acs-operator > ./acs/acs-operator/generated-policy.yaml
 kustomize build --enable-alpha-plugins ./acs/acs-central > ./acs/acs-central/generated-policy.yaml

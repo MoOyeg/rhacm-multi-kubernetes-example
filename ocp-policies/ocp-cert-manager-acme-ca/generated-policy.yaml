@@ -48,6 +48,20 @@ spec:
                 - http01:
                     ingress:
                       class: openshift-default
+                  selector:
+                    matchLabels:
+                      use-route-solver: "true"
+                - dns01:
+                    route53:
+                      accessKeyID: AKIA5EXAMPLE
+                      hostedZoneID: Z0152EXAMPLE
+                      region: us-east-1
+                      secretAccessKeySecretRef:
+                        key: secret-access-key
+                        name: route53-secret
+                  selector:
+                    matchLabels:
+                      use-dns-solver: "true"
         pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce
         severity: medium
