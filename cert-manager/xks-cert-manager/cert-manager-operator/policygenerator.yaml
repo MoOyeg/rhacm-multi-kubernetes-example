@@ -9,7 +9,7 @@ policyDefaults:
     placementRuleName: non-openshift-placementrule
   controls:
     - "CM-2 Baseline Configuration"
-  pruneObjectBehavior: "DeleteIfCreated"
+  pruneObjectBehavior: "DeleteAll"
   remediationAction: enforce
   namespace: global-policies
   severity: medium

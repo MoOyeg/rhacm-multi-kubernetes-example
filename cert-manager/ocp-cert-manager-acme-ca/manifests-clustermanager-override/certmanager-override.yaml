@@ -1,0 +1,15 @@
+#Some helpful material:https://cloud.redhat.com/blog/securing-ingress-controllers-on-a-managed-openshift-cluster-using-red-hat-advanced-cluster-management
+apiVersion: operator.openshift.io/v1alpha1
+kind: CertManager
+metadata:
+  name: cluster
+spec:
+  managementState: "Managed"
+  unsupportedConfigOverrides:
+    # Adding CertManager Override to allow use the AWS Secret in Kube-System
+    # Validate Records Using Public DNS
+    controller:
+      args:
+        - '--cluster-resource-namespace=kube-system'
+        - '--dns01-recursive-nameservers=1.1.1.1:53'
+        - '--dns01-recursive-nameservers-only'

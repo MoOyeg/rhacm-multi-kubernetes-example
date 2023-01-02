@@ -508,7 +508,7 @@ Example provided uses cert-manager with ACME and Route53 so requires AWS Credent
   Create via the pre-generated yaml
 
   ```bash
-  oc create -f ./ocp-policies/ocp-cert-manager-operator/generated-policy.yaml
+  oc create -f ./cert-manager/ocp-cert-manager-operator/generated-policy.yaml
   ```
 
   OR
@@ -516,7 +516,7 @@ Example provided uses cert-manager with ACME and Route53 so requires AWS Credent
   Generate your own policy and then create
 
   ```bash
-  kustomize build --enable-alpha-plugins ./ocp-policies/ocp-cert-manager-operator | oc create -f -
+  kustomize build --enable-alpha-plugins ./cert-manager/ocp-cert-manager-operator | oc create -f -
   ```
 
 - Use ACM to to install the Community Cert-Manager Operator On xKS.
@@ -524,7 +524,7 @@ Example provided uses cert-manager with ACME and Route53 so requires AWS Credent
   Create via the pre-generated yaml
 
   ```bash
-  oc create -f ./xks-policies/xks-cert-manager/cert-manager-operator/generated-policy.yaml
+  oc create -f ./cert-manager/xks-cert-manager/cert-manager-operator/generated-policy.yaml
   ```
 
   OR
@@ -532,11 +532,22 @@ Example provided uses cert-manager with ACME and Route53 so requires AWS Credent
   Generate your own policy and then create
 
   ```bash
-  kustomize build --enable-alpha-plugins ./xks-policies/xks-cert-manager/cert-manager-operator/ | oc create -f -
+  kustomize build --enable-alpha-plugins ./cert-manager/xks-cert-manager/cert-manager-operator/ | oc create -f -
   ```
 
-- Use ACM to create
+- Use ACM to create ACME ClusterIssuer(LetsEncrypt).Step will use your LetsEncypt email address to create Acme ClusterIssuer.
 
+  ```bash
+  export EMAIL_ADDRESS=<ACME_EMAIL_ADDRESS>
+  kustomize build --enable-alpha-plugins ./cert-manager/ocp-cert-manager-acme-ca/ | envsubst | oc create -f -
+  ```
+
+- Use ACM to create ACME Certificates for OCP Wildcard Domains
+  
+  ```bash
+  kustomize build --enable-alpha-plugins ./cert-manager/ocp-cert-manager-acme-certrequests/ | oc create -f -  
+  ```
+  
 ## Attach Subscription Admin Policy to your user if necessary
 
 ```bash

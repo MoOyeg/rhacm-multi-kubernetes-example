@@ -9,11 +9,13 @@ policyDefaults:
     placementRuleName: ocp-placementrule
   controls:
     - "CM-2 Baseline Configuration"
-  pruneObjectBehavior: "DeleteIfCreated"
+  pruneObjectBehavior: "DeleteAll"
   namespace: global-policies
   remediationAction: enforce
   severity: medium
 policies:
   - name: policy-ocp-cert-manager-operator
     manifests:
-      - path: ./manifests
+    #Switch version between community and RedHat
+      #- path: ./manifests-redhat
+      - path: ./manifests-community

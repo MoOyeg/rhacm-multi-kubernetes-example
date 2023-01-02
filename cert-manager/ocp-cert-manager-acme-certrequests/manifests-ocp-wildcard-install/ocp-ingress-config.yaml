@@ -1,0 +1,11 @@
+apiVersion: config.openshift.io/v1
+kind: Ingress
+metadata:
+  name: cluster
+spec:
+  componentRoutes:
+    - name: console
+      namespace: openshift-console
+      hostname: 'console-openshift-console.apps.{{ (lookup "config.openshift.io/v1" "DNS" "" "cluster").spec.baseDomain }}' 
+      servingCertKeyPairSecret:
+        name: ocp-acme-wildcard-cert-secret
