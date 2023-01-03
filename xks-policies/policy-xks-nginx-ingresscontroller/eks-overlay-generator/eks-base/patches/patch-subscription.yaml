@@ -15,7 +15,8 @@ spec:
       value:
         controller:
           setAsDefaultIngress: true
-          replicaCount: "2"        
+          replicaCount: "2"  
+          logLevel: "4"      
   placement:
     placementRef:
       kind: PlacementRule
