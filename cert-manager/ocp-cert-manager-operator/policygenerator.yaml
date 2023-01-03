@@ -17,5 +17,5 @@ policies:
   - name: policy-ocp-cert-manager-operator
     manifests:
     #Switch version between community and RedHat
-      #- path: ./manifests-redhat
-      - path: ./manifests-community
+      - path: ./manifests-redhat
+      #- path: ./manifests-community

@@ -2,15 +2,14 @@ apiVersion: policy.open-cluster-management.io/v1
 kind: PolicyGenerator
 metadata:
   name: policy-generator-xks-tekton
-  labels:
-    custom: tekton-xks-policy
 placementBindingDefaults:
   name: xks-tekton-policy-pb
 policyDefaults:
+  pruneObjectBehavior: "DeleteIfCreated"
   namespace: global-policies
   # Use an existing placement rule so that placement bindings can be consolidated
   placement:
-    placementRulePath: ../placementrules/non-openshift-placementrule.yaml
+    placementRuleName: non-openshift-placementrule
   remediationAction: enforce
   severity: medium
 policies:

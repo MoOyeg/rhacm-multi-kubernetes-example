@@ -17,3 +17,5 @@ kustomize build --enable-alpha-plugins ./xks-policies/xks-argocd/ > ./xks-polici
 #Cert-manager
 kustomize build --enable-alpha-plugins ./cert-manager/ocp-cert-manager-operator/ > ./cert-manager/ocp-cert-manager-operator/generated-policy.yaml
 kustomize build --enable-alpha-plugins ./cert-manager/xks-cert-manager/cert-manager-operator/ > ./cert-manager/xks-cert-manager/cert-manager-operator/generated-policy.yaml
+#kustomize build --enable-alpha-plugins ./cert-manager/ocp-cert-manager-acme-ca/ | envsubst > ./cert-manager/ocp-cert-manager-acme-ca/generated-policy.yaml
+kustomize build --enable-alpha-plugins ./cert-manager/ocp-cert-manager-acme-certrequests/ > ./cert-manager/ocp-cert-manager-acme-certrequests/generated-policy.yaml

@@ -43,6 +43,7 @@ spec:
               name: cert-manager
               source: operatorhubio-catalog
               sourceNamespace: olm
-        pruneObjectBehavior: DeleteIfCreated
+        pruneObjectBehavior: DeleteAll
         remediationAction: enforce
         severity: medium
+  remediationAction: enforce

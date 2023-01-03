@@ -5,6 +5,8 @@ metadata:
 placementBindingDefaults:
   name: ocp-certmanager-acme-certrequests
 policyDefaults:
+  placement:
+    placementRuleName: ocp-placementrule
   controls:
     - "CM-2 Baseline Configuration"
   pruneObjectBehavior: "DeleteIfCreated"
@@ -16,20 +18,14 @@ policies:
   - name: policy-ocp-cert-wildcard-create
     remediationAction: enforce   
     disabled: false 
-    placement:
-      clusterSelectors: {}
     manifests:
       - path: ./manifests-ocp-wildcard-create    
   - name: policy-ocp-cert-wildcard-copy
     remediationAction: enforce    
-    placement:
-      clusterSelectors: {}
     manifests:
       - path: ./manifests-ocp-wildcard-copy
-  # - name: policy-ocp-cert-wildcard-install  
-  #   remediationAction: enforce      
-  #   placement:
-  #     clusterSelectors: {}
-  #   manifests:
-  #     - path: ./manifests-ocp-wildcard-install
+  - name: policy-ocp-cert-wildcard-install  
+    remediationAction: enforce      
+    manifests:
+      - path: ./manifests-ocp-wildcard-install
             

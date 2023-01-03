@@ -7,9 +7,11 @@ metadata:
     use-dns-solver: "true"
 spec:
   secretName: ocp-acme-wildcard-cert-secret
+  duration: 24h
   issuerRef: 
     kind: ClusterIssuer
     name: letsencrypt-staging
   commonName: '*.apps.{{ (lookup "config.openshift.io/v1" "DNS" "" "cluster").spec.baseDomain }}'
   dnsNames:
     - '*.apps.{{ (lookup "config.openshift.io/v1" "DNS" "" "cluster").spec.baseDomain }}'
+    - '*.{{ (lookup "config.openshift.io/v1" "DNS" "" "cluster").spec.baseDomain }}'

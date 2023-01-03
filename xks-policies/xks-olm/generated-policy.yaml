@@ -20940,6 +20940,7 @@ spec:
         pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce
         severity: medium
+  remediationAction: enforce
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
@@ -21359,3 +21360,4 @@ spec:
         pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce
         severity: medium
+  remediationAction: enforce

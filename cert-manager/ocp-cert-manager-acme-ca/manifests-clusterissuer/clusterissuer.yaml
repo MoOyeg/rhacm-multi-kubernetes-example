@@ -8,6 +8,8 @@ spec:
     preferredChain: ''
     privateKeySecretRef:
       name: letsencrypt-secret
-    server: 'https://acme-staging-v02.api.letsencrypt.org/directory'
-
+# Lets Encrypt Staging
+    #server: 'https://acme-staging-v02.api.letsencrypt.org/directory'
+# Let's Encrypt Prod
+    server: 'https://acme-v02.api.letsencrypt.org/directory'
 
