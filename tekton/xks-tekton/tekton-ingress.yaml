@@ -4,14 +4,14 @@ metadata:
   name: tekton-ingress
   namespace: tekton-pipelines
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.org/rewrites: "serviceName=tekton-dashboard rewrite=/"
 spec:
   ingressClassName: nginx
   rules:
   - http:
       paths:
       - path: /tekton
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: tekton-dashboard

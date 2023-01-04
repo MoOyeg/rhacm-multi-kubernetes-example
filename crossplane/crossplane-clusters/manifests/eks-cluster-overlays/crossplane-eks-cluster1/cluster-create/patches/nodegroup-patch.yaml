@@ -13,7 +13,7 @@ spec:
       - name: crossplane-subnet-2-us-east-1
       - name: crossplane-subnet-3-us-east-1
     scalingConfig:
-      desiredSize: 2
+      desiredSize: 4
       maxSize: 4
       minSize: 1
 
