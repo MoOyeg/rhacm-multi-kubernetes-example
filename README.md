@@ -553,3 +553,5 @@ Example provided uses cert-manager with ACME and Route53 so requires AWS Credent
 ```bash
  oc adm policy add-cluster-role-to-user open-cluster-management:subscription-admin $(oc whoami)
 ```
+
+  #- host: '{{ lookup "cluster.open-cluster-management.io/v1alpha1" "ClusterClaim" "" "name").spec.value }}-''{{hub (splitn "." 2 ((lookup "config.openshift.io/v1" "DNS" "" "cluster").spec.baseDomain | print) )._1 hub}}'

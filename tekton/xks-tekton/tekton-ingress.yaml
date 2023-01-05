@@ -9,7 +9,8 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - http:
+  - host: tekton-eks-cluster-1.clustertest.test.oyegunle.com
+    http:
       paths:
       - path: /
         pathType: Prefix

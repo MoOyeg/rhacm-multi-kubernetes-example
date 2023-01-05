@@ -18,14 +18,16 @@ policies:
     #Policy starts as main entry point and will detect the necessary type of installation and enable the
     #appropriate patch
     placement:
-      clusterSelectors: {}
+      clusterSelectors:
+        vendor: OpenShift
     manifests:
       - path: ./manifests-policy-override
     disabled: false
   - name: policy-openshift-certmanager-object-override
     #Policy will try to patch the cert-manager object with some overrides
     placement:
-      clusterSelectors: {}
+      clusterSelectors:
+        vendor: OpenShift
     manifests:
       - path: ./manifests-clustermanager-override
     disabled: true
@@ -37,7 +39,8 @@ policies:
       namespace: global-policies
   - name: policy-certmanager-csv-override
     placement:
-      clusterSelectors: {}
+      clusterSelectors:
+        vendor: OpenShift
     manifests:
       - path: ./manifests-csv-override
     disabled: true
