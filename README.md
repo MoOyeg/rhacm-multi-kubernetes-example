@@ -61,7 +61,7 @@ Cluster configuration that will serve as the base for our ACM Policies and all o
   - Create List Of PlacementRules we want ACM to use from the placmentrules folder and can be leveraged by other policies. PlacementRules are used as selectors to determine which clusters a policy should be applied to.Might need to run this command twice to allow the previous policy to be enforced..
   - Attach subscription-admin role to the user that requested the global-policies namespace above.
 
-  You can install the ACM policy via a pre-generated yaml:
+  You can create the ACM policy via a pre-generated yaml:
 
   ```bash
   oc create -f ./policy-global-base/generated-policy.yaml
@@ -503,6 +503,11 @@ OR
 
 Example provided uses cert-manager with ACME and Route53 so requires AWS Credentials.
 
+### cert-manager-example Prerequisites
+
+- Run [Basic Cluster Configuration](#basic-cluster-configuration) steps from above.
+- [User running commands must have subscription-admin privilege](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#granting-subscription-admin-privilege). [Sample Solution](https://access.redhat.com/solutions/6010251)
+
 - Use ACM to to install the Cert-Manager Operator On OpenShift.Example presently uses Tech-Preview Version, update manifest if GA.
 
   Create via the pre-generated yaml
@@ -539,6 +544,9 @@ Example provided uses cert-manager with ACME and Route53 so requires AWS Credent
 
   ```bash
   export EMAIL_ADDRESS=<ACME_EMAIL_ADDRESS>
+  ```
+
+  ```bash
   kustomize build --enable-alpha-plugins ./cert-manager/ocp-cert-manager-acme-ca/ | envsubst | oc create -f -
   ```
 
@@ -553,5 +561,3 @@ Example provided uses cert-manager with ACME and Route53 so requires AWS Credent
 ```bash
  oc adm policy add-cluster-role-to-user open-cluster-management:subscription-admin $(oc whoami)
 ```
-
-  #- host: '{{ lookup "cluster.open-cluster-management.io/v1alpha1" "ClusterClaim" "" "name").spec.value }}-''{{hub (splitn "." 2 ((lookup "config.openshift.io/v1" "DNS" "" "cluster").spec.baseDomain | print) )._1 hub}}'

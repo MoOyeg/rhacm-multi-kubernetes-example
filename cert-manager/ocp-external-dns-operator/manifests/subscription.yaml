@@ -1,0 +1,14 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  labels:
+    operators.coreos.com/external-dns-operator.external-dns-operator: ''
+  name: external-dns-operator
+  namespace: external-dns-operator
+spec:
+  channel: stable-v1.1
+  installPlanApproval: Automatic
+  name: external-dns-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+

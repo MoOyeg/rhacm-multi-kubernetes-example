@@ -1,0 +1,46 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: configmap-policy-template
+  namespace: global-policies
+immutable: false
+data:
+  configmap-policy.yaml: |
+    apiVersion: policy.open-cluster-management.io/v1
+    kind: Policy
+    metadata:
+      name: policy-$cluster-cert-tekton-copy
+      namespace: $cluster
+    spec:
+      disabled: false
+      policy-templates:
+        - objectDefinition:
+            apiVersion: policy.open-cluster-management.io/v1
+            kind: ConfigurationPolicy
+            metadata:
+              name: policy-$cluster-cert-tekton-copy
+            spec:
+              object-templates:
+                - complianceType: musthave
+                  objectDefinition:
+                    kind: Secret
+                    apiVersion: v1
+                    metadata:
+                      name: tekton-ingress-cert
+                      namespace: tekton-pipelines
+                      annotations:
+                        cert-manager.io/alt-names: '##hub index (lookup "v1" "Secret" "$cluster" "tekton-ingress-cert").metadata.annotations "cert-manager.io/alt-names" hub%%'
+                        cert-manager.io/certificate-name: '##hub index (lookup "v1" "Secret" "$cluster" "tekton-ingress-cert").metadata.annotations "cert-manager.io/certificate-name" hub%%'
+                        cert-manager.io/common-name: '##hub index (lookup "v1" "Secret" "$cluster" "tekton-ingress-cert").metadata.annotations "cert-manager.io/common-name" hub%%'
+                        cert-manager.io/issuer-kind: '##hub index (lookup "v1" "Secret" "$cluster" "tekton-ingress-cert").metadata.annotations "cert-manager.io/issuer-kind" hub%%'
+                        cert-manager.io/issuer-name: '##hub index (lookup "v1" "Secret" "$cluster" "tekton-ingress-cert").metadata.annotations "cert-manager.io/issuer-name" hub%%'
+                        cert-manager.io/uri-sans: '##hub index (lookup "v1" "Secret" "$cluster" "tekton-ingress-cert").metadata.annotations "cert-manager.io/uri-sans" hub%%'
+                        cert-manager.io/ip-sans: '##hub index (lookup "v1" "Secret" "$cluster" "tekton-ingress-cert").metadata.annotations "cert-manager.io/ip-sans" hub%%'
+                    data:
+                      tls.key: '##hub fromSecret "$cluster" "tekton-ingress-cert" "tls.key" hub%%'
+                      tls.crt: '##hub fromSecret "$cluster" "tekton-ingress-cert" "tls.crt" hub%%'
+                    type: kubernetes.io/tls
+              pruneObjectBehavior: DeleteIfCreated
+              remediationAction: enforce
+              severity: medium
+      remediationAction: enforce

@@ -1,0 +1,9 @@
+bases:
+  - "./base"
+# patchesJson6902:
+#   - target:
+#       group: batch
+#       version: v1
+#       kind: Job
+#       name: tekton-ingress-search-job
+#     path: ./patches/search-job-rename.yaml

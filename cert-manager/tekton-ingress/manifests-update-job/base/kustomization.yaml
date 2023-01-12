@@ -1,0 +1,5 @@
+resources:
+- search-job.yaml
+- search-job-sa.yaml
+- externaldns.yaml
+- configmap-policy.yaml

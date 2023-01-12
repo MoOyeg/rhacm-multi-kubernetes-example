@@ -1,0 +1,61 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: configmap-policy-template
+  namespace: global-policies
+immutable: false
+data:
+  configmap-policy-template.yaml: |
+    apiVersion: policy.open-cluster-management.io/v1
+    kind: PlacementBinding
+    metadata:
+      name: binding-managedcluster-replace-me
+      namespace: global-policies
+    placementRef:
+      apiGroup: apps.open-cluster-management.io
+      kind: PlacementRule
+      name: hub-placementrule
+    subjects:
+    - apiGroup: policy.open-cluster-management.io
+      kind: Policy
+      name: policy-xks-acs-helm-secured-managedcluster-replace-me
+    ---
+    apiVersion: policy.open-cluster-management.io/v1
+    kind: Policy
+    metadata:
+      annotations:
+        policy.open-cluster-management.io/categories: CM Configuration Management
+        policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+        policy.open-cluster-management.io/standards: NIST SP 800-53
+      name: policy-xks-acs-helm-secured-managedcluster-replace-me
+      namespace: global-policies
+    spec:
+      disabled: false
+      policy-templates:
+      - objectDefinition:
+          apiVersion: policy.open-cluster-management.io/v1
+          kind: ConfigurationPolicy
+          metadata:
+            name: policy-xks-acs-helm-secured-managedcluster-replace-me
+          spec:
+            object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                kind: Service
+apiVersion: v1
+metadata:
+  name: tekton-clustername
+  labels:
+    '{{hub (splitn "." 2 ((lookup "config.openshift.io/v1" "DNS" "" "cluster").spec.baseDomain | print) )._1 hub}}/publish': 'yes'
+spec:
+  type: ExternalName
+  sessionAffinity: None
+  externalName: ""
+
+
+
+
+
+            pruneObjectBehavior: DeleteIfCreated
+            remediationAction: enforce
+            severity: medium

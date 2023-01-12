@@ -1,0 +1,150 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: search-job
+  namespace: global-policies
+rules:
+  - apiGroups:
+      - apps.open-cluster-management.io
+    resources:
+      - subscriptions
+    verbs:
+      - get
+      - list
+      - create
+      - patch
+      - update
+      - delete
+  - apiGroups:
+      - apps.open-cluster-management.io
+    resources:
+      - placementrules
+    verbs:
+      - get
+      - list
+      - create
+      - update
+  - apiGroups:
+      - policy.open-cluster-management.io
+    resources:
+      - placementbindings
+    verbs:
+      - get
+      - list
+      - create
+      - delete
+  - apiGroups:
+      - policy.open-cluster-management.io
+    resources:
+      - policies
+    verbs:
+      - get
+      - list
+      - create
+      - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: search-job-clusterrole
+rules:
+  - apiGroups:
+      - 'cluster.open-cluster-management.io'
+    resources:
+      - managedclusters
+    verbs:
+      - get
+      - watch
+      - list
+  - apiGroups:
+      - ''
+    resources:
+      - services
+    verbs:
+      - create
+      - get
+      - watch
+      - list
+      - delete
+  - apiGroups:
+      - 'cert-manager.io'
+    resources:
+      - certificates
+    verbs:
+      - create
+      - get
+      - watch
+      - list
+      - delete
+  - apiGroups:
+      - 'apps.open-cluster-management.io'
+    resources:
+      - placementrules
+    verbs:
+      - create
+      - get
+      - watch
+      - list
+  - apiGroups:
+      - 'policy.open-cluster-management.io'
+    resources:
+      - placementbindings
+    verbs:
+      - create
+      - get
+      - watch
+      - list
+  - apiGroups:
+      - 'policy.open-cluster-management.io'
+    resources:
+      - policies
+    verbs:
+      - create
+      - get
+      - watch
+      - list
+  - apiGroups:
+      - 'view.open-cluster-management.io'
+    resources:
+      - managedclusterviews
+    verbs:
+      - get
+      - watch
+      - list
+      - create
+      - delete
+      - patch
+      - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: search-job-binding
+  namespace: global-policies
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: search-job
+subjects:
+  - kind: ServiceAccount
+    name: search-job-sa
+    namespace: global-policies
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: search-job-binding-managedcluster
+subjects:
+  - kind: ServiceAccount
+    name: search-job-sa
+    namespace: global-policies
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: search-job-clusterrole
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: search-job-sa
+  namespace: global-policies

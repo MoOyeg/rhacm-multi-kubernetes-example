@@ -8,7 +8,7 @@ spec:
   tls:
     - hosts:
       - '{{ (index (lookup "cluster.open-cluster-management.io/v1alpha1" "ClusterClaim" "" "name").spec.value) }}.{{hub (splitn "." 2 ((lookup "config.openshift.io/v1" "DNS" "" "cluster").spec.baseDomain | print) )._1 hub}}'
-      secretName: tls-secret
+      secretName: tekton-ingress-cert
   rules:
   - host: '{{ (index (lookup "cluster.open-cluster-management.io/v1alpha1" "ClusterClaim" "" "name").spec.value) }}.{{hub (splitn "." 2 ((lookup "config.openshift.io/v1" "DNS" "" "cluster").spec.baseDomain | print) )._1 hub}}'
     http:

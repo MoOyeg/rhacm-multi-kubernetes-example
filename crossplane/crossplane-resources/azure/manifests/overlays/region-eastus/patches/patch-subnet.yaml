@@ -3,8 +3,8 @@ kind: Subnet
 metadata:
   name: crossplane-azure-subnet-eastus
 spec:
-  resourceGroupName: openenv-fvcf6
+  resourceGroupName: openenv-g7pwl
   #resourceGroupNameRef:
-  #  name: openenv-fvcf6
+  #  name: openenv-g7pwl
   virtualNetworkNameRef:
     name: crossplane-eastus-azure-vnet

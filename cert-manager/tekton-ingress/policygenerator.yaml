@@ -16,5 +16,13 @@ policies:
 - name: policy-xks-tekton-ingress
   disabled: false
   manifests:
-    - path: ./manifests
+    - path: ./manifests-ingress-init
   remediationAction: enforce
+- name: policy-xks-tekton-update-job
+  disabled: false
+  manifests:
+    - path: ./manifests-update-job
+  remediationAction: enforce
+  placement:
+    clusterSelectors:
+      name: local-cluster

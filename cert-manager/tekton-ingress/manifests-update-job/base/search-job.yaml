@@ -1,0 +1,240 @@
+kind: Job
+apiVersion: batch/v1
+metadata:
+  name: tekton-ingress-search-job
+  namespace: global-policies
+  labels:
+    job-type: tekton-ingress-search-job
+spec:
+  parallelism: 1
+  completions: 1
+  backoffLimit: 6
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        job-name: tekton-ingress-search-job
+    spec:
+      restartPolicy: Never
+      serviceAccountName: search-job-sa
+      schedulerName: default-scheduler
+      terminationGracePeriodSeconds: 30
+      securityContext: {}
+      containers:
+        - resources: {}
+          terminationMessagePath: /dev/termination-log
+          name: tekton-ingress-search-job
+          command:
+            - /bin/bash
+          env:
+            - name: URL
+              value: >-
+                https://search-search-api.open-cluster-management.svc:4010/searchapi/graphql
+            - name: JQ_BINARY_URL
+              value: >-
+                https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
+            - name: POLICY_NAME
+              value: policy-xks-tekton-ingress
+            - name: BASEDOMAIN
+              value: test.oyegunle.com
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: tmp-volume
+              mountPath: /tmp
+            - name: configmap-policy-template
+              mountPath: /tmp-cm/policy
+          terminationMessagePolicy: File
+          image: >-
+            image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+          args:
+            - '-c'
+            - >
+              #!/usr/bin/env bash -x
+
+              BASEDIR="${2:-$(dirname "$0")}"
+
+              INGRESS_HOSTNAME=""
+
+              COUNT=30
+
+              SLEEP=5
+
+
+              ### THIS SECTION WAS EXAMPLE ON HOW TO USE THE ACM SEARCH API ###
+
+              ### COMMENTED AS INFORMATION WAS AVAILABLE WITHOUT SEARCH API ###
+
+              #Curl the Search API to get required values
+
+              # curl -L -o /tmp/jq $JQ_BINARY_URL && chmod ugo+x /tmp/jq
+
+
+              # TOKEN='sha256~km36yTkASIGgnavd-EC-9SaVSM6CvvNHc5ZZkqkHae8' && \
+
+              # echo -e $TOKEN\n && \
+
+              # echo -e $URL\n && \
+
+              # OUTPUT=$(curl --insecure --location \
+
+              # --request POST $URL \
+
+              # --header "Authorization: Bearer $TOKEN" \
+
+              # --header 'Content-Type: application/json' \
+
+              # --data-raw '{"query":"query searchResultItems($input:
+              [SearchInput]) {\n    searchResult: search(input: $input)
+              {\n        related {\n            kind\n            items\n       
+              }\n   
+              }\n}\n","variables":{"input":[{"keywords":[],"filters":[{"property":"kind","values":["ingress"]},{"property":"name","values":["tekton-ingress"]}],"limit":100}]}}')
+
+              # echo $OUTPUT | /tmp/jq
+
+
+              ################### END OF SEARCH API TEST #############################
+
+
+              for cluster in $(oc get policy $POLICY_NAME -o jsonpath='{.status.status[*].clustername}')
+
+              do 
+                MCV_OUTPUT=$(echo """
+                apiVersion: view.open-cluster-management.io/v1beta1
+                kind: ManagedClusterView
+                metadata:
+                  name: tekton-ingress
+                  namespace: $cluster
+                spec:
+                  scope:
+                    name: tekton-ingress
+                    namespace: tekton-pipelines
+                    resource: ingress.v1.networking.k8s.io """ | oc create -f - 2>&1 1>/dev/null)
+
+                if ! [[ "$MCV_OUTPUT" == *"already exists"* ]]; then
+                  echo "There was an error"
+                  echo $MCV_OUTPUT
+                  continue
+                fi
+                
+                while [[ "$INGRESS_HOSTNAME" == "" ]] && [[ "$COUNT" -ge 0 ]]
+                do
+                echo $COUNT
+                sleep $SLEEP
+                INGRESS_HOSTNAME=$(oc get managedclusterview tekton-ingress -n eks-cluster-1 -o jsonpath='{.status.result.status.loadBalancer.ingress[0].hostname}')
+                COUNT=$(($COUNT-1))
+                done
+
+                echo "Ingress Hostname found for Tekton ingress in $cluster is $INGRESS_HOSTNAME"
+
+                SVC_EXTERNAL_NAME=$(oc get svc tekton-ingress-$cluster -n $cluster -o jsonpath='{.spec.externalName}' 2>&1 1>/dev/null)
+                
+                echo $SVC_EXTERNAL_NAME
+                if ! [[ "$SVC_EXTERNAL_NAME" == *"not found"* ]];then
+                  if ! [[ "$SVC_EXTERNAL_NAME" == "$INGRESS_HOSTNAME" ]];then
+                    echo "delete service"
+                    oc delete svc tekton-ingress-$cluster -n $cluster 2>&1 1>/dev/null
+                    SVC_EXTERNAL_NAME=""
+                  fi
+                fi
+                
+                if [[ "$SVC_EXTERNAL_NAME" == *"not found"* ]];then
+                  echo "create"
+                  #Create ExternalName Service to allow ExternalDNS
+                  oc create service externalname tekton-ingress-$cluster -n $cluster --dry-run=client --external-name $INGRESS_HOSTNAME -o yaml > /tmp/tekton-ingress-$cluster
+                  oc label --local=true -o yaml -f /tmp/tekton-ingress-$cluster "$BASEDOMAIN/publish=yes" > /tmp/tekton-ingress-$cluster-label
+                  oc create -f /tmp/tekton-ingress-$cluster-label
+                fi
+
+
+                CERT_NAME=$(oc get certificate tekton-ingress-cert -n $cluster -o jsonpath='{.spec.commonName}' 2>&1 1>/dev/null)
+                if [[ "$CERT_NAME" == *"not found"* ]];then  
+                  echo "create cert"
+                  echo """
+                  apiVersion: cert-manager.io/v1
+                  kind: Certificate
+                  metadata:
+                    name: tekton-ingress-cert
+                    namespace: $cluster
+                    labels:
+                      use-dns-solver: \"true\"
+                  spec:
+                    secretName: tekton-ingress-cert
+                    duration: 24h
+                    issuerRef: 
+                      kind: ClusterIssuer
+                      name: letsencrypt-staging
+                    commonName: "tekton-ingress-$cluster.$BASEDOMAIN"
+                    dnsNames:
+                      - "tekton-ingress-$cluster.$BASEDOMAIN"
+                    """ | sed 's/$cluster/'$cluster'/g' | sed "s/'$BASEDOMAIN'/$BASEDOMAIN/g" > /tmp/cert
+                    oc create -f /tmp/cert
+                fi
+
+
+                PLACEMENTRULE=$(oc get placementrule $cluster-placmentrule -n $cluster 2>&1 1>/dev/null)
+                echo "$PLACEMENTRULE"
+                if [[ "$PLACEMENTRULE" == *"not found"* ]];then 
+                echo "create placementrule"
+                echo """
+                apiVersion: apps.open-cluster-management.io/v1
+                kind: PlacementRule
+                metadata:
+                  name: $cluster-placmentrule
+                  namespace: $cluster
+                spec:
+                  clusterConditions:
+                    - status: \"True\"
+                      type: ManagedClusterConditionAvailable
+                  clusterSelector:
+                    matchExpressions:
+                      - key: name
+                        operator: In
+                        values:
+                          - $cluster
+                  """ | sed 's/$cluster/'$cluster'/g' | oc create -f -
+                fi
+
+
+                PLACEMENTBINDING=$(oc get placementbinding binding-policy-$cluster -n $cluster 2>&1 1>/dev/null)
+                echo "$PLACEMENTBINDING"
+                if [[ "$PLACEMENTBINDING" == *"not found"* ]];then 
+                echo "create placementbinding"
+                echo """
+                apiVersion: policy.open-cluster-management.io/v1
+                kind: PlacementBinding
+                metadata:
+                  name: binding-policy-$cluster
+                  namespace: $cluster
+                placementRef:
+                  name: $cluster-placmentrule
+                  apiGroup: apps.open-cluster-management.io
+                  kind: PlacementRule
+                subjects:
+                  - name: policy-$cluster-cert-tekton-copy
+                    apiGroup: policy.open-cluster-management.io
+                    kind: Policy
+                """ | sed 's/$cluster/'$cluster'/g' | oc create -f -
+                fi
+
+                POLICY=$(oc get policy policy-$cluster-cert-tekton-copy -n $cluster 2>&1 1>/dev/null)
+                if [[ "$POLICY" == *"not found"* ]];then 
+                echo "create policy"
+                cat /tmp-cm/policy/configmap-policy.yaml | sed 's/$cluster/'$cluster'/g' | sed 's/#/{/g' | sed 's/%/}/g' | oc create -f -
+                fi 
+
+              sleep infinity
+                
+              done
+      serviceAccount: search-job-sa
+      volumes:
+        - name: tmp-volume
+          emptyDir:
+            sizeLimit: 200Mi
+        - name: configmap-policy-template
+          configMap:
+            name: configmap-policy-template
+            defaultMode: 420
+      dnsPolicy: ClusterFirst
+  ttlSecondsAfterFinished: 30
+  completionMode: NonIndexed
+  suspend: false

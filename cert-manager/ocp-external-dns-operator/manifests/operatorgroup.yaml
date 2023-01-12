@@ -1,0 +1,8 @@
+apiVersion: operators.coreos.com/v1alpha2
+kind: OperatorGroup
+metadata:
+  name: external-dns-operator-acm
+  namespace: external-dns-operator
+spec:
+  targetNamespaces:
+    - external-dns-operator

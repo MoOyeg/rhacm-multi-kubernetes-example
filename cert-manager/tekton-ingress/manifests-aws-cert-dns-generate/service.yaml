@@ -1,0 +1,10 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: tekton-clustername
+  labels:
+    '{{hub (splitn "." 2 ((lookup "config.openshift.io/v1" "DNS" "" "cluster").spec.baseDomain | print) )._1 hub}}/publish': 'yes'
+spec:
+  type: ExternalName
+  sessionAffinity: None
+  externalName: ""

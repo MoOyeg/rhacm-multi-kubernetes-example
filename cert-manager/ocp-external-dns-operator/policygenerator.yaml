@@ -1,0 +1,20 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-install-openshift-externaldns-operator
+placementBindingDefaults:
+  name: ocp-externaldns-operator-binding
+policyDefaults:
+  placement:
+    placementRuleName: hub-placementrule
+  controls:
+    - "CM-2 Baseline Configuration"
+  pruneObjectBehavior: "DeleteAll"
+  namespace: global-policies
+  remediationAction: enforce
+  severity: medium
+policies:
+  - name: policy-ocp-externaldns-operator
+    manifests:
+      - path: ./manifests
+

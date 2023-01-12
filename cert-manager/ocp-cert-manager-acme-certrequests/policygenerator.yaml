@@ -19,7 +19,7 @@ policies:
     remediationAction: enforce   
     disabled: false 
     manifests:
-      - path: ./manifests-ocp-wildcard-create    
+      - path: ./manifests-ocp-wildcard-create   
   - name: policy-ocp-cert-wildcard-copy
     remediationAction: enforce    
     manifests:
