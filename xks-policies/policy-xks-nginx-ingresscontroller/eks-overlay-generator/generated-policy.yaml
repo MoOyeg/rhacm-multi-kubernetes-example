@@ -70,6 +70,7 @@ spec:
                 - path: spec
                   value:
                     controller:
+                      logLevel: "4"
                       replicaCount: "2"
                       setAsDefaultIngress: true
               placement:

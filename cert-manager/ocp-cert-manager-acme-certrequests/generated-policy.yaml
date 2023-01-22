@@ -1,68 +1,19 @@
-apiVersion: apps.open-cluster-management.io/v1
-kind: PlacementRule
-metadata:
-  name: placement-policy-ocp-cert-wildcard-copy
-  namespace: global-policies
-spec:
-  clusterSelector:
-    matchExpressions: []
----
-apiVersion: apps.open-cluster-management.io/v1
-kind: PlacementRule
-metadata:
-  name: placement-policy-ocp-cert-wildcard-create
-  namespace: global-policies
-spec:
-  clusterSelector:
-    matchExpressions: []
----
-apiVersion: apps.open-cluster-management.io/v1
-kind: PlacementRule
-metadata:
-  name: placement-policy-ocp-cert-wildcard-install
-  namespace: global-policies
-spec:
-  clusterSelector:
-    matchExpressions: []
----
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
 metadata:
-  name: binding-policy-ocp-cert-wildcard-copy
+  name: ocp-certmanager-acme-certrequests
   namespace: global-policies
 placementRef:
   apiGroup: apps.open-cluster-management.io
   kind: PlacementRule
-  name: placement-policy-ocp-cert-wildcard-copy
-subjects:
-- apiGroup: policy.open-cluster-management.io
-  kind: Policy
-  name: policy-ocp-cert-wildcard-copy
----
-apiVersion: policy.open-cluster-management.io/v1
-kind: PlacementBinding
-metadata:
-  name: binding-policy-ocp-cert-wildcard-create
-  namespace: global-policies
-placementRef:
-  apiGroup: apps.open-cluster-management.io
-  kind: PlacementRule
-  name: placement-policy-ocp-cert-wildcard-create
+  name: ocp-placementrule
 subjects:
 - apiGroup: policy.open-cluster-management.io
   kind: Policy
   name: policy-ocp-cert-wildcard-create
----
-apiVersion: policy.open-cluster-management.io/v1
-kind: PlacementBinding
-metadata:
-  name: binding-policy-ocp-cert-wildcard-install
-  namespace: global-policies
-placementRef:
-  apiGroup: apps.open-cluster-management.io
-  kind: PlacementRule
-  name: placement-policy-ocp-cert-wildcard-install
-subjects:
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: policy-ocp-cert-wildcard-copy
 - apiGroup: policy.open-cluster-management.io
   kind: Policy
   name: policy-ocp-cert-wildcard-install

@@ -70,6 +70,7 @@ spec:
                 - path: spec
                   value:
                     controller:
+                      logLevel: "4"
                       replicaCount: "2"
                       service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path: /healthz
                       setAsDefaultIngress: true

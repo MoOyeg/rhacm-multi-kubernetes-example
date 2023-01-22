@@ -69,7 +69,7 @@ Cluster configuration that will serve as the base for our ACM Policies and all o
 
   OR
 
-  You can edit the files in the folders below and generate your own policy and then create:
+  You can edit the files in the [folders](./policy-global-base) and generate your own policy and then create:
 
   ```bash
   kustomize build ./policy-global-base --enable-alpha-plugins | oc create -f -
@@ -101,36 +101,6 @@ OR
   ```bash
   kustomize build ./xks-policies/xks-olm/ --enable-alpha-plugins | oc create -f -
   ```
-
-<!-- ### Base ACM Hub Policies
-
-This will policy will install some policies we are likely to need for later steps.
-
-- Installs a policy for Red Hat ACS Helm Repo
-- Installs a policy for Nginx Helm Repo
-- Installs a policy for Ansible Automation Operator
-
-`kustomize build ./hub-policies --enable-alpha-plugins | oc create -f -` -->
-
-<!-- ## Operator Installs
-
-### Install GitOps,Pipelines on OCP
-
-```bash
-kustomize build ./ocp-policies --enable-alpha-plugins | oc create -f -
-```
-
-```bash
-kustomize build ./xks-argocd/ --enable-alpha-plugins | oc create -f -
-```
-
-## Install ACS Central
-
-oc apply -k ./acs-operator-central-gitops
-
-## Deploy an Application
-
-This Pacman App deployment will show a High Availibility use case. -->
 
 ## Crossplane Provisioning
 
@@ -524,9 +494,9 @@ Example provided uses cert-manager with ACME and Route53 so requires AWS Credent
   kustomize build --enable-alpha-plugins ./cert-manager/ocp-cert-manager-operator | oc create -f -
   ```
 
-- Use ACM to to install the Community Cert-Manager Operator On xKS.
+- Use ACM to to install Cert-Manager Operator On xKS. You can change between the community and Red Hat supported versions in [Policy Generator](./cert-manager/ocp-cert-manager-operator/policygenerator.yaml)
 
-  Create via the pre-generated yaml
+  Create via the pre-generated yaml.
 
   ```bash
   oc create -f ./cert-manager/xks-cert-manager/cert-manager-operator/generated-policy.yaml
@@ -546,12 +516,30 @@ Example provided uses cert-manager with ACME and Route53 so requires AWS Credent
   export EMAIL_ADDRESS=<ACME_EMAIL_ADDRESS>
   ```
 
+  Create via the pre-generated yaml.
+
+  ```bash
+  oc create -f ./cert-manager/ocp-cert-manager-acme-ca/generated-policy.yaml | envsubst
+  ```
+  
+  OR
+
+  Generate your own policy and then create.
+
   ```bash
   kustomize build --enable-alpha-plugins ./cert-manager/ocp-cert-manager-acme-ca/ | envsubst | oc create -f -
   ```
 
 - Use ACM to create ACME Certificates for OCP Wildcard Domains
-  
+
+  ```bash
+  oc create -f ../cert-manager/ocp-cert-manager-acme-certrequests/generated-policy.yaml
+  ```
+
+  OR
+
+  Generate your own policy and then create.
+
   ```bash
   kustomize build --enable-alpha-plugins ./cert-manager/ocp-cert-manager-acme-certrequests/ | oc create -f -  
   ```

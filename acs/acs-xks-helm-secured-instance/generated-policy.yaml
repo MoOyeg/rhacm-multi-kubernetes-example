@@ -22,6 +22,12 @@ metadata:
   name: policy-xks-acs-helm-secured
   namespace: stackrox
 spec:
+  dependencies:
+  - apiVersion: policy.open-cluster-management.io/v1
+    compliance: Compliant
+    kind: Policy
+    name: policy-acs-central
+    namespace: global-policies
   disabled: false
   policy-templates:
   - objectDefinition:
