@@ -1,0 +1,57 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: binding-policy-helm-nginx-repo
+  namespace: global-policies
+placementRef:
+  apiGroup: apps.open-cluster-management.io
+  kind: PlacementRule
+  name: hub-placementrule
+subjects:
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: policy-helm-nginx-repo
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: policy-helm-nginx-repo
+  namespace: global-policies
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-helm-nginx-repo
+      spec:
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: apps.open-cluster-management.io/v1
+            kind: Channel
+            metadata:
+              labels:
+                app: helm-ingress-nginx
+              name: channel-helm-ingress-nginx
+              namespace: namespace-helm-ingress-nginx
+            spec:
+              pathname: https://kubernetes.github.io/ingress-nginx
+              type: HelmRepo
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: v1
+            kind: Namespace
+            metadata:
+              labels:
+                app: helm-ingress-nginx
+              name: namespace-helm-ingress-nginx
+        pruneObjectBehavior: DeleteIfCreated
+        remediationAction: enforce
+        severity: medium
+  remediationAction: enforce

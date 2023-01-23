@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tekton-ingress
+  namespace: tekton-pipelines
+  # annotations:
+  #   nginx.org/rewrites: ""
+  #   nginx.ingress.kubernetes.io/rewrite-target: ""
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: tekton-eks-cluster-1.clustertest.test.oyegunle.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: tekton-dashboard
+            port:
+              number: 9097

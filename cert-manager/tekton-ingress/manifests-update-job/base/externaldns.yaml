@@ -1,0 +1,22 @@
+apiVersion: externaldns.olm.openshift.io/v1beta1
+kind: ExternalDNS
+metadata:
+  name: externaldns-outside
+spec:
+  domains:
+    - filterType: Include
+      matchType: Exact
+      name: '{{hub (splitn "." 2 ((lookup "config.openshift.io/v1" "DNS" "" "cluster").spec.baseDomain | print) )._1 hub}}'
+  provider:
+    type: '{{hub (lookup "config.openshift.io/v1" "Infrastructure" "" "cluster").spec.platformSpec.type hub}}'
+  source:
+    type: Service 
+    service:
+      serviceType:
+        - ExternalName
+    labelFilter: 
+      matchLabels:
+        '{{hub (splitn "." 2 ((lookup "config.openshift.io/v1" "DNS" "" "cluster").spec.baseDomain | print) )._1 hub}}/publish': 'yes'
+    hostnameAnnotation: "Allow" 
+    fqdnTemplate:
+    - '{{ `{{.Name}}` }}-{{hub (splitn "." 2 ((lookup "config.openshift.io/v1" "DNS" "" "cluster").spec.baseDomain | print) )._1 hub}}' 

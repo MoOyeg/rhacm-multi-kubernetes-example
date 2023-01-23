@@ -24,6 +24,38 @@ spec:
 apiVersion: apps.open-cluster-management.io/v1
 kind: PlacementRule
 metadata:
+  name: amazon-placementrule
+  namespace: crossplane-system
+spec:
+  clusterConditions:
+  - status: "True"
+    type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+    - key: cloud
+      operator: In
+      values:
+      - Amazon
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: azure-placementrule
+  namespace: crossplane-system
+spec:
+  clusterConditions:
+  - status: "True"
+    type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+    - key: cloud
+      operator: In
+      values:
+      - Azure
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
   name: eks-placementrule
   namespace: crossplane-system
 spec:
@@ -156,9 +188,6 @@ subjects:
 - apiGroup: policy.open-cluster-management.io
   kind: Policy
   name: policy-crossplane-helm-repo
-- apiGroup: policy.open-cluster-management.io
-  kind: Policy
-  name: policy-crossplane-git-repo
 - apiGroup: policy.open-cluster-management.io
   kind: Policy
   name: policy-crossplane-app-install
@@ -531,49 +560,7 @@ spec:
         pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce
         severity: medium
----
-apiVersion: policy.open-cluster-management.io/v1
-kind: Policy
-metadata:
-  annotations:
-    policy.open-cluster-management.io/categories: CM Configuration Management
-    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
-    policy.open-cluster-management.io/standards: NIST SP 800-53
-  name: policy-crossplane-git-repo
-  namespace: global-policies
-spec:
-  disabled: false
-  policy-templates:
-  - objectDefinition:
-      apiVersion: policy.open-cluster-management.io/v1
-      kind: ConfigurationPolicy
-      metadata:
-        name: policy-crossplane-git-repo
-      spec:
-        object-templates:
-        - complianceType: musthave
-          objectDefinition:
-            apiVersion: v1
-            kind: Namespace
-            metadata:
-              labels:
-                app: crossplane
-              name: channel-git-crossplane
-        - complianceType: musthave
-          objectDefinition:
-            apiVersion: apps.open-cluster-management.io/v1
-            kind: Channel
-            metadata:
-              labels:
-                app: crossplane
-              name: git-crossplane
-              namespace: channel-git-crossplane
-            spec:
-              pathname: https://github.com/MoOyeg/rhacm-multi-kubernetes-example.git
-              type: Git
-        pruneObjectBehavior: DeleteIfCreated
-        remediationAction: enforce
-        severity: medium
+  remediationAction: enforce
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
@@ -617,6 +604,7 @@ spec:
         pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce
         severity: medium
+  remediationAction: enforce
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
@@ -667,3 +655,4 @@ spec:
         pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce
         severity: medium
+  remediationAction: enforce

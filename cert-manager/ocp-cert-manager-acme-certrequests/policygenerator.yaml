@@ -1,0 +1,31 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-ocp-certmanager-acme-certrequests
+placementBindingDefaults:
+  name: ocp-certmanager-acme-certrequests
+policyDefaults:
+  placement:
+    placementRuleName: ocp-placementrule
+  controls:
+    - "CM-2 Baseline Configuration"
+  pruneObjectBehavior: "DeleteIfCreated"
+  namespace: global-policies
+  severity: medium
+  orderPolicies: true
+  consolidateManifests: false
+policies:
+  - name: policy-ocp-cert-wildcard-create
+    remediationAction: enforce   
+    disabled: false 
+    manifests:
+      - path: ./manifests-ocp-wildcard-create   
+  - name: policy-ocp-cert-wildcard-copy
+    remediationAction: enforce    
+    manifests:
+      - path: ./manifests-ocp-wildcard-copy
+  - name: policy-ocp-cert-wildcard-install  
+    remediationAction: enforce      
+    manifests:
+      - path: ./manifests-ocp-wildcard-install
+            

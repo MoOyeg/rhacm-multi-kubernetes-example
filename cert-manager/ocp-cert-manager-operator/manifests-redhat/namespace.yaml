@@ -1,0 +1,8 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: openshift-cert-manager-operator
+  labels:
+    kubernetes.io/metadata.name: openshift-cert-manager-operator
+    openshift.io/cluster-monitoring: 'true'
+spec: {}

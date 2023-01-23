@@ -1,0 +1,170 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: ocp-certmanager-acme-certrequests
+  namespace: global-policies
+placementRef:
+  apiGroup: apps.open-cluster-management.io
+  kind: PlacementRule
+  name: ocp-placementrule
+subjects:
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: policy-ocp-cert-wildcard-create
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: policy-ocp-cert-wildcard-copy
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: policy-ocp-cert-wildcard-install
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: policy-ocp-cert-wildcard-copy
+  namespace: global-policies
+spec:
+  dependencies:
+  - apiVersion: policy.open-cluster-management.io/v1
+    compliance: Compliant
+    kind: Policy
+    name: policy-ocp-cert-wildcard-create
+    namespace: global-policies
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-ocp-cert-wildcard-copy
+      spec:
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: v1
+            data:
+              tls.crt: '{{ fromSecret "kube-system" "ocp-acme-wildcard-cert-secret"
+                "tls.crt" }}'
+              tls.key: '{{ fromSecret "kube-system" "ocp-acme-wildcard-cert-secret"
+                "tls.key" }}'
+            kind: Secret
+            metadata:
+              annotations:
+                cert-manager.io/alt-names: '{{ index (lookup "v1" "Secret" "kube-system"
+                  "ocp-acme-wildcard-cert-secret").metadata.annotations "cert-manager.io/alt-names"
+                  }}'
+                cert-manager.io/certificate-name: '{{ index (lookup "v1" "Secret"
+                  "kube-system" "ocp-acme-wildcard-cert-secret").metadata.annotations
+                  "cert-manager.io/certificate-name" }}'
+                cert-manager.io/common-name: '{{ index (lookup "v1" "Secret" "kube-system"
+                  "ocp-acme-wildcard-cert-secret").metadata.annotations "cert-manager.io/common-name"
+                  }}'
+                cert-manager.io/ip-sans: '{{ index (lookup "v1" "Secret" "kube-system"
+                  "ocp-acme-wildcard-cert-secret").metadata.annotations "cert-manager.io/ip-sans"
+                  }}'
+                cert-manager.io/issuer-kind: '{{ index (lookup "v1" "Secret" "kube-system"
+                  "ocp-acme-wildcard-cert-secret").metadata.annotations "cert-manager.io/issuer-kind"
+                  }}'
+                cert-manager.io/issuer-name: '{{ index (lookup "v1" "Secret" "kube-system"
+                  "ocp-acme-wildcard-cert-secret").metadata.annotations "cert-manager.io/issuer-name"
+                  }}'
+                cert-manager.io/uri-sans: '{{ index (lookup "v1" "Secret" "kube-system"
+                  "ocp-acme-wildcard-cert-secret").metadata.annotations "cert-manager.io/uri-sans"
+                  }}'
+              name: ocp-acme-wildcard-cert-secret
+              namespace: openshift-ingress
+            type: kubernetes.io/tls
+        pruneObjectBehavior: DeleteIfCreated
+        remediationAction: enforce
+        severity: medium
+  remediationAction: enforce
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: policy-ocp-cert-wildcard-create
+  namespace: global-policies
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-ocp-cert-wildcard-create
+      spec:
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: cert-manager.io/v1
+            kind: Certificate
+            metadata:
+              labels:
+                use-dns-solver: "true"
+              name: ocp-acme-wildcard-cert
+              namespace: kube-system
+            spec:
+              commonName: '*.apps.{{ (lookup "config.openshift.io/v1" "DNS" "" "cluster").spec.baseDomain
+                }}'
+              dnsNames:
+              - '*.apps.{{ (lookup "config.openshift.io/v1" "DNS" "" "cluster").spec.baseDomain
+                }}'
+              - '*.{{ (lookup "config.openshift.io/v1" "DNS" "" "cluster").spec.baseDomain
+                }}'
+              duration: 24h
+              issuerRef:
+                kind: ClusterIssuer
+                name: letsencrypt-staging
+              secretName: ocp-acme-wildcard-cert-secret
+        pruneObjectBehavior: DeleteIfCreated
+        remediationAction: enforce
+        severity: medium
+  remediationAction: enforce
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: policy-ocp-cert-wildcard-install
+  namespace: global-policies
+spec:
+  dependencies:
+  - apiVersion: policy.open-cluster-management.io/v1
+    compliance: Compliant
+    kind: Policy
+    name: policy-ocp-cert-wildcard-copy
+    namespace: global-policies
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-ocp-cert-wildcard-install
+      spec:
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: operator.openshift.io/v1
+            kind: IngressController
+            metadata:
+              name: default
+              namespace: openshift-ingress-operator
+            spec:
+              defaultCertificate:
+                name: ocp-acme-wildcard-cert-secret
+        pruneObjectBehavior: DeleteIfCreated
+        remediationAction: enforce
+        severity: medium
+  remediationAction: enforce

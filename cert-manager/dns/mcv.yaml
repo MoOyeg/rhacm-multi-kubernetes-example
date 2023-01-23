@@ -1,0 +1,72 @@
+apiVersion: view.open-cluster-management.io/v1beta1
+kind: ManagedClusterView
+metadata:
+  name: example
+  namespace: eks-cluster-1
+  resourceVersion: '424584'
+  uid: 296d156e-da89-494b-85ac-cf54876c05b5
+spec:
+  scope:
+    name: tekton-ingress
+    namespace: tekton-pipelines
+    resource: ingress.v1.networking.k8s.io
+status:
+  conditions:
+    - lastTransitionTime: '2023-01-06T04:37:14Z'
+      message: Watching resources successfully
+      reason: GetResourceProcessing
+      status: 'True'
+      type: Processing
+  result:
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      creationTimestamp: '2023-01-06T02:08:03Z'
+      generation: 1
+      managedFields:
+        - apiVersion: networking.k8s.io/v1
+          fieldsType: FieldsV1
+          fieldsV1:
+            'f:spec':
+              'f:ingressClassName': {}
+              'f:rules': {}
+              'f:tls': {}
+          manager: config-policy-controller
+          operation: Update
+          time: '2023-01-06T02:08:03Z'
+        - apiVersion: networking.k8s.io/v1
+          fieldsType: FieldsV1
+          fieldsV1:
+            'f:status':
+              'f:loadBalancer':
+                'f:ingress': {}
+          manager: nginx-ingress-controller
+          operation: Update
+          subresource: status
+          time: '2023-01-06T02:10:47Z'
+      name: tekton-ingress
+      namespace: tekton-pipelines
+      resourceVersion: '10809'
+      uid: b3cdf35e-54f0-4344-a52e-553ad6fad021
+    spec:
+      ingressClassName: nginx
+      rules:
+        - host: eks-cluster-1.test.oyegunle.com
+          http:
+            paths:
+              - backend:
+                  service:
+                    name: tekton-dashboard
+                    port:
+                      number: 9097
+                path: /
+                pathType: Prefix
+      tls:
+        - hosts:
+            - eks-cluster-1.test.oyegunle.com
+          secretName: tls-secret
+    status:
+      loadBalancer:
+        ingress:
+          - hostname: >-
+              a4570f879567440f880549b4aa272587-1326606691.us-east-1.elb.amazonaws.com

@@ -1,0 +1,23 @@
+apiVersion: apps.open-cluster-management.io/v1
+kind: Subscription
+metadata:
+  annotations: {}    
+  labels:
+    app: nginx-eks-controller
+  name: nginx-subscription
+  namespace: global-policies
+spec:
+  packageOverrides:
+  - packageName: ingress-nginx
+    packageAlias: ingress-nginx
+    packageOverrides:
+    - path: spec
+      value:
+        controller:
+          setAsDefaultIngress: true
+          replicaCount: "2"  
+          logLevel: "4"      
+  placement:
+    placementRef:
+      kind: PlacementRule
+      name: eks-placementrule

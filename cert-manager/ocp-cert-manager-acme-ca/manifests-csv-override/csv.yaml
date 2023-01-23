@@ -1,0 +1,19 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  name: '{{ (lookup "operators.coreos.com/v1alpha1" "Subscription" "openshift-operators" "cert-manager").status.installedCSV }}'
+  namespace: openshift-operators
+spec:
+  install:
+    spec:
+      deployments:
+        - name: cert-manager
+          spec:
+            template:
+              spec:
+                containers:
+                  - name: cert-manager-controller
+                    args:
+                      - '--cluster-resource-namespace=kube-system'  
+                      - '--dns01-recursive-nameservers=1.1.1.1:53'
+                      - '--dns01-recursive-nameservers-only'                                     

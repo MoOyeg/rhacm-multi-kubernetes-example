@@ -6,11 +6,13 @@ Some steps can be skipped while others have a dependency on pre-completed steps.
 
 ## Contents
 
-- [Use Red Hat Advanced Cluster Security(ACS) with xKS via ACM](#red-hat-advanced-cluster-securityrhacs)
-- [Use Crossplane with ACM for xKS Provisioning](#crossplane-provisioning)
-- [Ancilliary Provisoning - EKS Ingress Controller](#crossplane-eks-ingresscontroller)
+- [Use Red Hat Advanced Cluster Security(ACS) to secure xKS clusters installed via ACM](#red-hat-advanced-cluster-securityrhacs)
+- [Use Crossplane with ACM to provision xKS Clusters](#crossplane-provisioning)
+- [Ancillary Provisoning: ACM+Crossplane can be used to implement the AWS Load Balancer Controller add-on](#crossplane-aws-lb-controller-addon)
+- [Ancillary Provisoning: ACM can be used to deploy the Nginx Ingress Controller on xKS Clusters](#nginx-ingress-controller)
+- [Certificate Management with cert-manager](#cert-manager-example)
 
-## Prerequisites
+## General Prerequisites
 
 - [OpenShift Cluster](https://docs.openshift.com/container-platform/4.9/welcome/index.html) - Version>=4.9
 - [oc client](https://docs.openshift.com/container-platform/4.9/cli_reference/openshift_cli/getting-started-cli.html) >= 4.9
@@ -43,23 +45,44 @@ If you would like to use ACM to create clusters here is some tooling to help
 
 ## Basic Cluster Configuration
 
+Cluster configuration that will serve as the base for our ACM Policies and all our other examples.
+
 ### Apply our Base Configuration Policies via ACM
 
-- This will create a namespace on every cluster that will serve as a base for any other policies we wish to apply:
+- Create a namespace to host our ACM policies.
 
   ```bash
-  oc apply -k ./policy-global-namespace
+  oc new-project global-policies
   ```
 
-### Global Placment Rules
+- Create an ACM Policy that does the following.
 
-- Create List Of PlacementRules we want ACM to use and can be leveraged by other policies. PlacementRules are used as selectors to determine which clusters a policy should be applied to.Might need to run this command twice to allow the previous policy to be enforced.
+  - Create our global-policies namesapce in every Kubernetes Cluster
+  - Create List Of PlacementRules we want ACM to use from the placmentrules folder and can be leveraged by other policies. PlacementRules are used as selectors to determine which clusters a policy should be applied to.Might need to run this command twice to allow the previous policy to be enforced..
+  - Attach subscription-admin role to the user that requested the global-policies namespace above.
+
+  You can create the ACM policy via a pre-generated yaml:
 
   ```bash
-  oc apply -k ./placementrules/
+  oc create -f ./policy-global-base/generated-policy.yaml
   ```
 
-## Base xKS Policy Configuration
+  OR
+
+  You can edit the files in the [folders](./policy-global-base) and generate your own policy and then create:
+
+  ```bash
+  kustomize build ./policy-global-base --enable-alpha-plugins | oc create -f -
+  ```
+
+## Install Operator Framework on xKS
+
+With OLM provided we can run operators from operatorhub.io on xKS clusters.
+
+### Operator Framework Steps Prerequisites
+
+- Run [Basic Cluster Configuration](#basic-cluster-configuration) steps from above.
+- [User running commands must have subscription-admin privilege](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#granting-subscription-admin-privilege). [Sample Solution](https://access.redhat.com/solutions/6010251)
 
 ### Install OLM on xKS Clusters
 
@@ -68,7 +91,7 @@ This will policy will install [Operator Lifecyle Manager](https://olm.operatorfr
 - Install OLM via the pre-generated yaml
 
   ```bash
-  oc create -f ./xks-policies/xks-general-policies/generated-policy.yaml
+  oc create -f ./xks-policies/xks-olm/generated-policy.yaml
   ```
 
 OR
@@ -76,134 +99,7 @@ OR
 - Generate your own policy and then create
 
   ```bash
-  kustomize build ./xks-policies/xks-general-policies/ --enable-alpha-plugins | oc create -f -
-  ```
-
-<!-- ### Base ACM Hub Policies
-
-This will policy will install some policies we are likely to need for later steps.
-
-- Installs a policy for Red Hat ACS Helm Repo
-- Installs a policy for Nginx Helm Repo
-- Installs a policy for Ansible Automation Operator
-
-`kustomize build ./hub-policies --enable-alpha-plugins | oc create -f -` -->
-
-<!-- ## Operator Installs
-
-### Install GitOps,Pipelines on OCP
-
-```bash
-kustomize build ./ocp-policies --enable-alpha-plugins | oc create -f -
-```
-
-```bash
-kustomize build ./xks-argocd/ --enable-alpha-plugins | oc create -f -
-```
-
-## Install ACS Central
-
-oc apply -k ./acs-operator-central-gitops
-
-## Deploy an Application
-
-This Pacman App deployment will show a High Availibility use case. -->
-
-## Red Hat Advanced Cluster Security(RHACS)  
-
-Repo provides an example of using ACM to install Red Hat Advanced Cluster Security on OCP Clusters and on xKS Clusters.
-
-### What example does repo provide?  
-
-- ACM will install ACS Operator on OCP Clusters
-- ACM will install ACS Central on OCP Hub
-- ACM will install ACS SecuredCluster on OCP Clusters
-- ACM will install ACS SecuredCluster via Helm on xKS Clusters
-
-### Prerequisites
-
-- Run [Basic Cluster Configuration](#basic-cluster-configuration) steps from above.
-- [User running commands must have subscription-admin privilege](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#granting-subscription-admin-privilege). [Sample Solution](https://access.redhat.com/solutions/6010251)
-
-### Steps  
-
-**1 Create Placementrules we will leverage for ACS Policies. Make sure to run prerequisites above first.**
-
-  ```bash
-  oc apply -k ./acs/acs-placementrules/
-  ```  
-
-**2 Create ACS Operator installation policy for all OpenShift Clusters.**
-
-- Create via the pre-generated yaml
-
-  ```bash
-  oc create -f ./acs/acs-operator/generated-policy.yaml
-  ```
-
-OR
-
-- Generate your own policy and then create
-
-  ```bash
-  kustomize build --enable-alpha-plugins ./acs/acs-operator | oc create -f -
-  ```  
-
-**3 Create ACS Central policy for only hub Openshift Cluster.**
-
-- Create via the pre-generated yaml
-
-  ```bash
-  oc create -f ./acs/acs-central/generated-policy.yaml
-  ```
-
-OR
-
-- Generate your own policy and then create
-
-  ```bash
-  kustomize build --enable-alpha-plugins ./acs/acs-central | oc create -f -
-
-**4 Create ACS SecuredClusters Policy for Openshift Clusters.**
-
-- Create via the pre-generated yaml
-
-  ```bash
-  oc create -f ./acs/acs-ocp-operator-secured-instance/generated-policy.yaml
-  ```
-
-OR
-
-- Generate your own policy and then create
-
-  ```bash
-  kustomize build --enable-alpha-plugins ./acs/acs-ocp-operator-secured-instance | oc create -f -
-  ```
-
-**5 Create Image Secret Pull Policy to allow ACS Pods pull required images.**
-
-- Create policy to allow ACS pods access pull-secret
-  
-  ```bash
-  oc create -f ./acs/acs-xks-helm-secured-instance/policy-pullsecret.yaml
-  ```
-
-**6 Create ACS SecuredClusters Policy for xKS Clusters.**
-Policy presently creates a job which then creates an ACM helm securedcluster application for each xks managedcluster.You can add new xks clusters by deleting the job and allowing ACM recreate it.  
-TODO: Research a way to accomplish without using a Job.  
-
-- Create via the pre-generated yaml
-
-  ```bash
-  oc create -f ./acs/acs-xks-helm-secured-instance/generated-policy.yaml
-  ```
-
-OR
-
-- Generate your own policy and then create
-
-  ```bash
-  kustomize build --enable-alpha-plugins ./acs/acs-xks-helm-secured-instance/ | oc create -f -
+  kustomize build ./xks-policies/xks-olm/ --enable-alpha-plugins | oc create -f -
   ```
 
 ## Crossplane Provisioning
@@ -218,7 +114,7 @@ Repo contains examples of using crossplane with ACM.
 - ACM will also attempt to import created clusters into ACM for management
 - Running steps in reverse should also delete/detach objects in ACM and Cloud Provider
 
-### Prerequisites
+### Crossplane Provisioning Steps Prerequisites
 
 - Run [Basic Cluster Configuration](#basic-cluster-configuration) steps from above.
 - [User running commands must have subscription-admin privilege](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#granting-subscription-admin-privilege). [Sample Solution](https://access.redhat.com/solutions/6010251)
@@ -306,7 +202,7 @@ Edit the [aws resources manifests](./crossplane/crossplane-resources/aws/manifes
   oc apply -k ./crossplane/crossplane-resources/aws/acm-app/
   ```
 
-- Use ACM application to create xKS Clusters.This will provision all the defined xKS clusters.To edit which clusters you want created, edit the [kustomization.yaml](./crossplane/crossplane-clusters/acm-app/kustomization.yaml).  
+- Use ACM application to create xKS Clusters.This will provision all the defined xKS clusters so if you are creating other xks clusters you might want to run the resources commands like above for those clouds.To edit which clusters you want created, edit the [kustomization.yaml](./crossplane/crossplane-clusters/acm-app/kustomization.yaml).  
   **_Please note there seems to be a bug where the cluster application appears blank.Application still works,will file a bug._**
 
   ```bash
@@ -353,11 +249,11 @@ Edit the [azure resources manifests](./crossplane/crossplane-resources/azure/man
 **GKE Cluster Sample**  
 TODO
 
-## Crossplane EKS IngressController
+## Crossplane AWS LB Controller Addon
 
-Leveraging crossplane and Red Hat Advanced Cluster Management we can also do anciliary provisioning steps like creating an EKS Ingress Controller.
+Leveraging crossplane and Red Hat Advanced Cluster Management we can also do ancillary provisioning steps like creating an EKS Ingress Controller.
 
-### Prerequisites
+### Crossplane AWS LB Controller Addon Prerequisites
 
 - Run [Basic Cluster Configuration](#basic-cluster-configuration) steps from above.
 - [User running commands must have subscription-admin privilege](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#granting-subscription-admin-privilege). [Sample Solution](https://access.redhat.com/solutions/6010251)
@@ -365,59 +261,289 @@ Leveraging crossplane and Red Hat Advanced Cluster Management we can also do anc
 - VPC Subnets used by EKS Ingress Controller must be tagged with certain tags. Example [Subnet Files](./crossplane/crossplane-resources/aws/manifests/overlays/region-us-east-1/patches/patch-subnet1.yaml) are tagged for eks-cluster-1 sample. Kindly update if yours are different.
 - The sample provided is for eks-cluster-1, you can make a copy of the overlay.
 
-### Steps
+### Crossplane AWS LB Controller Addon Steps
 
 - Use ACM/Crossplane to create the IAM Role Permission Policy and Helm EKS Charts Repo.Make sure created ACM policy object is compliant before next steps.  
-    Create via the pre-generated yaml
+   Create via the pre-generated yaml
 
-    ```bash
-    oc create -f ./xks-policies/policy-eks-ingresscontroller/crossplane-aws-lb-controller/global/generated-policy.yaml
-    ```
+  ```bash
+  oc create -f ./xks-policies/policy-eks-ingresscontroller/crossplane-aws-lb-controller/global/generated-policy.yaml
+  ```
 
   OR
 
-    Generate your own policy and then create
+  Generate your own policy and then create
 
-    ```bash
-    kustomize build --enable-alpha-plugins ./xks-policies/policy-eks-ingresscontroller/crossplane-aws-lb-controller/global/ | oc create -f -
-    ```
+  ```bash
+  kustomize build --enable-alpha-plugins ./xks-policies/policy-eks-ingresscontroller/crossplane-aws-lb-controller/global/ | oc create -f -
+  ```
 
-- Use ACM/Crossplane to create the OpenID Provider in AWS.Make sure created ACM policy object is compliant before next steps.  
+- Use ACM/Crossplane to create the OpenID Provider in AWS.Make sure created ACM policy object is compliant before next steps.
 
   ```bash
   oc apply -k ./xks-policies/policy-eks-ingresscontroller/crossplane-aws-lb-controller/overlays/eks-cluster-1/oidc/
   ```
 
-- Use ACM/Crossplane to create the AWS LoadBalancer Control Role and attach our previously created IAM permission policy.Make sure created ACM policy object is compliant before next steps.  
+- Use ACM/Crossplane to create the AWS LoadBalancer Control Role and attach our previously created IAM permission policy.Make sure created ACM policy object is compliant before next steps.
 
   ```bash
   oc apply -k ./xks-policies/policy-eks-ingresscontroller/crossplane-aws-lb-controller/overlays/eks-cluster-1/role/
   ```
 
-- Use ACM/Crossplane to create the AWS LoadBalancer ServiceAccount on EKS-Clusters.  
+- Use ACM/Crossplane to create the AWS LoadBalancer ServiceAccount on EKS-Clusters.
 
   ```bash
   oc apply -k ./xks-policies/policy-eks-ingresscontroller/crossplane-aws-lb-controller/overlays/eks-cluster-1/sa/
   ```
 
-- Use ACM subscription to install helm eks ingress-controller application.  
+- Use ACM subscription to install helm eks ingress-controller application.
 
   ```bash
   oc apply -k ./xks-policies/policy-eks-ingresscontroller/crossplane-aws-lb-controller/overlays/eks-cluster-1/subscription/
   ```
 
-- OPTIONAL: Use ACM to deploy AWS Sample Ingress Application.  
+- OPTIONAL: Use ACM to deploy AWS Sample Ingress Application.
 
   ```bash
   oc apply -k ./xks-policies/policy-eks-ingresscontroller/crossplane-aws-lb-controller/overlays/eks-cluster-1/aws-sample-app/
   ```
 
-- OPTIONAL: Verify Sample APP URL.Please note it might take a few minutes for the url of the sample nlb to become resolvable/accessible.  
+- OPTIONAL: Verify Sample APP URL.Please note it might take a few minutes for the url of the sample nlb to become resolvable/accessible.
 
   ```bash
   mkdir /tmp/kubeconfig && oc extract secret/eks-cluster-1 -n crossplane-system --keys=kubeconfig --to=/tmp/kubeconfig && oc get svc/nlb-sample-service -n nlb-sample-app -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' --kubeconfig /tmp/kubeconfig/kubeconfig
   ```
 
+## Nginx Ingress Controller
+
+Leveraging Red Hat Advanced Cluster Management we can also do ancillary provisioning steps like creating an Nginx Ingress Controller on our xKS Clusters.
+
+### Nginx Ingress Controller Prerequisites
+
+- Run [Install Operator Framework on xKS](#install-operator-framework-on-xks) steps.
+- Run [Basic Cluster Configuration](#basic-cluster-configuration) steps.
+- [User running commands must have subscription-admin privilege](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#granting-subscription-admin-privilege). [Sample Solution](https://access.redhat.com/solutions/6010251)
+
+### Nginx Ingress Controller Steps
+
+- Use ACM to create Helm Nginx Charts Repo.Make sure created ACM policy object is compliant before next steps.  
+   Create via the pre-generated yaml
+
+  ```bash
+  oc create -f ./xks-policies/policy-xks-nginx-ingresscontroller/global-generator/generated-policy.yaml
+  ```
+
+  OR
+
+  Generate your own policy and then create
+
+  ```bash
+  kustomize build --enable-alpha-plugins ./xks-policies/policy-xks-nginx-ingresscontroller/global-generator | oc create -f -
+  ```
+
+- Use ACM to to install Nginx IngressController Chart on EKS.Make sure created ACM policy object is compliant before next steps.  
+   Create via the pre-generated yaml
+
+  ```bash
+  oc create -f ./xks-policies/policy-xks-nginx-ingresscontroller/eks-overlay-generator/generated-policy.yaml
+  ```
+
+  OR
+
+  Generate your own policy and then create
+
+  ```bash
+  kustomize build --enable-alpha-plugins ./xks-policies/policy-xks-nginx-ingresscontroller/eks-overlay-generator/ | oc create -f -
+  ```
+
+- Use ACM to to install Nginx IngressController Chart on AKS.Make sure created ACM policy object is compliant before next steps.  
+   Create via the pre-generated yaml
+
+  ```bash
+  oc create -f ./xks-policies/policy-xks-nginx-ingresscontroller/aks-overlay-generator/generated-policy.yaml
+  ```
+
+  OR
+
+  Generate your own policy and then create
+
+  ```bash
+  kustomize build --enable-alpha-plugins ./xks-policies/policy-xks-nginx-ingresscontroller/aks-overlay-generator/ | oc create -f -
+  ```
+
+## Red Hat Advanced Cluster Security(RHACS)
+
+Repo provides an example of using ACM to install Red Hat Advanced Cluster Security on OCP Clusters and on xKS Clusters.
+
+### What example does repo provide?
+
+- ACM will install ACS Operator on OCP Clusters
+- ACM will install ACS Central on OCP Hub
+- ACM will install ACS SecuredCluster on OCP Clusters
+- ACM will install ACS SecuredCluster via Helm on xKS Clusters
+
+### Red Hat Advanced Cluster Security Prerequisites
+
+- Run [Basic Cluster Configuration](#basic-cluster-configuration) steps from above.
+- [User running commands must have subscription-admin privilege](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#granting-subscription-admin-privilege). [Sample Solution](https://access.redhat.com/solutions/6010251)
+
+### Steps
+
+**1 Create Placementrules we will leverage for ACS Policies. Make sure to run prerequisites above first.**
+
+```bash
+oc apply -k ./acs/acs-placementrules/
+```
+
+**2 Create ACS Operator installation policy for all OpenShift Clusters.**
+
+- Create via the pre-generated yaml
+
+  ```bash
+  oc create -f ./acs/acs-operator/generated-policy.yaml
+  ```
+
+OR
+
+- Generate your own policy and then create
+
+  ```bash
+  kustomize build --enable-alpha-plugins ./acs/acs-operator | oc create -f -
+  ```
+
+**3 Create ACS Central policy for only hub Openshift Cluster.**
+
+- Create via the pre-generated yaml
+
+  ```bash
+  oc create -f ./acs/acs-central/generated-policy.yaml
+  ```
+
+OR
+
+- Generate your own policy and then create
+
+  ```bash
+  kustomize build --enable-alpha-plugins ./acs/acs-central | oc create -f -
+  ```
+
+**4 Create ACS SecuredClusters Policy for Openshift Clusters.**
+
+- Create via the pre-generated yaml
+
+  ```bash
+  oc create -f ./acs/acs-ocp-operator-secured-instance/generated-policy.yaml
+  ```
+
+OR
+
+- Generate your own policy and then create
+
+  ```bash
+  kustomize build --enable-alpha-plugins ./acs/acs-ocp-operator-secured-instance | oc create -f -
+  ```
+
+**5 Create Image Secret Pull Policy to allow ACS Pods pull required images.**
+
+- Create policy to allow ACS pods access pull-secret
+
+  ```bash
+  oc create -f ./acs/acs-xks-helm-secured-instance/policy-pullsecret.yaml
+  ```
+
+**6 Create ACS SecuredClusters Policy for xKS Clusters.**  
+Policy presently creates a job which then creates an ACM helm securedcluster application for each xks managedcluster.You can add new xks clusters by deleting the job and allowing ACM recreate it.  
+TODO: Research a way to accomplish without using a Job.
+
+- Create via the pre-generated yaml
+
+  ```bash
+  oc create -f ./acs/acs-xks-helm-secured-instance/generated-policy.yaml
+  ```
+
+OR
+
+- Generate your own policy and then create
+
+  ```bash
+  kustomize build --enable-alpha-plugins ./acs/acs-xks-helm-secured-instance/ | oc create -f -
+  ```
+
+## cert-manager-example
+
+Example provided uses cert-manager with ACME and Route53 so requires AWS Credentials.
+
+### cert-manager-example Prerequisites
+
+- Run [Basic Cluster Configuration](#basic-cluster-configuration) steps from above.
+- [User running commands must have subscription-admin privilege](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.6/html-single/applications/index#granting-subscription-admin-privilege). [Sample Solution](https://access.redhat.com/solutions/6010251)
+
+- Use ACM to to install the Cert-Manager Operator On OpenShift.Example presently uses Tech-Preview Version, update manifest if GA.
+
+  Create via the pre-generated yaml
+
+  ```bash
+  oc create -f ./cert-manager/ocp-cert-manager-operator/generated-policy.yaml
+  ```
+
+  OR
+
+  Generate your own policy and then create
+
+  ```bash
+  kustomize build --enable-alpha-plugins ./cert-manager/ocp-cert-manager-operator | oc create -f -
+  ```
+
+- Use ACM to to install Cert-Manager Operator On xKS. You can change between the community and Red Hat supported versions in [Policy Generator](./cert-manager/ocp-cert-manager-operator/policygenerator.yaml)
+
+  Create via the pre-generated yaml.
+
+  ```bash
+  oc create -f ./cert-manager/xks-cert-manager/cert-manager-operator/generated-policy.yaml
+  ```
+
+  OR
+
+  Generate your own policy and then create
+
+  ```bash
+  kustomize build --enable-alpha-plugins ./cert-manager/xks-cert-manager/cert-manager-operator/ | oc create -f -
+  ```
+
+- Use ACM to create ACME ClusterIssuer(LetsEncrypt).Step will use your LetsEncypt email address to create Acme ClusterIssuer.
+
+  ```bash
+  export EMAIL_ADDRESS=<ACME_EMAIL_ADDRESS>
+  ```
+
+  Create via the pre-generated yaml.
+
+  ```bash
+  cat ./cert-manager/ocp-cert-manager-acme-ca/generated-policy.yaml | envsubst | oc create -f -
+  ```
+  
+  OR
+
+  Generate your own policy and then create.
+
+  ```bash
+  kustomize build --enable-alpha-plugins ./cert-manager/ocp-cert-manager-acme-ca/ | envsubst | oc create -f -
+  ```
+
+- Use ACM to create ACME Certificates for OCP Wildcard Domains
+
+  ```bash
+  oc create -f ./cert-manager/ocp-cert-manager-acme-certrequests/generated-policy.yaml
+  ```
+
+  OR
+
+  Generate your own policy and then create.
+
+  ```bash
+  kustomize build --enable-alpha-plugins ./cert-manager/ocp-cert-manager-acme-certrequests/ | oc create -f -  
+  ```
+  
 ## Attach Subscription Admin Policy to your user if necessary
 
 ```bash

@@ -1,0 +1,19 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-generator-aks-nginx-ingresscontroller
+placementBindingDefaults:
+  name: aks-nginx-ingresscontroller
+policyDefaults:
+  namespace: global-policies
+  # Use an existing placement rule so that placement bindings can be consolidated
+  placement:
+    placementRuleName: hub-placementrule
+  remediationAction: enforce
+  severity: medium
+  pruneObjectBehavior: "DeleteIfCreated"
+policies:
+- name: policy-aks-nginx-ingress-app
+  disabled: false
+  manifests:
+    - path: ./aks-base

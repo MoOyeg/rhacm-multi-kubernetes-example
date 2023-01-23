@@ -1,0 +1,9 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: policy-certmanager-csv-override
+  namespace: global-policies
+spec:
+  disabled: '{{ eq (lookup "operator.openshift.io/v1alpha1" "CertManager" "" "cluster").metadata.name "cluster" |  print | toBool }}'
+
+

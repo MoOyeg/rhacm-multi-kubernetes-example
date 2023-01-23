@@ -1,0 +1,15 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging
+spec:
+  acme:
+    email: ${EMAIL_ADDRESS}
+    preferredChain: ''
+    privateKeySecretRef:
+      name: letsencrypt-secret
+# Lets Encrypt Staging
+    #server: 'https://acme-staging-v02.api.letsencrypt.org/directory'
+# Let's Encrypt Prod
+    server: 'https://acme-v02.api.letsencrypt.org/directory'
+

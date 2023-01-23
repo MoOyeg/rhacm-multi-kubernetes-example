@@ -1,0 +1,20 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policygenerator-nginx-helm
+placementBindingDefaults:
+  name: nginx-helm-repo
+policyDefaults:
+  placement:
+    placementRuleName: hub-placementrule
+  controls:
+    - "CM-2 Baseline Configuration"
+  pruneObjectBehavior: "DeleteIfCreated"
+  namespace: global-policies
+  remediationAction: enforce
+  severity: medium
+policies:
+- name: policy-helm-nginx-repo
+  disabled: false
+  manifests:
+    - path: ./manifests

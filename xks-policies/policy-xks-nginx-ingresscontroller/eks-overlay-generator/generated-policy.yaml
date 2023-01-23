@@ -1,0 +1,83 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: binding-policy-eks-nginx-ingress-app
+  namespace: global-policies
+placementRef:
+  apiGroup: apps.open-cluster-management.io
+  kind: PlacementRule
+  name: hub-placementrule
+subjects:
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: policy-eks-nginx-ingress-app
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: policy-eks-nginx-ingress-app
+  namespace: global-policies
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-eks-nginx-ingress-app
+      spec:
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: app.k8s.io/v1beta1
+            kind: Application
+            metadata:
+              name: nginx-eks-ingresscontroller
+              namespace: global-policies
+            spec:
+              componentKinds:
+              - group: apps.open-cluster-management.io
+                kind: Subscription
+              descriptor: {}
+              selector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - nginx-eks-controller
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: apps.open-cluster-management.io/v1
+            kind: Subscription
+            metadata:
+              labels:
+                app: nginx-eks-controller
+              name: nginx-eks-subscription
+              namespace: global-policies
+            spec:
+              channel: namespace-helm-ingress-nginx/channel-helm-ingress-nginx
+              name: ingress-nginx
+              packageFilter:
+                version: 4.2.5
+              packageOverrides:
+              - packageAlias: ingress-nginx
+                packageName: ingress-nginx
+                packageOverrides:
+                - path: spec
+                  value:
+                    controller:
+                      logLevel: "4"
+                      replicaCount: "2"
+                      setAsDefaultIngress: true
+              placement:
+                placementRef:
+                  kind: PlacementRule
+                  name: eks-placementrule
+        pruneObjectBehavior: DeleteIfCreated
+        remediationAction: enforce
+        severity: medium
+  remediationAction: enforce

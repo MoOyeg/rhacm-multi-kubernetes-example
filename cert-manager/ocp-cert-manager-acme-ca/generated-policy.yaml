@@ -1,0 +1,325 @@
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: placement-policy-certmanager-csv-override
+  namespace: global-policies
+spec:
+  clusterSelector:
+    matchExpressions:
+    - key: vendor
+      operator: In
+      values:
+      - OpenShift
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: placement-policy-openshift-acme-ca-route53
+  namespace: global-policies
+spec:
+  clusterSelector:
+    matchExpressions:
+    - key: cloud
+      operator: In
+      values:
+      - Amazon
+    - key: vendor
+      operator: In
+      values:
+      - OpenShift
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: placement-policy-openshift-certdetect-policy-override
+  namespace: global-policies
+spec:
+  clusterSelector:
+    matchExpressions:
+    - key: vendor
+      operator: In
+      values:
+      - OpenShift
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: placement-policy-openshift-certmanager-object-override
+  namespace: global-policies
+spec:
+  clusterSelector:
+    matchExpressions:
+    - key: vendor
+      operator: In
+      values:
+      - OpenShift
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: binding-policy-certmanager-csv-override
+  namespace: global-policies
+placementRef:
+  apiGroup: apps.open-cluster-management.io
+  kind: PlacementRule
+  name: placement-policy-certmanager-csv-override
+subjects:
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: policy-certmanager-csv-override
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: binding-policy-openshift-acme-ca-route53
+  namespace: global-policies
+placementRef:
+  apiGroup: apps.open-cluster-management.io
+  kind: PlacementRule
+  name: placement-policy-openshift-acme-ca-route53
+subjects:
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: policy-openshift-acme-ca-route53
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: binding-policy-openshift-certdetect-policy-override
+  namespace: global-policies
+placementRef:
+  apiGroup: apps.open-cluster-management.io
+  kind: PlacementRule
+  name: placement-policy-openshift-certdetect-policy-override
+subjects:
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: policy-openshift-certdetect-policy-override
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: binding-policy-openshift-certmanager-object-override
+  namespace: global-policies
+placementRef:
+  apiGroup: apps.open-cluster-management.io
+  kind: PlacementRule
+  name: placement-policy-openshift-certmanager-object-override
+subjects:
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: policy-openshift-certmanager-object-override
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: policy-certmanager-csv-override
+  namespace: global-policies
+spec:
+  dependencies:
+  - apiVersion: policy.open-cluster-management.io/v1
+    compliance: Compliant
+    kind: Policy
+    name: policy-openshift-certdetect-policy-override
+    namespace: global-policies
+  disabled: true
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-certmanager-csv-override
+      spec:
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: operators.coreos.com/v1alpha1
+            kind: ClusterServiceVersion
+            metadata:
+              name: '{{ (lookup "operators.coreos.com/v1alpha1" "Subscription" "openshift-operators"
+                "cert-manager").status.installedCSV }}'
+              namespace: openshift-operators
+            spec:
+              install:
+                spec:
+                  deployments:
+                  - name: cert-manager
+                    spec:
+                      template:
+                        spec:
+                          containers:
+                          - args:
+                            - --cluster-resource-namespace=kube-system
+                            - --dns01-recursive-nameservers=1.1.1.1:53
+                            - --dns01-recursive-nameservers-only
+                            name: cert-manager-controller
+        pruneObjectBehavior: DeleteAll
+        remediationAction: enforce
+        severity: medium
+  remediationAction: enforce
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: policy-openshift-acme-ca-route53
+  namespace: global-policies
+spec:
+  dependencies:
+  - apiVersion: policy.open-cluster-management.io/v1
+    compliance: Compliant
+    kind: Policy
+    name: policy-openshift-certdetect-policy-override
+    namespace: global-policies
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-openshift-acme-ca-route53
+      spec:
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: cert-manager.io/v1
+            kind: ClusterIssuer
+            metadata:
+              name: letsencrypt-staging
+            spec:
+              acme:
+                email: ${EMAIL_ADDRESS}
+                preferredChain: ""
+                privateKeySecretRef:
+                  name: letsencrypt-secret
+                server: https://acme-v02.api.letsencrypt.org/directory
+                solvers:
+                - http01:
+                    ingress:
+                      class: openshift-default
+                  selector:
+                    matchLabels:
+                      use-route-solver: "true"
+                - dns01:
+                    route53:
+                      accessKeyID: '{{ fromSecret "kube-system" "aws-creds" "aws_access_key_id"
+                        | base64dec }}'
+                      hostedZoneID: '{{ (lookup "config.openshift.io/v1" "DNS" ""
+                        "cluster").spec.publicZone.id }}'
+                      region: '{{ (lookup "config.openshift.io/v1" "Infrastructure"
+                        "" "cluster").status.platformStatus.aws.region }}'
+                      secretAccessKeySecretRef:
+                        key: aws_secret_access_key
+                        name: aws-creds
+                  selector:
+                    matchLabels:
+                      use-dns-solver: "true"
+        pruneObjectBehavior: DeleteIfCreated
+        remediationAction: enforce
+        severity: medium
+  remediationAction: enforce
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: policy-openshift-certdetect-policy-override
+  namespace: global-policies
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-openshift-certdetect-policy-override
+      spec:
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: policy.open-cluster-management.io/v1
+            kind: Policy
+            metadata:
+              name: policy-openshift-certmanager-object-override
+              namespace: global-policies
+            spec:
+              disabled: '{{ ne (lookup "operator.openshift.io/v1alpha1" "CertManager"
+                "" "cluster").metadata.name "cluster" |  print | toBool }}'
+        pruneObjectBehavior: DeleteIfCreated
+        remediationAction: enforce
+        severity: medium
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-openshift-certdetect-policy-override2
+      spec:
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: policy.open-cluster-management.io/v1
+            kind: Policy
+            metadata:
+              name: policy-certmanager-csv-override
+              namespace: global-policies
+            spec:
+              disabled: '{{ eq (lookup "operator.openshift.io/v1alpha1" "CertManager"
+                "" "cluster").metadata.name "cluster" |  print | toBool }}'
+        pruneObjectBehavior: DeleteIfCreated
+        remediationAction: enforce
+        severity: medium
+  remediationAction: enforce
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: policy-openshift-certmanager-object-override
+  namespace: global-policies
+spec:
+  dependencies:
+  - apiVersion: policy.open-cluster-management.io/v1
+    compliance: Compliant
+    kind: Policy
+    name: policy-openshift-certdetect-policy-override
+    namespace: global-policies
+  disabled: true
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-openshift-certmanager-object-override
+      spec:
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: operator.openshift.io/v1alpha1
+            kind: CertManager
+            metadata:
+              name: cluster
+            spec:
+              managementState: Managed
+              unsupportedConfigOverrides:
+                controller:
+                  args:
+                  - --cluster-resource-namespace=kube-system
+                  - --dns01-recursive-nameservers=1.1.1.1:53
+                  - --dns01-recursive-nameservers-only
+        pruneObjectBehavior: DeleteIfCreated
+        remediationAction: enforce
+        severity: medium
+  remediationAction: enforce

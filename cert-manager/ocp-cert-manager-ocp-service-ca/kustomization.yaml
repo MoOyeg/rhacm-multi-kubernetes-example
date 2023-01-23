@@ -1,0 +1,5 @@
+resources:
+  - ../../placementrules/OCP-HUB
+namespace: openshift-service-ca
+generators:
+  - policygenerator.yaml

@@ -1,0 +1,22 @@
+bases:
+- ../../base
+patches:
+  - path: ./patches/patch-subscription.yaml
+    target:
+      kind: Subscription
+  - path: ./patches/patch-application.yaml
+    target:
+      kind: Application
+patchesJson6902:
+  - target:
+      group: apps.open-cluster-management.io
+      version: v1
+      kind: Subscription
+      name: nginx-subscription
+    path: ./patches/patch-subscription-rename.yaml
+  - target:
+      group: app.k8s.io
+      version: v1beta1
+      kind: Application
+      name: nginx
+    path: ./patches/patch-application-rename.yaml

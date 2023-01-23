@@ -8,4 +8,6 @@ resources:
 - ./AKS/aks-placementrule.yaml
 - ./EKS/eks-placementrule.yaml
 - ./GKE/gke-placementrule.yaml
+- ./AMAZON/amazon-placementrule.yaml
+- ./AZURE/azure-placementrule.yaml
 

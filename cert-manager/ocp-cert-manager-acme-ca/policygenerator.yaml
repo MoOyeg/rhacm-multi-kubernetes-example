@@ -1,0 +1,94 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-certmanager-clusterissuer-acme
+placementBindingDefaults:
+  name: certmanager-clusterissuer-acme
+policyDefaults:
+  controls:
+    - "CM-2 Baseline Configuration"
+  pruneObjectBehavior: "DeleteIfCreated"
+  namespace: global-policies
+  remediationAction: enforce
+  severity: medium
+  orderPolicies: false
+  consolidateManifests: false
+policies:
+  - name: policy-openshift-certdetect-policy-override
+    #Policy starts as main entry point and will detect the necessary type of installation and enable the
+    #appropriate patch
+    placement:
+      clusterSelectors:
+        vendor: OpenShift
+    manifests:
+      - path: ./manifests-policy-override
+    disabled: false
+  - name: policy-openshift-certmanager-object-override
+    #Policy will try to patch the cert-manager object with some overrides
+    placement:
+      clusterSelectors:
+        vendor: OpenShift
+    manifests:
+      - path: ./manifests-clustermanager-override
+    disabled: true
+    dependencies:
+    - apiVersion: policy.open-cluster-management.io/v1
+      compliance: Compliant
+      kind: Policy
+      name: policy-openshift-certdetect-policy-override
+      namespace: global-policies
+  - name: policy-certmanager-csv-override
+    placement:
+      clusterSelectors:
+        vendor: OpenShift
+    manifests:
+      - path: ./manifests-csv-override
+    disabled: true
+    pruneObjectBehavior: "DeleteAll"
+    dependencies:
+    - apiVersion: policy.open-cluster-management.io/v1
+      compliance: Compliant
+      kind: Policy
+      name: policy-openshift-certdetect-policy-override
+      namespace: global-policies
+  - name: policy-openshift-acme-ca-route53
+    placement:
+      clusterSelectors:
+        cloud: Amazon
+        vendor: OpenShift
+    disabled: false
+    dependencies:
+    - apiVersion: policy.open-cluster-management.io/v1
+      compliance: Compliant
+      kind: Policy
+      name: policy-openshift-certdetect-policy-override
+      namespace: global-policies
+    manifests:
+      - path: ./manifests-clusterissuer
+        patches:
+          - apiVersion: cert-manager.io/v1
+            kind: ClusterIssuer
+            metadata:
+              name: letsencrypt-staging
+            spec:
+              acme:
+                solvers:
+                  - http01:
+                      ingress:
+                        class: openshift-default
+                    selector:
+                      matchLabels:
+                        "use-route-solver": "true"
+                  - dns01:
+                      route53:
+                        region: '{{ (lookup "config.openshift.io/v1" "Infrastructure" "" "cluster").status.platformStatus.aws.region }}'
+                        hostedZoneID: '{{ (lookup "config.openshift.io/v1" "DNS" "" "cluster").spec.publicZone.id }}'
+                        accessKeyID: '{{ fromSecret "kube-system" "aws-creds" "aws_access_key_id" | base64dec }}'
+                        secretAccessKeySecretRef:
+                          name: aws-creds
+                          key: aws_secret_access_key
+                    selector:
+                      matchLabels:
+                        "use-dns-solver": "true"
+
+            

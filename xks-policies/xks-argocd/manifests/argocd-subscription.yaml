@@ -4,7 +4,9 @@ metadata:
   name: argocd-operator
   namespace: argocd-operator
 spec:
-  channel: stable
+  channel: alpha
+# operatorhub.io seems to have moved this package to alpha, uncomment when it's back on stable
+# channel: stable
   name: argocd-operator
   source: operatorhubio-catalog
   sourceNamespace: olm

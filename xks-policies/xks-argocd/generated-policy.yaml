@@ -1,0 +1,86 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: binding-policy-xks-argocd-operator
+  namespace: global-policies
+placementRef:
+  apiGroup: apps.open-cluster-management.io
+  kind: PlacementRule
+  name: non-openshift-placementrule
+subjects:
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: policy-xks-argocd-operator
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: policy-xks-argocd-operator
+  namespace: global-policies
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-xks-argocd-operator
+      spec:
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: argoproj.io/v1alpha1
+            kind: ArgoCD
+            metadata:
+              name: argocd
+              namespace: argocd-operator
+            spec:
+              server:
+                grpc:
+                  ingress:
+                    enabled: true
+                ingress:
+                  enabled: true
+                insecure: true
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: v1
+            kind: Namespace
+            metadata:
+              name: argocd-operator
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: operators.coreos.com/v1
+            kind: OperatorGroup
+            metadata:
+              name: argocd-operatorgroup
+              namespace: argocd-operator
+            spec:
+              targetNamespaces:
+              - argocd-operator
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: operators.coreos.com/v1alpha1
+            kind: Subscription
+            metadata:
+              name: argocd-operator
+              namespace: argocd-operator
+            spec:
+              channel: alpha
+              config:
+                env:
+                - name: ARGOCD_CLUSTER_CONFIG_NAMESPACES
+                  value: metadata-service,argocd-operator
+                - name: DISABLE_DEFAULT_ARGOCD_INSTANCE
+                  value: "true"
+              name: argocd-operator
+              source: operatorhubio-catalog
+              sourceNamespace: olm
+        pruneObjectBehavior: DeleteIfCreated
+        remediationAction: enforce
+        severity: medium
+  remediationAction: enforce

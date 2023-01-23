@@ -1,0 +1,11 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: cert-manager
+  namespace: operators
+spec:
+  sourceNamespace: olm
+  source: operatorhubio-catalog
+  channel: stable
+  name: cert-manager
+

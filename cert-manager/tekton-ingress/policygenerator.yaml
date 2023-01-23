@@ -1,0 +1,28 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-generator-xks-tekton-ingress
+placementBindingDefaults:
+  name: xks-tekton-policy-pb
+policyDefaults:
+  pruneObjectBehavior: "DeleteIfCreated"
+  namespace: global-policies
+  # Use an existing placement rule so that placement bindings can be consolidated
+  placement:
+    placementRuleName: non-openshift-placementrule
+  remediationAction: enforce
+  severity: medium
+policies:
+- name: policy-xks-tekton-ingress
+  disabled: false
+  manifests:
+    - path: ./manifests-ingress-init
+  remediationAction: enforce
+- name: policy-xks-tekton-update-job
+  disabled: false
+  manifests:
+    - path: ./manifests-update-job
+  remediationAction: enforce
+  placement:
+    clusterSelectors:
+      name: local-cluster

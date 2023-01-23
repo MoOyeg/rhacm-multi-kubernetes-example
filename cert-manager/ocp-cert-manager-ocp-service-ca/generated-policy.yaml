@@ -1,0 +1,79 @@
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: hub-placementrule
+  namespace: openshift-service-ca
+spec:
+  clusterConditions:
+  - status: "True"
+    type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+    - key: name
+      operator: In
+      values:
+      - local-cluster
+    - key: vendor
+      operator: In
+      values:
+      - OpenShift
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: binding-policy-ocp-cert-service-ca
+  namespace: openshift-service-ca
+placementRef:
+  apiGroup: apps.open-cluster-management.io
+  kind: PlacementRule
+  name: hub-placementrule
+subjects:
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: policy-ocp-cert-service-ca
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  annotations:
+    policy.open-cluster-management.io/categories: CM Configuration Management
+    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+  name: policy-ocp-cert-service-ca
+  namespace: openshift-service-ca
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-ocp-cert-service-ca
+      spec:
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: cert-manager.io/v1
+            kind: Issuer
+            metadata:
+              name: ca-issuer
+              namespace: openshift-cert-manager
+            spec:
+              ca:
+                secretName: pki-key-pair
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: v1
+            data:
+              tls.crt: '{{hub fromSecret "openshift-service-ca" "signing-key" "tls.crt"
+                hub}}'
+              tls.key: '{{hub fromSecret "openshift-service-ca" "signing-key" "tls.key"
+                hub}}'
+            kind: Secret
+            metadata:
+              name: pki-key-pair
+              namespace: openshift-cert-manager
+            type: Opaque
+        pruneObjectBehavior: DeleteIfCreated
+        remediationAction: enforce
+        severity: medium

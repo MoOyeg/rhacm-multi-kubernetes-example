@@ -185,3 +185,4 @@ spec:
         pruneObjectBehavior: DeleteIfCreated
         remediationAction: enforce
         severity: medium
+  remediationAction: enforce

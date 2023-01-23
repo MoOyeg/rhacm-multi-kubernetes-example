@@ -18,4 +18,10 @@ policies:
   disabled: false
   manifests:
     - path: ./manifests
+  dependencies:
+    - apiVersion: policy.open-cluster-management.io/v1
+      compliance: Compliant
+      kind: Policy
+      name: policy-acs-central
+      namespace: global-policies
 
