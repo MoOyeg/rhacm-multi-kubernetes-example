@@ -187,7 +187,7 @@ spec:
             kind: Subscription
             metadata:
               annotations:
-                apps.open-cluster-management.io/git-branch: demo2
+                apps.open-cluster-management.io/git-branch: main
                 apps.open-cluster-management.io/git-path: placementrules
               labels:
                 app: app-placementrules
