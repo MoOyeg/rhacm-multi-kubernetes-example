@@ -519,7 +519,7 @@ Example provided uses cert-manager with ACME and Route53 so requires AWS Credent
   Create via the pre-generated yaml.
 
   ```bash
-  oc create -f ./cert-manager/ocp-cert-manager-acme-ca/generated-policy.yaml | envsubst
+  cat ./cert-manager/ocp-cert-manager-acme-ca/generated-policy.yaml | envsubst | oc create -f -
   ```
   
   OR
@@ -533,7 +533,7 @@ Example provided uses cert-manager with ACME and Route53 so requires AWS Credent
 - Use ACM to create ACME Certificates for OCP Wildcard Domains
 
   ```bash
-  oc create -f ../cert-manager/ocp-cert-manager-acme-certrequests/generated-policy.yaml
+  oc create -f ./cert-manager/ocp-cert-manager-acme-certrequests/generated-policy.yaml
   ```
 
   OR
