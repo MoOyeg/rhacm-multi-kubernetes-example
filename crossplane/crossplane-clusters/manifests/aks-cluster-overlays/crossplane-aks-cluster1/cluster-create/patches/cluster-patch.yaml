@@ -7,9 +7,9 @@ metadata:
     app: "crossplane"
     provider: azure
 spec: 
-  resourceGroupName: resourcegroup-replaceme
+  resourceGroupName: openenv-2576s
   #resourceGroupNameRef:
-  #  name: openenv-dxhj4
+  #  name: openenv-2576s
   vnetSubnetIDRef:
     name: crossplane-azure-subnet-eastus
   location: East US
