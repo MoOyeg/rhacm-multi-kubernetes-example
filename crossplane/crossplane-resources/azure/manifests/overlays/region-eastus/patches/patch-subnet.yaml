@@ -3,8 +3,8 @@ kind: Subnet
 metadata:
   name: crossplane-azure-subnet-eastus
 spec:
-  resourceGroupName: openenv-2576s
+  resourceGroupName: openenv-xvhdm
   #resourceGroupNameRef:
-  #  name: openenv-2576s
+  #  name: openenv-xvhdm
   virtualNetworkNameRef:
     name: crossplane-eastus-azure-vnet
