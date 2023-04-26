@@ -13,13 +13,22 @@ policyDefaults:
   namespace: global-policies
   remediationAction: enforce
   severity: medium
+  orderPolicies: true
 policies:
 - name: policy-xks-olm-crds
   disabled: false
   manifests:
     - path: ./crds
+  policySets:
+    - policy-xks-base
 - name: policy-xks-olm-deploy
   disabled: false
   manifests:
     - path: ./olm_deploy
   remediationAction: enforce
+  policySets:
+    - policy-xks-base
+policySets:
+  - name: policy-xks-base
+    placement:
+      placementRuleName: "non-openshift-placementrule"

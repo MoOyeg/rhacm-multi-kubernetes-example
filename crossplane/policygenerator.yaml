@@ -5,19 +5,20 @@ metadata:
 placementBindingDefaults:
   name: crossplane-install-binding
 policyDefaults:
-  placement:
-    placementRuleName: hub-placementrule
   controls:
     - "CM-2 Baseline Configuration"
   pruneObjectBehavior: "DeleteIfCreated"
   namespace: global-policies
   remediationAction: enforce
   severity: medium
+  orderPolicies: true
 policies:
 - name: policy-crossplane-helm-repo
   disabled: false
   manifests:
     - path: ./crossplane-helm-repo
+  policySets:
+    - policy-test-crossplane
 # - name: policy-crossplane-git-repo
 #   disabled: false
 #   manifests:
@@ -26,9 +27,16 @@ policies:
   disabled: false
   manifests:
     - path: ./crossplane-install-non-vault
+  policySets:
+    - policy-test-crossplane
 - name: policy-crossplane-providers
   disabled: false
   manifests:
     - path: ./crossplane-provider
-
+  policySets:
+    - policy-test-crossplane
+policySets:
+  - name: policy-test-crossplane
+    placement:
+      placementRuleName: "hub-placementrule"
     
