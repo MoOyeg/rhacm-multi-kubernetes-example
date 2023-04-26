@@ -11,18 +11,20 @@ policyDefaults:
   remediationAction: enforce
   severity: medium
   namespace: global-policies
+  orderPolicies: true
 policies:
 - name: policy-globalpolicy-namespace
   disabled: false
   manifests:
     - path: ./manifests-namespace
+  policySets:
+    - policy-global-all-base
 - name: policy-placementrules
   disabled: false
   manifests:
     - path: ./manifests-placementrules
-  placement:
-    clusterSelectors:
-      name: local-cluster
+  policySets:
+    - policy-global-hub
 - name: policy-subscription-admin
   disabled: false
   manifests:
@@ -30,4 +32,10 @@ policies:
   placement:
     clusterSelectors:
       name: local-cluster
-    
+policySets:
+  - name: policy-global-hub
+    placement:
+      placementRuleName: "bootstrap-hub-placementrule"
+  - name: policy-global-all-base
+    placement:
+      clusterSelectors: {}

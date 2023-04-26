@@ -1,2 +1,4 @@
+resources:
+- ./hub-placementrule.yaml
 generators:
 - ./policygenerator.yaml
