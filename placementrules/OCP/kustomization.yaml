@@ -1,4 +1,5 @@
 resources:
-- ./ocp-placementrule.yaml
+#- ./ocp-placementrule.yaml
+- ./ocp-placement.yaml
 
 

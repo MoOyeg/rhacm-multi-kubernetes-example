@@ -1,3 +1,4 @@
 resources:
-- ./gke-placementrule.yaml
+#- ./gke-placementrule.yaml
+- ./gke-placement.yaml
 

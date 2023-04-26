@@ -1,4 +1,5 @@
 resources:
-- ./non-openshift-placementrule.yaml
+#- ./non-openshift-placementrule.yaml
+- ./non-openshift-placement.yaml
 
 

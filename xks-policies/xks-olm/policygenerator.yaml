@@ -2,15 +2,13 @@ apiVersion: policy.open-cluster-management.io/v1
 kind: PolicyGenerator
 metadata:
   name: policy-generator-xks-olm
-placementBindingDefaults:
-  name: xks-olm-binding
 policyDefaults:
-  placement:
-    placementRuleName: non-openshift-placementrule
+  policySets:
+    - global-xks-policies
+  namespace: global-policies
   controls:
     - "CM-2 Baseline Configuration"
   pruneObjectBehavior: "DeleteIfCreated"
-  namespace: global-policies
   remediationAction: enforce
   severity: medium
 policies:
@@ -23,3 +21,6 @@ policies:
   manifests:
     - path: ./olm_deploy
   remediationAction: enforce
+policySets:
+  - name: global-xks-policies
+    placement: 

@@ -1,4 +1,5 @@
 resources:
-- ./azure-placementrule.yaml
+#- ./azure-placementrule.yaml
+- ./azure-placement.yaml
 
 

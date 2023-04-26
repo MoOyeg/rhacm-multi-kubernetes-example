@@ -1,13 +1,11 @@
-namespace: global-policies
 resources:
-- ./NON-OCP/non-openshift-placementrule.yaml
-- ./NON-HUB/not-local-ocp-placementrule.yaml
-- ./OCP-NON-HUB/ocp-non-hub-placementrule.yaml
-- ./OCP/ocp-placementrule.yaml
-- ./OCP-HUB/hub-placementrule.yaml
-- ./AKS/aks-placementrule.yaml
-- ./EKS/eks-placementrule.yaml
-- ./GKE/gke-placementrule.yaml
-- ./AMAZON/amazon-placementrule.yaml
-- ./AZURE/azure-placementrule.yaml
-
+- ./NON-OCP
+- ./NON-HUB
+- ./OCP-NON-HUB
+- ./OCP
+- ./OCP-HUB
+- ./AKS
+- ./EKS
+- ./GKE
+- ./AMAZON
+- ./AZURE

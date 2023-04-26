@@ -1,3 +1,4 @@
 resources:
-- ./not-local-ocp-placementrule.yaml
+#- ./not-local-ocp-placementrule.yaml
+- ./not-local-ocp-placement.yaml
 

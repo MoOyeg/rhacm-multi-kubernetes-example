@@ -1,4 +1,5 @@
 resources:
-- ./aks-placementrule.yaml
+#- ./aks-placementrule.yaml
+- ./aks-placement.yaml
 
 

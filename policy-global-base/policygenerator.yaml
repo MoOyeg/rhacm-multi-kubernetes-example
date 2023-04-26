@@ -11,23 +11,29 @@ policyDefaults:
   remediationAction: enforce
   severity: medium
   namespace: global-policies
+  orderPolicies: true
 policies:
 - name: policy-globalpolicy-namespace
   disabled: false
   manifests:
     - path: ./manifests-namespace
+  policySets:
+    - my-global-base-config
 - name: policy-placementrules
   disabled: false
   manifests:
     - path: ./manifests-placementrules
-  placement:
-    clusterSelectors:
-      name: local-cluster
+  policySets:
+    - my-global-hub-config
 - name: policy-subscription-admin
   disabled: false
   manifests:
     - path: ./manifests-rbac
-  placement:
-    clusterSelectors:
-      name: local-cluster
-    
+policySets:
+  - name: my-global-hub-config
+    placement:
+      clusterSelectors:
+        name: local-cluster
+  - name: my-global-base-config
+    placement:
+      clusterSelectors: {}

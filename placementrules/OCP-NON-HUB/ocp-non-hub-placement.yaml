@@ -1,0 +1,17 @@
+apiVersion: apps.open-cluster-management.io/v1
+kind: Placement
+metadata:
+  name: ocp-non-hub-placement
+spec:
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - key: name
+              operator: NotIn
+              values:
+                - local-cluster
+            - key: vendor
+              operator: In
+              values:
+                - OpenShift

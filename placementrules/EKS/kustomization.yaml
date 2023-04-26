@@ -1,4 +1,5 @@
 resources:
-- ./eks-placementrule.yaml
+#- ./eks-placementrule.yaml
+- ./eks-placement.yaml
 
 
