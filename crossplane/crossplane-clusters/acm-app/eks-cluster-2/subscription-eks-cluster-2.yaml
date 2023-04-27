@@ -1,0 +1,16 @@
+apiVersion: apps.open-cluster-management.io/v1
+kind: Subscription
+metadata:
+  annotations:
+    apps.open-cluster-management.io/git-branch: demo3
+    apps.open-cluster-management.io/git-path: crossplane/crossplane-clusters/manifests/eks-cluster-overlays/crossplane-eks-cluster1/cluster-create 
+  labels:
+    app: crossplane-clusters
+  name: crossplane-cluster-eks-cluster-2
+  namespace: crossplane-system
+spec:
+  channel: channel-rhacm-git-ns/rhacm-git
+  placement:
+    placementRef:
+      kind: PlacementRule
+      name: hub-placementrule
