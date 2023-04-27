@@ -5,7 +5,7 @@ metadata:
 spec:
   forProvider:
     region: us-east-1
-    version: "1.22"
+    version: "1.24"
     resourcesVpcConfig:
       # Defined in ../../crossplane-resources/aws/manifests
       subnetIdRefs:
