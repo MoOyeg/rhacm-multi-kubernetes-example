@@ -2,6 +2,8 @@ apiVersion: policy.open-cluster-management.io/v1
 kind: PolicyGenerator
 metadata:
   name: policygeneratorbaseconfig
+placementBindingDefaults:
+  name: global-baseconfig
 policyDefaults:
   controls:
     - "CM-2 Baseline Configuration"

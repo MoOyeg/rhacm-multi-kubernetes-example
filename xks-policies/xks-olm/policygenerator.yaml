@@ -2,6 +2,8 @@ apiVersion: policy.open-cluster-management.io/v1
 kind: PolicyGenerator
 metadata:
   name: policy-generator-xks-olm
+placementBindingDefaults:
+  name: xks-olm-binding
 policyDefaults:
   placement:
     placementRuleName: non-openshift-placementrule
