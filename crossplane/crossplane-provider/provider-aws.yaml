@@ -3,5 +3,6 @@ kind: Provider
 metadata:
   name: provider-aws
 spec:
+  #package: xpkg.upbound.io/crossplane-contrib/provider-aws:v0.39.0
   package: "crossplane/provider-aws@sha256:f26dd6486d3e079eaf09ffbb31332dc367857cd97a281b578683c648472a7c63"
   packagePullPolicy: Always
