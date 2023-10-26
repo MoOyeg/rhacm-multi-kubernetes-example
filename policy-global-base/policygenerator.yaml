@@ -25,13 +25,14 @@ policies:
     - path: ./manifests-placementrules
   policySets:
     - policy-global-hub
-- name: policy-subscription-admin
-  disabled: false
-  manifests:
-    - path: ./manifests-rbac
-  placement:
-    clusterSelectors:
-      name: local-cluster
+#Hub lookup for namespaced objects no longer supported
+# - name: policy-subscription-admin
+#   disabled: false
+#   manifests:
+#     - path: ./manifests-rbac
+#   placement:
+#     clusterSelectors:
+#       name: local-cluster
 policySets:
   - name: policy-global-hub
     placement:

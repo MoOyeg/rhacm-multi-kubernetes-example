@@ -55,6 +55,11 @@ Cluster configuration that will serve as the base for our ACM Policies and all o
   oc new-project global-policies
   ```
 
+- Create the ManagedClusterSetBinding
+
+  ```bash
+  oc create -f ./managedclustersetbinding.yaml
+  ```
 - Create an ACM Policy that does the following.
 
   - Create our global-policies namesapce in every Kubernetes Cluster

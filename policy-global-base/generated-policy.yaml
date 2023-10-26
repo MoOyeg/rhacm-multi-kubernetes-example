@@ -1,79 +1,59 @@
 apiVersion: apps.open-cluster-management.io/v1
 kind: PlacementRule
 metadata:
-  name: placement-policy-globalpolicy-namespace
+  name: bootstrap-hub-placementrule
+  namespace: global-policies
+spec:
+  clusterConditions:
+  - status: "True"
+    type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+    - key: name
+      operator: In
+      values:
+      - local-cluster
+    - key: vendor
+      operator: In
+      values:
+      - OpenShift
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: placement-policy-global-all-base
   namespace: global-policies
 spec:
   clusterSelector:
     matchExpressions: []
 ---
-apiVersion: apps.open-cluster-management.io/v1
-kind: PlacementRule
-metadata:
-  name: placement-policy-placementrules
-  namespace: global-policies
-spec:
-  clusterSelector:
-    matchExpressions:
-    - key: name
-      operator: In
-      values:
-      - local-cluster
----
-apiVersion: apps.open-cluster-management.io/v1
-kind: PlacementRule
-metadata:
-  name: placement-policy-subscription-admin
-  namespace: global-policies
-spec:
-  clusterSelector:
-    matchExpressions:
-    - key: name
-      operator: In
-      values:
-      - local-cluster
----
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
 metadata:
-  name: binding-policy-globalpolicy-namespace
+  name: global-baseconfig
   namespace: global-policies
 placementRef:
   apiGroup: apps.open-cluster-management.io
   kind: PlacementRule
-  name: placement-policy-globalpolicy-namespace
+  name: bootstrap-hub-placementrule
 subjects:
 - apiGroup: policy.open-cluster-management.io
-  kind: Policy
-  name: policy-globalpolicy-namespace
+  kind: PolicySet
+  name: policy-global-hub
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
 metadata:
-  name: binding-policy-placementrules
+  name: global-baseconfig2
   namespace: global-policies
 placementRef:
   apiGroup: apps.open-cluster-management.io
   kind: PlacementRule
-  name: placement-policy-placementrules
+  name: placement-policy-global-all-base
 subjects:
 - apiGroup: policy.open-cluster-management.io
-  kind: Policy
-  name: policy-placementrules
----
-apiVersion: policy.open-cluster-management.io/v1
-kind: PlacementBinding
-metadata:
-  name: binding-policy-subscription-admin
-  namespace: global-policies
-placementRef:
-  apiGroup: apps.open-cluster-management.io
-  kind: PlacementRule
-  name: placement-policy-subscription-admin
-subjects:
-- apiGroup: policy.open-cluster-management.io
-  kind: Policy
-  name: policy-subscription-admin
+  kind: PolicySet
+  name: policy-global-all-base
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
@@ -115,6 +95,12 @@ metadata:
   name: policy-placementrules
   namespace: global-policies
 spec:
+  dependencies:
+  - apiVersion: policy.open-cluster-management.io/v1
+    compliance: Compliant
+    kind: Policy
+    name: policy-globalpolicy-namespace
+    namespace: global-policies
   disabled: false
   policy-templates:
   - objectDefinition:
@@ -156,27 +142,6 @@ spec:
               type: Git
         - complianceType: musthave
           objectDefinition:
-            apiVersion: apps.open-cluster-management.io/v1
-            kind: PlacementRule
-            metadata:
-              name: bootstrap-hub-placementrule
-              namespace: global-policies
-            spec:
-              clusterConditions:
-              - status: "True"
-                type: ManagedClusterConditionAvailable
-              clusterSelector:
-                matchExpressions:
-                - key: name
-                  operator: In
-                  values:
-                  - local-cluster
-                - key: vendor
-                  operator: In
-                  values:
-                  - OpenShift
-        - complianceType: musthave
-          objectDefinition:
             apiVersion: v1
             kind: Namespace
             metadata:
@@ -204,41 +169,22 @@ spec:
         severity: medium
   remediationAction: enforce
 ---
-apiVersion: policy.open-cluster-management.io/v1
-kind: Policy
+apiVersion: policy.open-cluster-management.io/v1beta1
+kind: PolicySet
 metadata:
-  annotations:
-    policy.open-cluster-management.io/categories: CM Configuration Management
-    policy.open-cluster-management.io/controls: CM-2 Baseline Configuration
-    policy.open-cluster-management.io/standards: NIST SP 800-53
-  name: policy-subscription-admin
+  name: policy-global-all-base
   namespace: global-policies
 spec:
-  disabled: false
-  policy-templates:
-  - objectDefinition:
-      apiVersion: policy.open-cluster-management.io/v1
-      kind: ConfigurationPolicy
-      metadata:
-        name: policy-subscription-admin
-      spec:
-        object-templates:
-        - complianceType: musthave
-          objectDefinition:
-            apiVersion: rbac.authorization.k8s.io/v1
-            kind: ClusterRoleBinding
-            metadata:
-              name: open-cluster-management:subscription-admin
-            roleRef:
-              apiGroup: rbac.authorization.k8s.io
-              kind: ClusterRole
-              name: open-cluster-management:subscription-admin
-            subjects:
-            - apiGroup: rbac.authorization.k8s.io
-              kind: User
-              name: '{{hub (index (lookup "v1" "Namespace" "" "global-policies").metadata.annotations
-                "openshift.io/requester") hub}}'
-        pruneObjectBehavior: DeleteIfCreated
-        remediationAction: enforce
-        severity: medium
-  remediationAction: enforce
+  description: ""
+  policies:
+  - policy-globalpolicy-namespace
+---
+apiVersion: policy.open-cluster-management.io/v1beta1
+kind: PolicySet
+metadata:
+  name: policy-global-hub
+  namespace: global-policies
+spec:
+  description: ""
+  policies:
+  - policy-placementrules
