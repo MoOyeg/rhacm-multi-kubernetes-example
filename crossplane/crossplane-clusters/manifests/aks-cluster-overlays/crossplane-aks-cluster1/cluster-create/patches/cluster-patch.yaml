@@ -7,9 +7,9 @@ metadata:
     app: "crossplane"
     provider: azure
 spec: 
-  resourceGroupName: openenv-qs7sg
+  resourceGroupName: openenv-w8mkd
   #resourceGroupNameRef:
-  #  name: openenv-qs7sg
+  #  name: openenv-w8mkd
   vnetSubnetIDRef:
     name: crossplane-azure-subnet-eastus
   location: East US
