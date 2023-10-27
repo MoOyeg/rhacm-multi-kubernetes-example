@@ -7,7 +7,7 @@ metadata:
     app: "crossplane"
     provider: azure
 spec: 
-  resourceGroupName: openenv-qs7sg
+  resourceGroupName: resourcegroup-replaceme
   #resourceGroupNameRef:
   #  name: openenv-qs7sg
   vnetSubnetIDRef:
