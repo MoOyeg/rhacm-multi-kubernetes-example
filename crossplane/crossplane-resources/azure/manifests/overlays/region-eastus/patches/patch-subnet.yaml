@@ -3,8 +3,8 @@ kind: Subnet
 metadata:
   name: crossplane-azure-subnet-eastus
 spec:
-  resourceGroupName: resourcegroup-replaceme
+  resourceGroupName: openenv-qs7sg
   #resourceGroupNameRef:
-  #  name: openenv-dxhj4
+  #  name: openenv-qs7sg
   virtualNetworkNameRef:
     name: crossplane-eastus-azure-vnet

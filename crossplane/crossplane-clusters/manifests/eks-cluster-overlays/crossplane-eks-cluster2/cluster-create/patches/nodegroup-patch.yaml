@@ -4,16 +4,16 @@ metadata:
   name: eks-cluster-2-nodegroup
 spec:
   forProvider:
-    region: us-east-1
+    region: us-east-2
     clusterNameRef:
       name: eks-cluster-2
     # Defined in crossplane-resources/aws/manifests
     subnetRefs:
-      - name: crossplane-subnet-1-us-east-1
-      - name: crossplane-subnet-2-us-east-1
-      - name: crossplane-subnet-3-us-east-1
+      - name: crossplane-subnet-1-us-east-2
+      - name: crossplane-subnet-2-us-east-2
+      - name: crossplane-subnet-3-us-east-2
     scalingConfig:
-      desiredSize: 2
+      desiredSize: 4
       maxSize: 4
       minSize: 1
 

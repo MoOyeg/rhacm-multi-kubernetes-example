@@ -4,6 +4,8 @@ resources:
 #Create eks-cluster-1(folder manifests/overlays/region-us-east-1)
 - ./eks-cluster-1/subscription-eks-cluster-1.yaml
 - ./eks-cluster-1/subscription-eks-cluster-1-attach.yaml
+# - ./eks-cluster-2/subscription-eks-cluster-2.yaml
+# - ./eks-cluster-2/subscription-eks-cluster-2-attach.yaml
 #Create aks-cluster-1(folder manifests/overlays/eastus1)
 - ./aks-cluster-1/subscription-aks-cluster-1.yaml
 - ./aks-cluster-1/subscription-aks-cluster-1-attach.yaml

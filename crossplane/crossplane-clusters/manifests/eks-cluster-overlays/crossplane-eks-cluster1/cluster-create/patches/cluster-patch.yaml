@@ -5,8 +5,10 @@ metadata:
 spec:
   forProvider:
     region: us-east-1
-    version: "1.22"
+    version: "1.24"
     resourcesVpcConfig:
+      endpointPrivateAccess: true
+      endpointPublicAccess: true
       # Defined in ../../crossplane-resources/aws/manifests
       subnetIdRefs:
         - name: crossplane-subnet-1-us-east-1
