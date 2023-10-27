@@ -60,11 +60,16 @@ Cluster configuration that will serve as the base for our ACM Policies and all o
   ```bash
   oc create -f ./managedclustersetbinding.yaml
   ```
+
+- Attach subscription-admin role to the user that requested the global-policies namespace above.
+  ```bash
+  oc adm policy add-cluster-role-to-user open-cluster-management:subscription-admin $(oc whoami)
+  ```
+
 - Create an ACM Policy that does the following.
 
   - Create our global-policies namesapce in every Kubernetes Cluster
   - Create List Of PlacementRules we want ACM to use from the placmentrules folder and can be leveraged by other policies. PlacementRules are used as selectors to determine which clusters a policy should be applied to.Might need to run this command twice to allow the previous policy to be enforced..
-  - Attach subscription-admin role to the user that requested the global-policies namespace above.
 
   You can create the ACM policy via a pre-generated yaml:
 
