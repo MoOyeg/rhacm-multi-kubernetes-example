@@ -5,6 +5,6 @@ metadata:
 spec:
   resourceGroupName: resourcegroup-replaceme
   #resourceGroupNameRef:
-  #  name: openenv-qs7sg
+  #  name: openenv-w8mkd
   virtualNetworkNameRef:
     name: crossplane-eastus-azure-vnet

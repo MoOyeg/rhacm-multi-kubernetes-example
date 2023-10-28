@@ -9,7 +9,7 @@ metadata:
 spec: 
   resourceGroupName: resourcegroup-replaceme
   #resourceGroupNameRef:
-  #  name: openenv-qs7sg
+  #  name: openenv-w8mkd
   vnetSubnetIDRef:
     name: crossplane-azure-subnet-eastus
   location: East US
