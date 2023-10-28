@@ -3,7 +3,7 @@ kind: Subnet
 metadata:
   name: crossplane-azure-subnet-eastus
 spec:
-  resourceGroupName: openenv-w8mkd
+  resourceGroupName: resourcegroup-replaceme
   #resourceGroupNameRef:
   #  name: openenv-w8mkd
   virtualNetworkNameRef:
